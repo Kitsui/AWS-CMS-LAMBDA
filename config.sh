@@ -1,4 +1,3 @@
 #init config
-
-lol="lol"
-lol2="lol2"
+startStmt="<!--------------start of script---------------->"
+endStmt="<!---------------end of script----------------->"
