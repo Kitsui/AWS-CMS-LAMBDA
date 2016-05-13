@@ -1,3 +1,6 @@
 #Params for initial setup
-STACK_NAME="MyStack"
-BUCKET_NAME="adam-miguel-bash-bucket"
+STACK_NAME="AdamStack"
+BUCKET_NAME="adam-miguel-bash-bucket2"
+ACCOUNT_NUMBER="617218249308"
+ADMIN_NAME="Admin"
+REGION="us-east-1"
