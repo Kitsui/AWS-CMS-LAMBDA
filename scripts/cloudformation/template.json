@@ -1,6 +1,14 @@
 {
       "AWSTemplateFormatVersion" : "2010-09-09",
+      "Parameters" : {
+
+        "BucketName" : {
+          "Type" : "String",
+          "Description" : "The name for an s3 Bucket to create."
+        }
+      },
       "Resources" : {
+
           "S3Bucket" : {
              "Type" : "AWS::S3::Bucket",
              "Properties" : {
@@ -12,6 +20,25 @@
                  }
              },
              "DeletionPolicy" : "Delete"
+          },
+
+          "AdminGroup" : {
+            "Type" : "AWS::IAM::Group"
+          },
+
+          "AdminPolicies" : {
+            "Type" : "AWS::IAM::Policy",
+            "Properties" : {
+              "PolicyName" : "Admins",
+              "PolicyDocument" : {
+                "Statement": [{
+                  "Effect"   : "Allow",
+                  "Action"   : "*",
+                  "Resource" : "*"
+                }]
+              },
+              "Groups" : [{ "Ref" : "AdminGroup" }]
+            }
           }
       },
       "Outputs" : {
@@ -22,12 +49,6 @@
           "S3BucketSecureURL" : {
                 "Value" : { "Fn::Join" : [ "", [ "https://", { "Fn::GetAtt" : [ "S3Bucket", "DomainName" ] } ] ] },
                 "Description" : "Name of S3 bucket to hold website content"
-          }
-      },
-      "Parameters" : {
-          "BucketName" : {
-              "Type" : "String",
-              "Description" : "The name for an s3 Bucket to create."
           }
       }
 }
