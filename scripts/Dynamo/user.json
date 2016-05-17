@@ -1,0 +1,7 @@
+{
+    "UID": {"S": "12345678"},
+    "Username": {"S": "Admin"},
+    "Password": {"S": "password123"},
+    "Email": {"S": "email@gmail.com"},
+    "Roles": {"S": "1"}
+}
