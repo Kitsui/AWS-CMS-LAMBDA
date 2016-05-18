@@ -3,8 +3,6 @@ source params.sh
 
 ECHO "<------ RUNNING LAMBDA SCRIPT ------>"
 
-sleep 5
-
 # Create Lambda function
 aws lambda create-function \
 --function-name logEvent \

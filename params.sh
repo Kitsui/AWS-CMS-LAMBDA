@@ -1,6 +1,5 @@
 #Params for initial setup
-STACK_NAME="AdamStack"
-BUCKET_NAME="adam-miguel-bash-bucket2"
-ACCOUNT_NUMBER="617218249308"
+BUCKET_NAME="kitsui-aws-cms-test"
+ACCOUNT_NUMBER="617218249308" # Modify as needed
 ADMIN_NAME="Admin"
 REGION="us-east-1"
