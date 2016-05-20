@@ -6,5 +6,6 @@ ECHO "<------ RUNNING SETUP SCRIPT ------>"
 scripts/s3bucket/s3bucket.sh
 scripts/lambda/lambda.sh
 scripts/Dynamo/dynamo.sh
+scripts/apigateway/apigateway.sh
 
 ECHO "<------ SETUP SCRIPT COMPLETE ------>"
