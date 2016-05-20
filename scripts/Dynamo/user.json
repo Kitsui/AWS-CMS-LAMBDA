@@ -1,5 +1,5 @@
 {
-    "UID": {"S": "12345678"},
+    "ID": {"N": "123"},
     "Username": {"S": "Admin"},
     "Password": {"S": "password123"},
     "Email": {"S": "email@gmail.com"},

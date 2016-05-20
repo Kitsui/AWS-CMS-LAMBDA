@@ -1,0 +1,49 @@
+<html>
+<head>
+    <title>Register User</title>
+</head>
+<body>
+<div>
+    <form id="email_form" action="/register" method="post">
+      <input type="text" name="username" id="usernameInput" placeholder="Username">
+      <input type="email" name="email" id="emailInput" placeholder="Email">
+      <input type="password" name="password" id="passwordInput" placeholder="Password">
+      <button type="submit" id="submit_form">Submit</button>
+    </form> 
+</div>
+<script type="text/javascript">
+
+    function post_request() {
+        var xhr = new XMLHttpRequest();
+        var params = JSON.stringify({
+            User:{ 
+                username: document.getElementById("usernameInput").value, 
+                email: document.getElementById("emailInput").value,
+                password: document.getElementById("passwordInput").value
+            }
+        });
+        xhr.open("POST", "https://nnih0llbtg.execute-api.us-west-2.amazonaws.com/Test/register", true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.setRequestHeader("x-api-key", "EItAcMzuPs7l1kn9NpFUY1BBwT59FVJW1GIM6cxp");
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState === 4){
+                if(xhr.status === 200){
+                    alert("You are registered!");
+                }
+                else{
+                    alert("Could not register. Please try again later.");
+                }
+            }
+        };
+        xhr.send(params);
+        return false;
+    }
+
+    document.getElementById("email_form").onsubmit = function() {
+            post_request();
+            return false;
+    }
+
+</script>
+</body>
+</html>
