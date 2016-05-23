@@ -2,22 +2,27 @@
 // Author: Adam Campbell
 // Date: 20/May/2016
 
+"use strict";
+
+// Module imports
+var bcryptjs = require('bcryptjs');
+var uuid = require('uuid');
+
+// AWS services
+var AWS = require('aws-sdk');
+var dynamodb = 	new AWS.DynamoDB();
+
+// Object
 var user = function(){  
 
 	var self = this;
 
-	self.registerUser = function (AWS, event, context){
-
-		var dynamodb = 	new AWS.DynamoDB();
-
-		var minId = 0;
-		var maxId = 999999999;
-		var id = Math.floor(Math.random() * (maxId - minId + 1)) + minId;
+	self.registerUser = function (event, context){
 
 		var params = {
 			Item: {
 			    "ID": {
-			        N: id.toString()
+			        S: uuid.v1()
 			    },
 				"Username": {
 					S: event.user.username
@@ -26,7 +31,7 @@ var user = function(){
 					S: event.user.email
 				},
 				"Password": {
-					S: event.user.password
+					S: bcryptjs.hashSync(event.user.password, 8)
 				},
 				"Roles": {
 					S: "1"
