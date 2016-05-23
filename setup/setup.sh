@@ -35,7 +35,7 @@ ECHO "<------ Setting up DynamoDB ------>"
 # Create User table
 aws dynamodb create-table --table-name User \
  --attribute-definitions \
-  AttributeName=ID,AttributeType=N \
+  AttributeName=ID,AttributeType=S \
   AttributeName=Username,AttributeType=S \
  --key-schema AttributeName=ID,KeyType=HASH AttributeName=Username,KeyType=RANGE \
  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5

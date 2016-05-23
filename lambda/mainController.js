@@ -17,7 +17,7 @@ exports.handler = function(event, context) {
 		switch(request) {
 			case "register":
 				var userInstance = new User();
-				userInstance.registerUser(AWS, event, context);
+				userInstance.registerUser(event, context);
 				break;
 		}
 	}
