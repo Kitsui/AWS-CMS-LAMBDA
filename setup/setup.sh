@@ -60,4 +60,72 @@ aws lambda create-function \
 --zip-file fileb://../lambda/mainController.zip
 ECHO "<------ Setting up Lambda COMPLETE ------>"
 
+ECHO "<------ Setting up API Gateway ------>"
+## Create the API
+API_ID=$(aws apigateway create-rest-api \
+	--name AWS_CMS_Operations_DERP \
+	--region "$REGION" \
+	--output text \
+	--query 'id')
+
+ROOT_ID=$(aws apigateway get-resources \
+	--rest-api-id "$API_ID" \
+	--region "$REGION" \
+	--output text \
+	--query 'items[?path==`'/'`].[id]')
+
+# Create a resource for API
+RESOURCE_ID=$(aws apigateway create-resource \
+--rest-api-id "$API_ID" \
+--parent-id "$ROOT_ID" \
+--path-part AWS_CMS_Manager \
+--output text \
+--query 'id')
+
+# Create method (POST) on the above resource
+aws apigateway put-method \
+--rest-api-id $API_ID \
+--resource-id $RESOURCE_ID \
+--http-method POST \
+--authorization-type NONE
+
+# Set the Lambda function as the destination for the POST
+aws apigateway put-integration \
+--rest-api-id $API_ID \
+--resource-id $RESOURCE_ID \
+--http-method POST \
+--type AWS \
+--integration-http-method POST \
+--uri arn:aws:apigateway:$REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:$REGION:$ACCOUNT_NUMBER:function:mainController/invocations
+
+# Set the API response to return JSON
+aws apigateway put-method-response \
+--rest-api-id $API_ID \
+--resource-id $RESOURCE_ID \
+--http-method POST \
+--status-code 200 \
+--response-models "{\"application/json\": \"Empty\"}"
+
+# Set the Lambda response to return JSON
+aws apigateway put-integration-response \
+--rest-api-id $API_ID \
+--resource-id $RESOURCE_ID \
+--http-method POST \
+--status-code 200 \
+--response-templates "{\"application/json\": \"\"}"
+
+# Deploy the API
+aws apigateway create-deployment \
+--rest-api-id $API_ID \
+--stage-name prod
+
+# Add grant permissions to gateway for invoking mainController function
+aws lambda add-permission \
+--function-name mainController \
+--statement-id apigateway-production-aws-cms \
+--action lambda:InvokeFunction \
+--principal apigateway.amazonaws.com \
+--source-arn "arn:aws:execute-api:$REGION:$ACCOUNT_NUMBER:$API_ID/prod/POST/AWS_CMS_Manager"
+ECHO "<------ Setting up API Gateway COMPLETE ------>"
+
 ECHO "<------ Setting up AWS CMS COMPLETE ------>"
