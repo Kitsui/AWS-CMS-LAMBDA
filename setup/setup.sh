@@ -40,13 +40,28 @@ aws dynamodb create-table --table-name User \
  --key-schema AttributeName=ID,KeyType=HASH AttributeName=Username,KeyType=RANGE \
  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
 
-sleep 5
+# Create Token table
+ aws dynamodb create-table --table-name Token \
+ --attribute-definitions \
+  AttributeName=Token,AttributeType=S \
+  AttributeName=UserID,AttributeType=S \
+ --key-schema AttributeName=Token,KeyType=HASH AttributeName=UserID,KeyType=RANGE \
+ --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
+
+sleep 30
 
 # Create admin
  aws dynamodb put-item \
  --table-name User \
  --item file://dynamo/user.json \
  --return-consumed-capacity TOTAL
+
+ # Create default token
+aws dynamodb put-item \
+ --table-name Token \
+ --item file://dynamo/token.json \
+ --return-consumed-capacity TOTAL
+
 ECHO "<------ Setting up DynamoDB COMPLETE------>"
 
 ECHO "<------ Setting up Lambda ------>"
@@ -127,5 +142,7 @@ aws lambda add-permission \
 --principal apigateway.amazonaws.com \
 --source-arn "arn:aws:execute-api:$REGION:$ACCOUNT_NUMBER:$API_ID/prod/POST/AWS_CMS_Manager"
 ECHO "<------ Setting up API Gateway COMPLETE ------>"
+
+
 
 ECHO "<------ Setting up AWS CMS COMPLETE ------>"
