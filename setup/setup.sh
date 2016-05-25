@@ -43,9 +43,9 @@ aws dynamodb create-table --table-name User \
 # Create Token table
  aws dynamodb create-table --table-name Token \
  --attribute-definitions \
-  AttributeName=Token,AttributeType=S \
+  AttributeName=TokenString,AttributeType=S \
   AttributeName=UserID,AttributeType=S \
- --key-schema AttributeName=Token,KeyType=HASH AttributeName=UserID,KeyType=RANGE \
+ --key-schema AttributeName=TokenString,KeyType=HASH AttributeName=UserID,KeyType=RANGE \
  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
 
 sleep 30
