@@ -16,6 +16,7 @@ exports.handler = function(event, context) {
 	var isAuth = true;
 	var request = "login"
 
+
 	if(isAuth) {
 
 		switch(request) {
@@ -25,9 +26,13 @@ exports.handler = function(event, context) {
 				break;
 			case "login":
 				var user = new User();
-				var email = "senpai@johncave.co.nz";
-				var password = "SenpaiIsGreat";
+				var email = "sempai@johncave.co.nz";
+				var password = "SempaiIsGreat";
 				user.loginUser(event.email, event.password);
+				break;
+			case "logout":
+				var userInstance = new User();
+				userInstance.logoutUser(event, context);
 				break;
 		}
 	}

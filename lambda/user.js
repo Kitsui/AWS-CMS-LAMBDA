@@ -45,67 +45,68 @@ var user = function(){
 	  		else     console.log(data);           // successful response
 		});
 	};
+
+
+
 	self.loginUser = function(email, password){
-		
+			
 		var docClient = new AWS.DynamoDB.DocumentClient();
 
-  //some code
 
+		var params = {
+		    TableName: "User",
+		    ProjectionExpression: "ID, Username, Email, Password"
+		};
 
-var params = {
-    TableName: "User",
-    ProjectionExpression: "ID, Username, Email, Password"
-};
+		console.log("Scanning User table.");
+		docClient.scan(params, onScan);
 
-console.log("Scanning User table.");
-docClient.scan(params, onScan);
+		function onScan(err, data) {
+		    if (err) {
+		        console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+		    } else {
+		        // print all the users
+		        console.log("Scan succeeded.");
+		        data.Items.forEach(function(user) {
+		           console.log(
+		                user.Username,
+		                user.ID,
+		                user.Email);
+						if(user.Email == email && bcryptjs.compareSync(password, user.Password)){
 
-function onScan(err, data) {
-    if (err) {
-        console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-    } else {
-        // print all the users
-        console.log("Scan succeeded.");
-        data.Items.forEach(function(user) {
-           console.log(
-                user.Username,
-                user.ID,
-                user.Email);
-				if(user.Email == email && bcryptjs.compareSync(password, user.Password)){
-
-					/** Sync */
-					function randomStringAsBase64Url(size) {
-						return crypto.randomBytes(size).toString('base64');
-					}
-					var token = randomStringAsBase64Url(30);
-					var params = {
-						Item:{
-							"TokenString": {
-								S: token
-							},
-							"UserID": {
-								S: user.ID
+							/** Sync */
+							function randomStringAsBase64Url(size) {
+								return crypto.randomBytes(size).toString('base64');
 							}
-						},
-						TableName: "Token"
-					}
-					dynamodb.putItem(params, function(err, data) {
-						if (err) console.log(err, err.stack); // an error occurred
-						else     console.log(data);           // successful response
-					});
-					context.succeed("Logged in user "+user.Username+". Please set token "+token);
-				}
-        });
-		//context.succeed(data.Items);
+							var token = randomStringAsBase64Url(30);
+							var params = {
+								Item:{
+									"TokenString": {
+										S: token
+									},
+									"UserID": {
+										S: user.ID
+									}
+								},
+								TableName: "Token"
+							}
+							dynamodb.putItem(params, function(err, data) {
+								if (err) console.log(err, err.stack); // an error occurred
+								else     console.log(data);           // successful response
+							});
+							context.succeed("Logged in user "+user.Username+". Please set token "+token);
+						}
+		        });
+				//context.succeed(data.Items);
 
-        // continue scanning if we have more movies
-        if (typeof data.LastEvaluatedKey != "undefined") {
-            console.log("Scanning for more...");
-            params.ExclusiveStartKey = data.LastEvaluatedKey;
-            docClient.scan(params, onScan);
-        }
-    }
-}
+		        // continue scanning if we have more movies
+		        if (typeof data.LastEvaluatedKey != "undefined") {
+		            console.log("Scanning for more...");
+		            params.ExclusiveStartKey = data.LastEvaluatedKey;
+		            docClient.scan(params, onScan);
+		        }
+		    }
+		}
 
 		
 		/*
@@ -129,6 +130,34 @@ function onScan(err, data) {
 			context.fail({success: false, message: "Email or password was incorrect."});
 		} */
 	};
+
+	self.logoutUser = function (event, context){
+		var docClient = new AWS.DynamoDB.DocumentClient();
+		var tokenString = event.User.TokenString;
+		var userID = event.User.UserID;
+		var params = {
+		    TableName:"Token",
+		    Key:{
+		        "TokenString":tokenString,
+		        "UserID": userID
+		    }
+		};
+
+		console.log("Attempting a conditional delete...");
+
+		docClient.delete(params, function(err, data) {
+		    if (err) {
+		        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+		        context.fail("Error with Dynamo", JSON.stringify(err, null, 2));
+		    } else {
+		            console.log("Logout succeeded:", JSON.stringify(data, null, 2) , " Token has been Removed from token table");
+		            context.succeed("Logout Successful", JSON.stringify(data, null, 2), "Token removed from table");
+		    }
+		});
+	}
+
 };
+
+
 
 module.exports = user;
