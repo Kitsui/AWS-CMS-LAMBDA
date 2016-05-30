@@ -27,7 +27,7 @@ exports.handler = function(event, context) {
 				var user = new User();
 				var email = "senpai@johncave.co.nz";
 				var password = "SenpaiIsGreat";
-				user.loginUser("me@here.com", "yaoi");
+				user.loginUser(event.email, event.password);
 				break;
 		}
 	}
