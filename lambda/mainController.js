@@ -9,8 +9,12 @@ var User = require('user.js');
 
 exports.handler = function(event, context) {
 
+	GLOBAL.event = event;
+	GLOBAL.context = context;
+	
+	
 	var isAuth = true;
-	var request = "register"
+	var request = "login"
 
 	if(isAuth) {
 
@@ -18,6 +22,12 @@ exports.handler = function(event, context) {
 			case "register":
 				var userInstance = new User();
 				userInstance.registerUser(event, context);
+				break;
+			case "login":
+				var user = new User();
+				var email = "senpai@johncave.co.nz";
+				var password = "SenpaiIsGreat";
+				user.loginUser(event.email, event.password);
 				break;
 		}
 	}
