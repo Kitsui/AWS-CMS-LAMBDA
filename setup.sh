@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 source params.sh
 
 ECHO "<------ Setting up AWS CMS ------>"
