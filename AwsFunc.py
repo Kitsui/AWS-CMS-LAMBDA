@@ -201,41 +201,41 @@ def create_token_db_entry():
 
 	return True
 
-# Always returns 'MalformedPolicyDocument' error
-def create_lambda_role():
+def create_lambda_function():
 	try:
+		lmda = boto3.client('lambda')
 		iam = boto3.client('iam')
 
 		lambda_permissions_json = ''
 		with open('lambda/lambda_permissions.json', 'r') as thefile:
 			lambda_permissions_json = thefile.read()
 
-		iam.create_role(
+		code = b''
+		with open('lambda/mainController.zip', 'rb') as thefile:
+			code = thefile.read()
+
+		lambda_role = iam.create_role(
 			RoleName='lambda_basic_execution',
-			AssumeRolePolicyDocument={}
+			AssumeRolePolicyDocument=lambda_permissions_json
 		)
-	except botocore.exceptions.ClientError as e:
-		print e.response['Error']['Code']
-		return False
 
-	return True
+		iam.attach_role_policy(
+			RoleName='lambda_basic_execution',
+			PolicyArn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+		)
 
-# Requires fix to 'create_lambda_role' to work
-def create_lambda_function():
-	try:
-		a_lambda = boto3.client('lambda')
-		iam = boto3.client('iam')
-		lambda_basic_execution = iam.Role('lambda_basic_execution')		
-
-		a_lambda.create_function(
+		lmda.create_function(
 			FunctionName='mainController',
 			Runtime='python2.7',
-			Role=lambda_basic_execution.arn
+			Role=lambda_role['Role']['Arn'],
+			Handler='mainController.handler',
+			Code={
+				'ZipFile': code
+			},
+			Description='Central management function designed to handle any API Gateway request'
 		)
 	except botocore.exceptions.ClientError as e:
 		print e.response['Error']['Code']
 		return False
 
 	return True
-
-create_lambda_role()
