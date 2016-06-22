@@ -211,7 +211,7 @@ def create_lambda_function():
 			lambda_permissions_json = thefile.read()
 
 		code = b''
-		with open('lambda/mainController.zip', 'rb') as thefile:
+		with open('lambda/controller.zip', 'rb') as thefile:
 			code = thefile.read()
 
 		lambda_role = iam.create_role(
@@ -225,10 +225,10 @@ def create_lambda_function():
 		)
 
 		lmda.create_function(
-			FunctionName='mainController',
+			FunctionName='controller',
 			Runtime='python2.7',
 			Role=lambda_role['Role']['Arn'],
-			Handler='mainController.handler',
+			Handler='controller.lambda_handler',
 			Code={
 				'ZipFile': code
 			},
