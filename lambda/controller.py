@@ -4,23 +4,28 @@
 # Author: Adam Campbell
 """
 
-from __future__ import print_function
 import User
+import Blog
 
 def handler(event, context):
 	
 	isAuth = True
 	request = event["request"]
 
-	# new User instance
+	# Custom object instances
 	user = User.User(event, context)
+	blog = Blog.Blog(event, context)
+
+	# Map request type to function calls
+	functionMapping = {
+		"getBlogs": blog.get_all_blogs,
+		"saveNewBlog": blog.save_new_blog,
+		"registerUser": user.register,
+		"loginUser": user.login,
+		"logoutUser": user.logout
+	}
 
 	if isAuth:
-		if request == "register":
-			user.register()
-		elif request == "login":
-			user.login()
-		elif request == "logout":
-			user.logout()
+		functionMapping[request]()
 	else:
-		print("You are not authorized")
+		print "You are not authorized"
