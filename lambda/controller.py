@@ -5,6 +5,22 @@
 """
 
 from __future__ import print_function
+import User
 
-def lambda_handler(event, context):
-	print("Hello Miguel & Adam!")
+def handler(event, context):
+	
+	isAuth = True
+	request = event["request"]
+
+	# new User instance
+	user = User.User(event, context)
+
+	if isAuth:
+		if request == "register":
+			user.register()
+		elif request == "login":
+			user.login()
+		elif request == "logout":
+			user.logout()
+	else:
+		print("You are not authorized")
