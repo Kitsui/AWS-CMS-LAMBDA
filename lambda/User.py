@@ -40,12 +40,11 @@ class User(object):
 		pass
 
 	def logout(self):
-
 		# get user credentials
 		token = self.event['tokenString']
     		user = self.event['userID']
 
-    		# fetch dynamo table
+		# fetch dynamo table
 		dynamodb = boto3.resource('dynamodb')
 	    	table = dynamodb.Table('Token')
 
