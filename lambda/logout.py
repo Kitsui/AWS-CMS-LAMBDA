@@ -1,8 +1,8 @@
 import boto3
 
 def my_handler(event, context) :
-    token = event['tokenString']
-    user = event['userID']
+    token = event['User']['tokenString']
+    user = event['User']['userID']
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('Token')
     response = table.delete_item(
