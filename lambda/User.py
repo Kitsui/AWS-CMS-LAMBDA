@@ -37,6 +37,21 @@ class User(object):
 		return True
 
 	def login(self):
+	        dynamodb = boto3.resource('dynamodb')
+		    from boto3.dynamodb.conditions import Key, Attr
+		    table = dynamodb.Table('User')
+		    
+		    username = event["User"]["Username"]
+		    password =  event["User"]["Password"]
+		    
+		    # response = table.scan()
+		    response = table.query(KeyConditionExpression=Key('Username').eq(username))
+		    
+		    for i in response['Items']:
+		        if(i['Password'] == password):
+		            return "successfully logged in"
+
+		return "failed to login"
 		pass
 
 	def logout(self):

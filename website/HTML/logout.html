@@ -17,13 +17,11 @@
         <div class="col-lg-6 col-md-offset-3">    
             <form class="form-horizontal" id="logout_form" action="/register" method="post">
               <div class="form-group form-group-lg">
-                <div class="col-sm-12">
-                  <input class="form-control input-lg" type="text" name="email" id="usernameInput" placeholder="Username">
-                </div>
-                <div class="col-sm-12">
-                  <input class="form-control input-lg" type="text" name="password" id="tokenInput" placeholder="
-                  Token">
-                </div>
+
+                  <input type="hidden" class="form-control input-lg" type="text" name="email" id="usernameInput">
+
+                  <input type="hidden" class="form-control input-lg" type="text" name="password" id="tokenInput">
+                
               </div>
               <button type="submit" id="submit_form" class="btn btn-lg btn-default">Logout</button>
             </form> 
