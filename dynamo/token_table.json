@@ -1,0 +1,27 @@
+{	
+	"TableName": "Token",
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "TokenString",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "UserID",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "TokenString",
+			"KeyType": "HASH"
+		},
+		{
+			"AttributeName": "UserID",
+			"KeyType": "RANGE"
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits":5
+	}
+}
