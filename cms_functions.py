@@ -64,12 +64,13 @@ class AwsFunc:
 					directory = root + '/' + fl
 					key = directory[8:]
 					mime = mimetypes.guess_type(directory)
-					put_kwargs = {
-						'Bucket': self.bucket['Location'][1:],
-						'ACL': 'public-read',
-						'Body': directory,
-						'Key': key
-					}
+					with open(directory, 'rb') as file_body:
+						put_kwargs = {
+							'Bucket': self.bucket['Location'][1:],
+							'ACL': 'public-read',
+							'Body': file_body.read(),
+							'Key': key
+						}
 					if mime[0] != None:
 						put_kwargs['ContentType'] = mime[0]
 					if mime[1] != None:
