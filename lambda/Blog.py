@@ -55,7 +55,28 @@ class Blog(object):
 		return True
 
 	def edit_blog(self):
-		pass
+		dynamodb = boto3.resource('dynamodb')
+		table = dynamodb.Table('Blog')
+
+		blogID = self.event['blog']['BlogID']
+		author = self.event['blog']['Author']
+		content = self.event['blog']['Content']
+		title = self.event['blog']['Title']
+
+		response = table.update_item(Key={'BlogID': blogID, 'Author': author }, UpdateExpression="set Title = :t, Content=:c", ExpressionAttributeValues={ ':t': title, ':c': content})
+		responseCode =  {'message': response['ResponseMetadata']['HTTPStatusCode']}
+		return responseCode
 
 	def delete_blog(self):
-		pass
+		blogID = self.event['blog']['BlogID']
+	    	author = self.event['blog']['Author']
+	        
+	    	dynamodb = boto3.resource('dynamodb')
+	    	table = dynamodb.Table('Blog')
+	    	try:
+			response = table.delete_item(Key={'BlogID': blogID, 'Author' : author})
+	    	except botocore.exceptions.ClientError as e:
+	        	print e.response['Error']['Code']
+	        	return False
+	    	responseStatusCode = {'message': response['ResponseMetadata']['HTTPStatusCode']}
+	    	return responseStatusCode
