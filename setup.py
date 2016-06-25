@@ -1,14 +1,21 @@
 #!/usr/bin/python2.7
 
 import AwsFunc
+import sys
 
-# Create bucket
-AwsFunc.create_bucket("Adam-Miguel-Kitsui-Test", "us-east-1")
-# Create dynamodb tables
-AwsFunc.create_user_table()
-AwsFunc.create_token_table()
-# Create table entries
-AwsFunc.create_admin_db_entry()
-AwsFunc.create_token_db_entry()
-# Create controller function
-AwsFunc.create_lambda_function()
+if len(sys.argv) != 2:
+	command = ''
+	for arg in sys.argv:
+		command += arg + ' '
+	print 'Invalid command: ' + command
+	print 'Usage: %s <bucket-name>' % sys.argv[0]
+	sys.exit()
+
+cms = AwsFunc.AwsFunc(sys.argv[1])	# Instantiate an AwsFunc class
+cms.create_bucket()					# Create an s3 bucket
+cms.create_user_table()				# Create a dynamodb user table
+cms.create_admin_db_entry()			# Add an entry to the user table that represents an admin
+cms.create_token_table()			# Create a dynamodb token table
+cms.create_token_db_entry()			# Add an entry to the token table
+cms.create_lambda_function()		# Create a lambda function
+cms.create_api_gateway()			# Create an api gateway linked to the lambda function

@@ -7,16 +7,17 @@ import mimetypes
 import time
 import ast
 
-class AwsFunc(object):
+class AwsFunc:
 	""" Contains functions for creating, modifying and deleting elements of the AWSCMS.
 	
 	Requires awscli configured or an aws configuration file. 
 	"""
-	def __init__(self):
+	def __init__(self, bucket_name):
 		""" Gets low-level clients for services to be used and creates containers for
 		AWS objects that will be filled by creation functions.
 		"""
 		self.s3 = boto3.client('s3')
+		self.bucket_name = bucket_name
 		self.bucket = None
 
 		self.dynamodb = boto3.client('dynamodb')
@@ -32,7 +33,7 @@ class AwsFunc(object):
 		self.apigateway = boto3.client('apigateway')
 		self.rest_api = None
 
-	def create_bucket(self, bucket_name=None, bucket_region=None):
+	def create_bucket(self, bucket_region=None):
 		""" Creates a bucket with the name 'bucket_name' in region 'bucket_region'. 
 		
 		If 'bucket_region' is not given, bucket will default to US Standard region.
@@ -44,7 +45,7 @@ class AwsFunc(object):
 			# Set the variables needed to create the bucket
 			bucket_kwargs = {
 				'ACL': 'public-read',
-				'Bucket': bucket_name
+				'Bucket': self.bucket_name
 			}
 			if bucket_region != None and bucket_region != 'us-east-1':
 				bucket_kwargs['CreateBucketConfiguration'] = {'LocationConstraint': bucket_region}
@@ -343,7 +344,7 @@ class AwsFunc(object):
 		return uri
 		
 	def create_api_permission_uri(self, api_resource):
-	""" Creates the uri that is needed for giving the api deployment permission to trigger the lambda function """
+		""" Creates the uri that is needed for giving the api deployment permission to trigger the lambda function """
 		uri = 'arn:aws:execute-api:'
 		uri += self.lmda_function['FunctionArn'][15:24] # Pull the region from the lambda function's arn
 		uri += ':'
