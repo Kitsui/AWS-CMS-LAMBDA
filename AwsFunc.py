@@ -8,7 +8,10 @@ import time
 import ast
 
 class AwsFunc(object):
-	""" Contains functions for creating, modifying and deleting elements of the AWSCMS. """
+	""" Contains functions for creating, modifying and deleting elements of the AWSCMS.
+	
+	Requires awscli configured or an aws configuration file. 
+	"""
 	def __init__(self):
 		""" Gets low-level clients for services to be used and creates containers for
 		AWS objects that will be filled by creation functions.
@@ -22,14 +25,18 @@ class AwsFunc(object):
 
 		self.lmda = boto3.client('lambda')
 		self.lmda_function = None
-		self.lmda_role = None
 
 		self.iam = boto3.client('iam')
+		self.lmda_role = None
+		
+		self.apigateway = boto3.client('apigateway')
+		self.rest_api = None
 
 	def create_bucket(self, bucket_name=None, bucket_region=None):
-		""" Creates a bucket with the name 'bucket_name' in region 'bucket_region'. If 
-		'bucket_region' is not given, bucket will default to US Standard region.
-		The bucket is then populated with files.
+		""" Creates a bucket with the name 'bucket_name' in region 'bucket_region'. 
+		
+		If 'bucket_region' is not given, bucket will default to US Standard region.
+		Files for the AWS CMS are uploaded to the bucket.
 		"""
 		try:
 			print 'Creating bucket'
@@ -207,18 +214,20 @@ class AwsFunc(object):
 			code = b''
 			with open('lambda/mainController.zip', 'rb') as thefile:
 				code = thefile.read()
-
+			
+			# Create a role that can be attached to lambda functions
 			self.lmda_role = self.iam.create_role(
 				RoleName='lambda_basic_execution',
 				AssumeRolePolicyDocument=lmda_role_json
 			)
-
+			
+			# Attach permissions to the lambda role
 			self.iam.attach_role_policy(
 				RoleName=self.lmda_role['Role']['RoleName'],
 				PolicyArn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 			)
 			
-			time.sleep(1)	# This prevents an error from being thrown about the lambda role
+			time.sleep(5)	# This prevents an error from being thrown about the lambda role
 			
 			self.lmda_function = self.lmda.create_function(
 				FunctionName='mainController',
@@ -238,5 +247,109 @@ class AwsFunc(object):
 		print 'Lambda function created'
 
 		return True
+
+	def create_api_gateway(self):
+		""" Creates the api gateway and links it to the lambda function """
+		try:
+			print 'Creating the api gateway'
+			
+			# Create a rest api
+			self.rest_api = self.apigateway.create_rest_api(
+				name='AWS_CMS_Operations'
+			)
+			
+			# Get the rest api's root id
+			root_id = self.apigateway.get_resources(
+				restApiId=self.rest_api['id']
+			)['items'][0]['id']
+			
+			# Create an api resource
+			api_resource = self.apigateway.create_resource(
+				restApiId=self.rest_api['id'],
+				parentId=root_id,
+				pathPart='AWS_CMS_Manager'
+			)
+			
+			# Add a post method to the rest api resource
+			api_method = self.apigateway.put_method(
+				restApiId=self.rest_api['id'],
+				resourceId=api_resource['id'],
+				httpMethod='POST',
+				authorizationType='NONE'
+			)
+			
+			# Add an integration method to the api resource
+			self.apigateway.put_integration(
+				restApiId=self.rest_api['id'],
+				resourceId=api_resource['id'],
+				httpMethod='POST',
+				type='AWS',
+				integrationHttpMethod='POST',
+				uri=self.create_api_invocation_uri()
+			)
+			
+			# Set the put method response for the api resource
+			self.apigateway.put_method_response(
+				restApiId=self.rest_api['id'],
+				resourceId=api_resource['id'],
+				httpMethod='POST',
+				statusCode='200',
+				responseModels={
+					'application/json': 'Empty'
+				}
+			)
+			
+			# Set the put integration response for the api resource
+			self.apigateway.put_integration_response(
+				restApiId=self.rest_api['id'],
+				resourceId=api_resource['id'],
+				httpMethod='POST',
+				statusCode='200',
+				responseTemplates={
+					'application/json': ''
+				}
+			)
+			
+			# Create a deployment of the rest api
+			self.apigateway.create_deployment(
+				restApiId=self.rest_api['id'],
+				stageName='prod'
+			)
+			
+			# Give the api deployment permission to trigger the lambda function
+			self.lmda.add_permission(
+				FunctionName=self.lmda_function['FunctionName'],
+				StatementId='apigateway-production-aws-cms',
+				Action='lambda:InvokeFunction',
+				Principal='apigateway.amazonaws.com',
+				SourceArn=self.create_api_permission_uri(api_resource)
+			)
+			
+			print 'Api gateway created'
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			print e.response['Error']['Message']
+			return False
+			
+		return True
+
+	def create_api_invocation_uri(self):
+		""" Creates the uri that is needed for an integration method """
+		uri = 'arn:aws:apigateway:'
+		uri += self.lmda_function['FunctionArn'][15:24] # Pull the region from the lambda function's arn
+		uri += ':lambda:path/2015-03-31/functions/'
+		uri += self.lmda_function['FunctionArn']
+		uri += '/invocations'
+		return uri
 		
-test = AwsFunc()
+	def create_api_permission_uri(self, api_resource):
+	""" Creates the uri that is needed for giving the api deployment permission to trigger the lambda function """
+		uri = 'arn:aws:execute-api:'
+		uri += self.lmda_function['FunctionArn'][15:24] # Pull the region from the lambda function's arn
+		uri += ':'
+		uri += self.lmda_function['FunctionArn'][25:37] # Pull the account number from the lambda function's arn
+		uri += ':'
+		uri += self.rest_api['id']
+		uri += '/prod/POST/'
+		uri += api_resource['pathPart']
+		return uri
