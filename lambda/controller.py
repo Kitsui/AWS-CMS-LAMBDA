@@ -18,9 +18,11 @@ def handler(event, context):
 
 	# Map request type to function calls
 	functionMapping = {
+		
 		"getBlogData": blog.get_blog_data,
 		"getBlogs": blog.get_all_blogs,
 		"saveNewBlog": blog.save_new_blog,
+		"deleteSingleBlog": blog.delete_blog,
 		"registerUser": user.register,
 		"loginUser": user.login,
 		"logoutUser": user.logout

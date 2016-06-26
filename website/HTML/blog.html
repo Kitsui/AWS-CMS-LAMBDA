@@ -27,6 +27,7 @@ and open the template in the editor.
                         <h4 id="username-title">Author</h4>
                         <label for="Title">Title</label>
                         <br>
+                        <input type="text" class="form-control" id="blog-id-edit-input" placeholder="Blog ID for Edit">
                         <input type="text" class="form-control" id="blog-title" placeholder="Title">
                         <input type="hidden" class="form-control" id="username" value="Admin">
                         <br>
@@ -34,7 +35,7 @@ and open the template in the editor.
                         <textarea id="blog-content"></textarea>
                     </div>
                 </form>
-                <button type="button" class="btn btn-default" id="send-blog-data">Register</button>
+                <button type="button" class="btn btn-default" id="send-blog-data">Publish</button>
             </div> 
             <div class="col-sm-5">
                 <h1>Blog List</h1>
@@ -62,20 +63,24 @@ and open the template in the editor.
                     var blogTitle = $('input#blog-title').val();
                     var blogContent = $('#blog-content').val();
                     var blogAuthor = $('input#username').val();
-                    alert(blogAuthor);
-                    saveBlog(blogTitle, blogContent, blogAuthor);
+                    var blogIDEdit = $('input#blog-id-edit-input').val();
+                    alert(blogAuthor + blogIDEdit);
+                    if(blogIDEdit)
+                        editBlog(blogIDEdit, blogTitle, blogContent, blogAuthor);
+                    else
+                        saveBlog(blogTitle, blogContent, blogAuthor);
                 });
                 $( "#refresh-blog-list" ).click(function() {
                     getBlogs();
                 });
                 $( "#delete-blog-button" ).click(function() {
                     var blogID = $('input#blog-id-delete-input').val();
-                    var author = $('input#blog-author-get-input').val();
+                    var author = $('input#blog-author-delete-input').val();
                     getSingleBlogData(blogID,author);
                 });
                 $( "#get-blog-button" ).click(function() {
                     var blogID = $('input#blog-id-get-input').val();
-                    var author = $('input#blog-author-delete-input').val();
+                    var author = $('input#blog-author-get-input').val();
                     DeleteSingleBlog(blogID,author);
                 });
             }); 
