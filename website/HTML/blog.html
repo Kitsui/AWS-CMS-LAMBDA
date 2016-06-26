@@ -42,6 +42,13 @@ and open the template in the editor.
                 <div class="blog-list">
                     Blog List
                 </div>
+                <input type="text" class="form-control" id="blog-author-get-input" placeholder="Blog Author">
+                <input type="text" class="form-control" id="blog-id-get-input" placeholder="Blog ID Get">
+                <button type="button" class="btn btn-default" id="get-blog-button">Get Blog</button>
+               
+                <input type="text" class="form-control" id="blog-author-delete-input" placeholder="Blog Author">
+                <input type="text" class="form-control" id="blog-id-delete-input" placeholder="Blog ID  Delete">
+                <button type="button" class="btn btn-default" id="delete-blog-button">Delete Blog</button>
             </div>
         </div>
     </div>
@@ -60,6 +67,16 @@ and open the template in the editor.
                 });
                 $( "#refresh-blog-list" ).click(function() {
                     getBlogs();
+                });
+                $( "#delete-blog-button" ).click(function() {
+                    var blogID = $('input#blog-id-delete-input').val();
+                    var author = $('input#blog-author-get-input').val();
+                    getSingleBlogData(blogID,author);
+                });
+                $( "#get-blog-button" ).click(function() {
+                    var blogID = $('input#blog-id-get-input').val();
+                    var author = $('input#blog-author-delete-input').val();
+                    DeleteSingleBlog(blogID,author);
                 });
             }); 
     </script>
