@@ -15,7 +15,7 @@ s3 = boto3.client('s3')
 rest_api_names = ['AWS_CMS_Operations']
 lmda_function_names = ['mainController']
 role_names = ['lambda_basic_execution']
-dynamodb_table_names = ['User', 'Token']
+dynamodb_table_names = ['User', 'Token', 'Blog']
 s3_bucket_names = sys.argv[1:]
 
 # Remove all AWSCMS api gateways
