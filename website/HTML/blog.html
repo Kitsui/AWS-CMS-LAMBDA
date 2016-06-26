@@ -75,12 +75,12 @@ and open the template in the editor.
                 });
                 $( "#delete-blog-button" ).click(function() {
                     var blogID = $('input#blog-id-delete-input').val();
-                    var author = $('input#blog-author-get-input').val();
+                    var author = $('input#blog-author-delete-input').val();
                     getSingleBlogData(blogID,author);
                 });
                 $( "#get-blog-button" ).click(function() {
                     var blogID = $('input#blog-id-get-input').val();
-                    var author = $('input#blog-author-delete-input').val();
+                    var author = $('input#blog-author-get-input').val();
                     DeleteSingleBlog(blogID,author);
                 });
             }); 
