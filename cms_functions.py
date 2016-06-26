@@ -238,7 +238,7 @@ class AwsFunc:
 				lmda_role_json = thefile.read()
 			
 			code = b''
-			with open('lambda/mainController.zip', 'rb') as thefile:
+			with open('lambda/controller.zip', 'rb') as thefile:
 				code = thefile.read()
 			
 			# Create a role that can be attached to lambda functions
@@ -256,10 +256,10 @@ class AwsFunc:
 			time.sleep(5)	# This prevents an error from being thrown about the lambda role
 			
 			self.lmda_function = self.lmda.create_function(
-				FunctionName='mainController',
+				FunctionName='controller',
 				Runtime='python2.7',
 				Role=self.lmda_role['Role']['Arn'],
-				Handler='mainController.handler',
+				Handler='controller.handler',
 				Code={
 					'ZipFile': code
 				},
