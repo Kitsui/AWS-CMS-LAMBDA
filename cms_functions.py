@@ -226,7 +226,7 @@ class AwsFunc:
 			# Attach permissions to the lambda role
 			self.iam.attach_role_policy(
 				RoleName=self.lmda_role['Role']['RoleName'],
-				PolicyArn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+				PolicyArn='arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole'
 			)
 			
 			time.sleep(5)	# This prevents an error from being thrown about the lambda role
