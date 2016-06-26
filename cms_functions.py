@@ -12,10 +12,13 @@ class AwsFunc:
 	
 	Requires awscli configured or an aws configuration file. 
 	"""
-	def __init__(self, bucket_name):
+	def __init__(self, bucket_name, account_id, region):
 		""" Gets low-level clients for services to be used and creates containers for
 		AWS objects that will be filled by creation functions.
 		"""
+		self.account_id = account_id
+		self.region = region
+		
 		self.s3 = boto3.client('s3')
 		self.bucket_name = bucket_name
 		self.bucket = None
@@ -363,7 +366,7 @@ class AwsFunc:
 	def create_api_invocation_uri(self):
 		""" Creates the uri that is needed for an integration method """
 		uri = 'arn:aws:apigateway:'
-		uri += self.lmda_function['FunctionArn'][15:24] # Pull the region from the lambda function's arn
+		uri += self.region
 		uri += ':lambda:path/2015-03-31/functions/'
 		uri += self.lmda_function['FunctionArn']
 		uri += '/invocations'
@@ -372,9 +375,9 @@ class AwsFunc:
 	def create_api_permission_uri(self, api_resource):
 		""" Creates the uri that is needed for giving the api deployment permission to trigger the lambda function """
 		uri = 'arn:aws:execute-api:'
-		uri += self.lmda_function['FunctionArn'][15:24] # Pull the region from the lambda function's arn
+		uri += self.region
 		uri += ':'
-		uri += self.lmda_function['FunctionArn'][25:37] # Pull the account number from the lambda function's arn
+		uri += self.account_id
 		uri += ':'
 		uri += self.rest_api['id']
 		uri += '/prod/POST/'
