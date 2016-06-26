@@ -269,6 +269,8 @@ class AwsFunc:
 				Description='Central management function designed to handle any API Gateway request',
 				Timeout=10
 			)
+			
+			print self.lmda_function
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
 			print e.response['Error']['Message']
@@ -308,6 +310,7 @@ class AwsFunc:
 				authorizationType='NONE'
 			)
 			
+			print self.lmda_function
 			# Add an integration method to the api resource
 			self.apigateway.put_integration(
 				restApiId=self.rest_api['id'],
