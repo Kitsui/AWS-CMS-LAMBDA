@@ -16,6 +16,7 @@
     function post_request() {
         var xhr = new XMLHttpRequest();
         var params = JSON.stringify({
+            request: "registerUser",
             User:{ 
                 username: document.getElementById("usernameInput").value, 
                 email: document.getElementById("emailInput").value,
