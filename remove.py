@@ -13,7 +13,7 @@ s3 = boto3.client('s3')
 
 # Resources to be deleted
 rest_api_names = ['AWS_CMS_Operations']
-lmda_function_names = ['mainController']
+lmda_function_names = ['controller']
 role_names = ['lambda_basic_execution']
 dynamodb_table_names = ['User', 'Token', 'Blog']
 s3_bucket_names = sys.argv[1:]
