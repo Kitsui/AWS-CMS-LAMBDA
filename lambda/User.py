@@ -7,6 +7,7 @@
 import boto3
 import botocore
 import uuid
+from passlib.apps import custom_app_context as pwd_context
 
 class User(object):
 
@@ -15,12 +16,15 @@ class User(object):
 		self.context = context
 
 	def register(self):
+		# Get password for hashing
+		password = self.event["user"]["password"]
+		hashed = pwd_context.encrypt(password)
 		# Get user register params
 		register_params = {
 			"ID": {"S": str(uuid.uuid4())},
 			"Username": {"S": self.event["user"]["username"]},
 			"Email": {"S": self.event["user"]["email"]},
-			"Password": {"S": self.event["user"]["password"]},
+			"Password": {"S": hashed},
 			"Roles": {"S": str(1)}
 		}
 		# Attempt to add to dynamo
@@ -38,22 +42,23 @@ class User(object):
 		return True
 
 	def login(self):
-	        dynamodb = boto3.resource('dynamodb')
-		    from boto3.dynamodb.conditions import Key, Attr
-		    table = dynamodb.Table('User')
-		    
-		    username = event["User"]["Username"]
-		    password =  event["User"]["Password"]
-		    
-		    # response = table.scan()
-		    response = table.query(KeyConditionExpression=Key('Username').eq(username))
-		    
-		    for i in response['Items']:
-		        if(i['Password'] == password):
-		            return "successfully logged in"
+		dynamodb = boto3.resource('dynamodb')
+		from boto3.dynamodb.conditions import Key, Attr
+	    	table = dynamodb.Table('User')
+	    
+		username = event["User"]["Username"]
+		password =  event["User"]["Password"]
+		# hash password for comparison
+		hashed = pwd_context.encrypt(password)
+	    
+		# response = table.scan()
+		response = table.query(KeyConditionExpression=Key('Username').eq(username))
+
+		for i in response['Items']:
+			if(i['Password'] == hashed):
+		    		return "successfully logged in"
 
 		return "failed to login"
-		pass
 
 	def logout(self):
 		# get user credentials
@@ -72,4 +77,4 @@ class User(object):
             		}
         	)
 		# if message is 200 then successfully logged out    
-	    	return {'message': response['ResponseMetadata']['HTTPStatusCode']} 
+    		return {'message': response['ResponseMetadata']['HTTPStatusCode']} 

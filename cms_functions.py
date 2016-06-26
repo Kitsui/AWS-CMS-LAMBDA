@@ -140,6 +140,30 @@ class AwsFunc:
 
 		return created
 
+	def create_blog_table(self):
+		""" Creates a blog table. """
+		try:
+			print 'Creating blog table'
+			
+			# Get the blog table's json
+			blog_table_json = ''
+			with open('dynamo/blog_table.json', 'r') as thefile:
+				blog_table_json = ast.literal_eval(thefile.read())
+			
+			# Create the blog table
+			self.blog_table = self.dynamodb.create_table(**blog_table_json)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			print e.response['Error']['Message']
+			return False
+
+		# Wait for the blog table to be created before continuing
+		created = self.wait_for_table(self.blog_table)
+
+		print 'Blog table created'
+
+		return created
+
 	def wait_for_table(self, table):
 		""" Waits for a table to finish being created. """
 		response = {}

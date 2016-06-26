@@ -1,0 +1,27 @@
+{	
+	"TableName": "Blog",
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "BlogID",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "SavedDate",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "BlogID",
+			"KeyType": "HASH"
+		},
+		{
+			"AttributeName": "SavedDate",
+			"KeyType": "RANGE"
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits":5
+	}
+}
