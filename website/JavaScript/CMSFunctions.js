@@ -14,9 +14,9 @@ function saveBlog(title, content, author) {
             Author : author
         }
     });
-    xhr.open("POST", "https://nnih0llbtg.execute-api.us-west-2.amazonaws.com/Test/register", true);
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.setRequestHeader("x-api-key", "EItAcMzuPs7l1kn9NpFUY1BBwT59FVJW1GIM6cxp");
+    xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4){
             if(xhr.status === 200){
@@ -43,9 +43,9 @@ function editBlog(id, title, content, author) {
             Author : author
         }
     });
-    xhr.open("POST", "https://nnih0llbtg.execute-api.us-west-2.amazonaws.com/Test/register", true);
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.setRequestHeader("x-api-key", "EItAcMzuPs7l1kn9NpFUY1BBwT59FVJW1GIM6cxp");
+    xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4){
             if(xhr.status === 200){
@@ -69,9 +69,9 @@ function getBlogs() {
     var params = JSON.stringify({
        request: "getBlogs" 
     });
-    xhr.open("POST", "https://nnih0llbtg.execute-api.us-west-2.amazonaws.com/Test/register", true);
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.setRequestHeader("x-api-key", "EItAcMzuPs7l1kn9NpFUY1BBwT59FVJW1GIM6cxp");
+    xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4){
             if(xhr.status === 200){
@@ -100,9 +100,9 @@ function getSingleBlogData(blogID, author) {
            Author: author
        }
     });
-    xhr.open("POST", "https://nnih0llbtg.execute-api.us-west-2.amazonaws.com/Test/register", true);
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.setRequestHeader("x-api-key", "EItAcMzuPs7l1kn9NpFUY1BBwT59FVJW1GIM6cxp");
+    xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4){
             if(xhr.status === 200){
@@ -131,9 +131,9 @@ function DeleteSingleBlog(blogID, author) {
            Author: author
        }
     });
-    xhr.open("POST", "https://nnih0llbtg.execute-api.us-west-2.amazonaws.com/Test/register", true);
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.setRequestHeader("x-api-key", "EItAcMzuPs7l1kn9NpFUY1BBwT59FVJW1GIM6cxp");
+    xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4){
             if(xhr.status === 200){
