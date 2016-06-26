@@ -18,7 +18,7 @@
             <form class="form-horizontal" id="email_form" action="/register" method="post">
               <div class="form-group form-group-lg">
                 <div class="col-sm-12">
-                  <input class="form-control input-lg" type="email" name="email" id="usernameInput" placeholder="Username">
+                  <input class="form-control input-lg" type="text" name="username" id="usernameInput" placeholder="Username">
                 </div>
                 <div class="col-sm-12">
                   <input class="form-control input-lg" type="password" name="password" id="passwordInput" placeholder="Password">
@@ -36,9 +36,9 @@
 function post_request() {
     var xhr = new XMLHttpRequest();
     var params = JSON.stringify({
-        Records:{ 
-            Email: document.getElementById("usernameInput").value, 
-            Newsletter: document.getElementById("passwordInput").value
+        User:{ 
+            Username: document.getElementById("usernameInput").value, 
+            Password: document.getElementById("passwordInput").value
         }
     });
     xhr.open("POST", "https://nnih0llbtg.execute-api.us-west-2.amazonaws.com/Test/register", true);
