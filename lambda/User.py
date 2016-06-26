@@ -6,6 +6,7 @@
 
 import boto3
 import botocore
+import uuid
 
 class User(object):
 
@@ -16,7 +17,7 @@ class User(object):
 	def register(self):
 		# Get user register params
 		register_params = {
-			"ID": {"S": str(1)},
+			"ID": {"S": str(uuid.uuid4())},
 			"Username": {"S": self.event["user"]["username"]},
 			"Email": {"S": self.event["user"]["email"]},
 			"Password": {"S": self.event["user"]["password"]},
