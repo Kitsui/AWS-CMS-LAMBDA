@@ -36,6 +36,7 @@
 function post_request() {
     var xhr = new XMLHttpRequest();
     var params = JSON.stringify({
+        request: "loginUser",
         User:{ 
             Username: document.getElementById("usernameInput").value, 
             Password: document.getElementById("passwordInput").value
