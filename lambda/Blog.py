@@ -15,8 +15,22 @@ class Blog(object):
 		self.event = event
 		self.context = context
 
-	def get_single_blog(self):
-		pass
+	def get_blog_data(self):
+		# Attempt to read blog data from dynamo
+		try:
+			dynamodb = boto3.client('dynamodb')
+			blogData = dynamodb.get_item(
+				TableName="Blog",
+				Key={
+					"BlogID": {"S": self.event["blog"]["blogID"]},
+					"Author": {"S": self.event["blog"]["author"]}},
+				ConsistentRead=True)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			return False
+
+		print blogData
+		return True
 
 	def get_all_blogs(self):
 		# Attempt to get all data from table
