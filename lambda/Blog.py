@@ -7,6 +7,7 @@
 import boto3
 import botocore
 import datetime
+import uuid
 
 class Blog(object):
 
@@ -34,7 +35,7 @@ class Blog(object):
 	def save_new_blog(self):		
 		# Get new blog params
 		blog_params = {
-			"BlogID": {"S": str(1)},
+			"BlogID": {"S": str(uuid.uuid4())},
 			"Author": {"S": self.event["blog"]["author"]},
 			"Title": {"S": self.event["blog"]["title"]},
 			"Content": {"S": self.event["blog"]["content"]},
