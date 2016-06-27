@@ -8,7 +8,7 @@ import boto3
 import botocore
 import datetime
 import uuid
-import Response
+from Response import Response
 
 class Blog(object):
 
