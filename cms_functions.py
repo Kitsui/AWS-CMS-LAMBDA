@@ -255,6 +255,10 @@ class AwsFunc:
 				RoleName=self.lmda_role['Role']['RoleName'],
 				PolicyArn='arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
 			)
+			self.iam.attach_role_policy(
+				RoleName=self.lmda_role['Role']['RoleName'],
+				PolicyArn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+			)
 			
 			time.sleep(5)	# This prevents an error from being thrown about the lambda role
 			
@@ -269,8 +273,6 @@ class AwsFunc:
 				Description='Central management function designed to handle any API Gateway request',
 				Timeout=10
 			)
-			
-			print self.lmda_function
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
 			print e.response['Error']['Message']
@@ -291,30 +293,22 @@ class AwsFunc:
 			)
 			
 			# Get the rest api's root id
-			root_id = self.apigateway.get_resources(
+			root_resource = self.apigateway.get_resources(
 				restApiId=self.rest_api['id']
-			)['items'][0]['id']
-			
-			# Create an api resource
-			api_resource = self.apigateway.create_resource(
-				restApiId=self.rest_api['id'],
-				parentId=root_id,
-				pathPart='AWS_CMS_Manager'
-			)
+			)['items'][0]
 			
 			# Add a post method to the rest api resource
 			api_method = self.apigateway.put_method(
 				restApiId=self.rest_api['id'],
-				resourceId=api_resource['id'],
+				resourceId=root_resource['id'],
 				httpMethod='POST',
 				authorizationType='NONE'
 			)
 			
-			print self.lmda_function
 			# Add an integration method to the api resource
 			self.apigateway.put_integration(
 				restApiId=self.rest_api['id'],
-				resourceId=api_resource['id'],
+				resourceId=root_resource['id'],
 				httpMethod='POST',
 				type='AWS',
 				integrationHttpMethod='POST',
@@ -324,7 +318,7 @@ class AwsFunc:
 			# Set the put method response for the api resource
 			self.apigateway.put_method_response(
 				restApiId=self.rest_api['id'],
-				resourceId=api_resource['id'],
+				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
 				responseModels={
@@ -335,7 +329,7 @@ class AwsFunc:
 			# Set the put integration response for the api resource
 			self.apigateway.put_integration_response(
 				restApiId=self.rest_api['id'],
-				resourceId=api_resource['id'],
+				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
 				responseTemplates={
@@ -355,7 +349,7 @@ class AwsFunc:
 				StatementId='apigateway-production-aws-cms',
 				Action='lambda:InvokeFunction',
 				Principal='apigateway.amazonaws.com',
-				SourceArn=self.create_api_permission_uri(api_resource)
+				SourceArn=self.create_api_permission_uri()
 			)
 			
 			print 'Api gateway created'
@@ -375,7 +369,7 @@ class AwsFunc:
 		uri += '/invocations'
 		return uri
 		
-	def create_api_permission_uri(self, api_resource):
+	def create_api_permission_uri(self):
 		""" Creates the uri that is needed for giving the api deployment permission to trigger the lambda function """
 		uri = 'arn:aws:execute-api:'
 		uri += self.region
@@ -383,6 +377,5 @@ class AwsFunc:
 		uri += self.account_id
 		uri += ':'
 		uri += self.rest_api['id']
-		uri += '/prod/POST/'
-		uri += api_resource['pathPart']
+		uri += '/*/POST/'
 		return uri
