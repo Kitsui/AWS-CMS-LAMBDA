@@ -29,6 +29,6 @@ def handler(event, context):
 	}
 
 	if isAuth:
-		functionMapping[request]()
+		return functionMapping[request]()
 	else:
 		print "You are not authorized"

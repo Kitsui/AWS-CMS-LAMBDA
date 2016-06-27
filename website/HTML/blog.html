@@ -7,11 +7,11 @@ and open the template in the editor.
 <html>
     <head>
         <title>Add Blog</title>
-        <script src="js/jquery-3.0.0.min.js" type="text/javascript"></script>
+        <script src="../JavaScript/jquery-3.0.0.min.js" type="text/javascript"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" >
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-        <script src="js/CMSFunctions.js" type="text/javascript"></script>
-        <script src="js/angular.js" type="text/javascript"></script>
+        <script src="../JavaScript/CMSFunctions.js" type="text/javascript"></script>
+        <script src="../JavaScript/angular.js" type="text/javascript"></script>
         <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
         <script>tinymce.init({ selector:'textarea' });</script>
         <meta charset="UTF-8">
@@ -55,7 +55,7 @@ and open the template in the editor.
     </div>
      <script>
 
-            var url = "js/CMSFunctions.js";
+            var url = "../JavaScript/CMSFunctions.js";
             $.getScript( url, function() {
                  // change ID of User
                 $( "#send-blog-data" ).click(function() {
