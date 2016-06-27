@@ -1,6 +1,6 @@
 #!/usr/bin/python2.7
 
-def replace_variable(document, **args):
+def replace_variables(document, **args):
 	replacements = []
 	for i in range(len(document)):
 		for key in args:

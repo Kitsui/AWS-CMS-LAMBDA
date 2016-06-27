@@ -6,6 +6,7 @@ import os
 import mimetypes
 import time
 import ast
+from replace_variables import replace_variables
 
 class AwsFunc:
 	""" Contains functions for creating, modifying and deleting elements of the AWSCMS.
@@ -35,6 +36,7 @@ class AwsFunc:
 		
 		self.apigateway = boto3.client('apigateway')
 		self.rest_api = None
+		self.api_key = None
 
 	def create_bucket(self, bucket_region=None):
 		""" Creates a bucket with the name 'bucket_name' in region 'bucket_region'. 
@@ -68,10 +70,12 @@ class AwsFunc:
 					key = directory[8:]
 					mime = mimetypes.guess_type(directory)
 					with open(directory, 'rb') as file_body:
+						body = file_body.read()
+						body = replace_variables(body, endpoint_url=self.create_api_call_uri(), api_key=self.api_key)
 						put_kwargs = {
 							'Bucket': self.bucket['Location'][1:],
 							'ACL': 'public-read',
-							'Body': file_body.read(),
+							'Body': body,
 							'Key': key
 						}
 					if mime[0] != None:
@@ -260,8 +264,9 @@ class AwsFunc:
 				PolicyArn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 			)
 			
-			time.sleep(5)	# This prevents an error from being thrown about the lambda role
+			time.sleep(10)
 			
+			# Create the lambda function
 			self.lmda_function = self.lmda.create_function(
 				FunctionName='controller',
 				Runtime='python2.7',
@@ -281,7 +286,7 @@ class AwsFunc:
 		print 'Lambda function created'
 
 		return True
-
+		
 	def create_api_gateway(self):
 		""" Creates the api gateway and links it to the lambda function """
 		try:
@@ -297,7 +302,7 @@ class AwsFunc:
 				restApiId=self.rest_api['id']
 			)['items'][0]
 			
-			# Add a post method to the rest api resource
+			# Add a post method to the rest api
 			api_method = self.apigateway.put_method(
 				restApiId=self.rest_api['id'],
 				resourceId=root_resource['id'],
@@ -322,7 +327,9 @@ class AwsFunc:
 				httpMethod='POST',
 				statusCode='200',
 				responseParameters={
-					'method.response.header.Access-Control-Allow-Origin': True
+					'method.response.header.Access-Control-Allow-Headers': False,
+					'method.response.header.Access-Control-Allow-Origin': False,
+					'method.response.header.Access-Control-Allow-Methods': False
 				},
 				responseModels={
 					'application/json': 'Empty'
@@ -336,7 +343,9 @@ class AwsFunc:
 				httpMethod='POST',
 				statusCode='200',
 				responseParameters={
-					'method.response.header.Access-Control-Allow-Origin': '\'*\''
+					'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with\'',
+					'method.response.header.Access-Control-Allow-Origin': '\'*\'',
+					'method.response.header.Access-Control-Allow-Methods': '\'POST,GET,OPTIONS\''
 				},
 				responseTemplates={
 					'application/json': ''
@@ -366,9 +375,9 @@ class AwsFunc:
 				httpMethod='OPTIONS',
 				statusCode='200',
 				responseParameters={
-					'method.response.header.Access-Control-Allow-Headers': True,
-					'method.response.header.Access-Control-Allow-Origin': True,
-					'method.response.header.Access-Control-Allow-Methods': True
+					'method.response.header.Access-Control-Allow-Headers': False,
+					'method.response.header.Access-Control-Allow-Origin': False,
+					'method.response.header.Access-Control-Allow-Methods': False
 				},
 				responseModels={
 					'application/json': 'Empty'
@@ -397,10 +406,23 @@ class AwsFunc:
 				stageName='prod'
 			)
 			
+			# Create an api key linked to the rest api
+			self.api_key = self.apigateway.create_api_key(
+				name='AWS_CMS_Api_Key',
+				description='Allows sending of requests to the AWS CMS',
+				enabled=True,
+				stageKeys=[
+					{
+						'restApiId': self.rest_api['id'],
+						'stageName': 'prod'
+					},
+				]
+			)['id']
+			
 			# Give the api deployment permission to trigger the lambda function
 			self.lmda.add_permission(
 				FunctionName=self.lmda_function['FunctionName'],
-				StatementId='apigateway-production-aws-cms',
+				StatementId='c67ytfvu65ytd5tsrdghk',
 				Action='lambda:InvokeFunction',
 				Principal='apigateway.amazonaws.com',
 				SourceArn=self.create_api_permission_uri()
@@ -432,4 +454,12 @@ class AwsFunc:
 		uri += ':'
 		uri += self.rest_api['id']
 		uri += '/*/POST/'
+		return uri
+		
+	def create_api_call_uri(self):
+		uri = 'https://'
+		uri += self.apigateway.get_rest_api(
+			restApiId=self.rest_api['id']
+		)['id']
+		uri += '.execute-api.us-east-1.amazonaws.com/prod'
 		return uri
