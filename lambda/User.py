@@ -7,6 +7,7 @@
 import boto3
 import botocore
 import uuid
+import Response
 from passlib.apps import custom_app_context as pwd_context
 
 class User(object):
@@ -37,44 +38,60 @@ class User(object):
 			)
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
-			return False
+			response = Response("Error")
+			response.errorMessage = "Unable to register new user: %s" % e.response['Error']['Code']
+			return response
 		
-		return True
+		return Response("Success")
 
 	def login(self):
-		dynamodb = boto3.resource('dynamodb')
-		from boto3.dynamodb.conditions import Key, Attr
-	    	table = dynamodb.Table('User')
-	    
 		username = self.event["User"]["Username"]
 		password =  self.event["User"]["Password"]
 		# hash password for comparison
 		hashed = pwd_context.encrypt(password)
-	    
-		# response = table.scan()
-		response = table.query(KeyConditionExpression=Key('Username').eq(username))
 
-		for i in response['Items']:
-			if(i['Password'] == hashed):
-		    		return "successfully logged in"
+		# Attempt to check dynamo
+		try:			
+			dynamodb = boto3.resource('dynamodb')
+			from boto3.dynamodb.conditions import Key, Attr
+	    		table = dynamodb.Table('User')    
+			# response = table.scan()
+			result = table.query(KeyConditionExpression=Key('Username').eq(username))
 
-		return "failed to login"
+			for i in result['Items']:
+				if(i['Password'] == hashed):
+			    		return Response("Success")
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error")
+			response.errorMessage = "Unable to log in: %s" % e.response['Error']['Code']
+			return response
+
+		response = Response("Error")
+		response.errorMessage = "Unable to login, username or password incorrect"
+		return response
 
 	def logout(self):
 		# get user credentials
 		token = self.event['tokenString']
     		user = self.event['userID']
 
-		# fetch dynamo table
-		dynamodb = boto3.resource('dynamodb')
-	    	table = dynamodb.Table('Token')
+		try:			
+			# fetch dynamo table
+			dynamodb = boto3.resource('dynamodb')
+		    	table = dynamodb.Table('Token')
 
-	    	# remove token from user
-	    	response = table.delete_item(
-	            Key={
-	    	        'TokenString': token,
-	                'UserID': user
-            		}
-        	)
-		# if message is 200 then successfully logged out    
-    		return {'message': response['ResponseMetadata']['HTTPStatusCode']} 
+		    	# remove token from user
+		    	response = table.delete_item(
+		            Key={
+		    	        'TokenString': token,
+		                'UserID': user
+	            		}
+	        	)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error")
+			response.errorMessage = "Unable to log out: %s" % e.response['Error']['Code']
+			return response
+   
+    		return Response("Success") 
