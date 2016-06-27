@@ -1,34 +1,46 @@
 
-function test() {
-    alert("lol");
-}   
+window.onload = function() {
+    // init function
+    bindClickEvents()
+}
+
+function bindClickEvents() {
+    // bind events
+}
+
+function postToServer(params, stateChangeFunc) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
+    xhr.onreadystatechange = stateChangeFunc(xhr);
+    xhr.send(params);
+    return false;
+}
 
 function saveBlog(title, content, author) {
-    alert("Save new blog called");
-    var xhr = new XMLHttpRequest();
+    
     var params = JSON.stringify({
         request: "saveNewBlog",
         blog:{ 
-            Title: title,
-            Content: content,
-            Author : author
+            title: title,
+            content: content,
+            author : author
         }
     });
-    xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
-        xhr.setRequestHeader("Content-type", "application/json");
-        xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
-    xhr.onreadystatechange = function(){
-        if(xhr.readyState === 4){
-            if(xhr.status === 200){
-                alert("Post Successful");
-            }
-            else{
-                alert("Could not Post. Please try again later.");
-            }
+
+    postToServer(params, saveBlogStateChange);
+}
+
+function saveBlogStateChange(xhr) {
+    if(xhr.readyState === 4){
+        if(xhr.status === 200){
+            alert("Save New Post Successful");
         }
-    };
-    xhr.send(params);
-    return false;
+        else{
+            alert("Could not save new Post. Please try again later.");
+        }
+    }
 }
 
 function editBlog(id, title, content, author) {
@@ -37,10 +49,10 @@ function editBlog(id, title, content, author) {
     var params = JSON.stringify({
         request: "editBlog",
         blog:{
-            BlogID: id,
-            Title: title,
-            Content: content,
-            Author : author
+            blogID: id,
+            title: title,
+            content: content,
+            author : author
         }
     });
     xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
@@ -95,9 +107,9 @@ function getSingleBlogData(blogID, author) {
     var xhr = new XMLHttpRequest();
     var params = JSON.stringify({
        request: "getBlogData",
-       Blog: {
-           BlogID: blogID,
-           Author: author
+       blog: {
+           blogID: blogID,
+           author: author
        }
     });
     xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
@@ -126,9 +138,9 @@ function DeleteSingleBlog(blogID, author) {
     var xhr = new XMLHttpRequest();
     var params = JSON.stringify({
        request: "deleteSingleBlog",
-       Blog: {
-           BlogID: blogID,
-           Author: author
+       blog: {
+           blogID: blogID,
+           author: author
        }
     });
     xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);

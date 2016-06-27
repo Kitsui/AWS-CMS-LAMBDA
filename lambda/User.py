@@ -46,8 +46,8 @@ class User(object):
 		from boto3.dynamodb.conditions import Key, Attr
 	    	table = dynamodb.Table('User')
 	    
-		username = event["User"]["Username"]
-		password =  event["User"]["Password"]
+		username = self.event["User"]["Username"]
+		password =  self.event["User"]["Password"]
 		# hash password for comparison
 		hashed = pwd_context.encrypt(password)
 	    
