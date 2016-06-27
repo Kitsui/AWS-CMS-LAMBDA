@@ -65,10 +65,15 @@ for role in iam.list_roles()['Roles']:
 				RoleName=role['RoleName'],
 				PolicyArn=policy['PolicyArn']
 			)
+		for policy_name in iam.list_role_policies(RoleName=role['RoleName'])['PolicyNames']:
+			iam.delete_role_policy(
+				RoleName=role['RoleName'],
+				PolicyName=policy_name
+			)
 		# Delete role
 		iam.delete_role(
-				RoleName=role['RoleName']
-			)
+			RoleName=role['RoleName']
+		)
 		roles_removed += 1
 
 if roles_removed > 0:
