@@ -30,7 +30,7 @@ class Blog(object):
 			return False
 
 		print blogData
-		return True
+		return blogData
 
 	def get_all_blogs(self):
 		# Attempt to get all data from table
@@ -44,7 +44,7 @@ class Blog(object):
 			return False
 		
 		print data
-		return True
+		return data
 
 	def save_new_blog(self):		
 		# Get new blog params
@@ -73,18 +73,18 @@ class Blog(object):
 		dynamodb = boto3.resource('dynamodb')
 		table = dynamodb.Table('Blog')
 
-		blogID = self.event['blog']['BlogID']
-		author = self.event['blog']['Author']
-		content = self.event['blog']['Content']
-		title = self.event['blog']['Title']
+		blogID = self.event['blog']['blogID']
+		author = self.event['blog']['author']
+		content = self.event['blog']['content']
+		title = self.event['blog']['title']
 
 		response = table.update_item(Key={'BlogID': blogID, 'Author': author }, UpdateExpression="set Title = :t, Content=:c", ExpressionAttributeValues={ ':t': title, ':c': content})
 		responseCode =  {'message': response['ResponseMetadata']['HTTPStatusCode']}
 		return responseCode
 
 	def delete_blog(self):
-		blogID = self.event['blog']['BlogID']
-	    	author = self.event['blog']['Author']
+		blogID = self.event['blog']['blogID']
+	    	author = self.event['blog']['author']
 	        
 	    	dynamodb = boto3.resource('dynamodb')
 	    	table = dynamodb.Table('Blog')
