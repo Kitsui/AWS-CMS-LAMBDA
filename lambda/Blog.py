@@ -8,6 +8,7 @@ import boto3
 import botocore
 import datetime
 import uuid
+from Response import Response
 
 class Blog(object):
 
@@ -27,10 +28,13 @@ class Blog(object):
 				ConsistentRead=True)
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
-			return False
+			response = Response("Error")
+			response.errorMessage = "Unable to get blog data: %s" % e.response['Error']['Code']
+			return response
 
-		print blogData
-		return blogData
+		response = Response("Success")
+		response.setData = blogData
+		return response
 
 	def get_all_blogs(self):
 		# Attempt to get all data from table
@@ -41,10 +45,13 @@ class Blog(object):
 				ConsistentRead=True)
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
-			return False
+			response = Response("Error")
+			response.errorMessage = "Unable to get blog data: %s" % e.response['Error']['Code']
+			return response
 		
-		print data
-		return data
+		response = Response("Success")
+		response.setData = data
+		return response
 
 	def save_new_blog(self):		
 		# Get new blog params
@@ -65,33 +72,42 @@ class Blog(object):
 			)
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
-			return False
+			response = Response("Error")
+			response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
+			return response
 		
-		return True
+		return Response("Success")
 
 	def edit_blog(self):
-		dynamodb = boto3.resource('dynamodb')
-		table = dynamodb.Table('Blog')
-
 		blogID = self.event['blog']['blogID']
 		author = self.event['blog']['author']
 		content = self.event['blog']['content']
 		title = self.event['blog']['title']
 
-		response = table.update_item(Key={'BlogID': blogID, 'Author': author }, UpdateExpression="set Title = :t, Content=:c", ExpressionAttributeValues={ ':t': title, ':c': content})
-		responseCode =  {'message': response['ResponseMetadata']['HTTPStatusCode']}
-		return responseCode
+	    	try:
+			dynamodb = boto3.resource('dynamodb')
+			table = dynamodb.Table('Blog')
+			table.update_item(Key={'BlogID': blogID, 'Author': author }, UpdateExpression="set Title = :t, Content=:c", ExpressionAttributeValues={ ':t': title, ':c': content})
+	    	except botocore.exceptions.ClientError as e:
+	        	print e.response['Error']['Code']
+	        	response = Response("Error")
+			response.errorMessage = "Unable to save edited blog: %s" % e.response['Error']['Code']
+			return response
+
+		return Response("Success")
 
 	def delete_blog(self):
 		blogID = self.event['blog']['blogID']
 	    	author = self.event['blog']['author']
 	        
-	    	dynamodb = boto3.resource('dynamodb')
-	    	table = dynamodb.Table('Blog')
 	    	try:
-			response = table.delete_item(Key={'BlogID': blogID, 'Author' : author})
+	 	   	dynamodb = boto3.resource('dynamodb')
+	    		table = dynamodb.Table('Blog')
+			table.delete_item(Key={'BlogID': blogID, 'Author' : author})
 	    	except botocore.exceptions.ClientError as e:
 	        	print e.response['Error']['Code']
-	        	return False
-	    	responseStatusCode = {'message': response['ResponseMetadata']['HTTPStatusCode']}
-	    	return responseStatusCode
+	        	response = Response("Error")
+			response.errorMessage = "Unable to delete blog: %s" % e.response['Error']['Code']
+			return response
+
+	    	return Response("Success")
