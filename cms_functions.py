@@ -358,7 +358,10 @@ class AwsFunc:
 				httpMethod='POST',
 				type='AWS',
 				integrationHttpMethod='POST',
-				uri=self.create_api_invocation_uri()
+				uri=self.create_api_invocation_uri(),
+				requestTemplates={
+					'application/json': ''
+				}
 			)
 			
 			# Set the put method response of the POST method
@@ -367,11 +370,9 @@ class AwsFunc:
 				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
-				responseParameters={
-					'method.response.header.Access-Control-Allow-Headers': False,
-					'method.response.header.Access-Control-Allow-Origin': False,
-					'method.response.header.Access-Control-Allow-Methods': False
-				},
+#				responseParameters={
+#					'method.response.header.Access-Control-Allow-Origin': False
+#				},
 				responseModels={
 					'application/json': 'Empty'
 				}
@@ -383,16 +384,15 @@ class AwsFunc:
 				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
-				responseParameters={
-					'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with\'',
-					'method.response.header.Access-Control-Allow-Origin': '\'*\'',
-					'method.response.header.Access-Control-Allow-Methods': '\'POST,GET,OPTIONS\''
-				},
+#				responseParameters={
+#					'method.response.header.Access-Control-Allow-Origin': '\'*\''
+#				},
 				responseTemplates={
 					'application/json': ''
 				}
 			)
 			
+			"""
 			# Add an options method to the rest api
 			api_method = self.apigateway.put_method(
 				restApiId=self.rest_api['id'],
@@ -406,7 +406,10 @@ class AwsFunc:
 				restApiId=self.rest_api['id'],
 				resourceId=root_resource['id'],
 				httpMethod='OPTIONS',
-				type='MOCK'
+				type='MOCK',
+				requestTemplates={
+					'application/json': ''
+				}
 			)
 			
 			# Set the put method response of the OPTIONS method
@@ -424,7 +427,7 @@ class AwsFunc:
 					'application/json': 'Empty'
 				}
 			)
-			
+
 			# Set the put integration response of the OPTIONS method
 			self.apigateway.put_integration_response(
 				restApiId=self.rest_api['id'],
@@ -432,14 +435,16 @@ class AwsFunc:
 				httpMethod='OPTIONS',
 				statusCode='200',
 				responseParameters={
-					'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with\'',
-					'method.response.header.Access-Control-Allow-Origin': '\'*\'',
-					'method.response.header.Access-Control-Allow-Methods': '\'POST,GET,OPTIONS\''
+					'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token\'',
+					'method.response.header.Access-Control-Allow-Methods': '\'POST,OPTIONS\'',
+					'method.response.header.Access-Control-Allow-Origin': '\'*\''
+					
 				},
 				responseTemplates={
 					'application/json': ''
 				}
 			)
+			"""
 			
 			# Create a deployment of the rest api
 			self.apigateway.create_deployment(
