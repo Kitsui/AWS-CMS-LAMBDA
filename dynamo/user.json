@@ -1,11 +1,11 @@
 {
 	"TableName": "User",
 	"Item": {
-		"ID": {"S": "123"},
+		"ID": {"S": "0322f11b-2ae8-48d0-aac6-1b2dc5400816"},
 		"Username": {"S": "Admin"},
 		"Password": {"S": "password123"},
 		"Email": {"S": "email@gmail.com"},
-		"Roles": {"S": "1"}
+		"Roles": {"L": ["c104ea59-7deb-4ae4-8418-225d8f4f42cd"]}
 	},
 	"ReturnConsumedCapacity": "TOTAL"
 }

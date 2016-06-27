@@ -1,0 +1,12 @@
+{
+    "RoleID": {"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"},
+    "Name": {"S": "Admin"},
+    "Permissions": {"M": 
+    	"permissions": {
+    		"User_CanCreate": 1,
+    		"User_CanRead": 1,
+    		"User_CanUpdate": 1,
+    		"User_CanDelete": 1
+    	}
+    }
+}

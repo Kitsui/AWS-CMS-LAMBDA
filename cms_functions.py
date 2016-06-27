@@ -95,6 +95,29 @@ class AwsFunc:
 
 		return True
 
+	def create_role_table(self):
+		""" Creates a role table. """
+		try:
+			print 'Creating role table'
+
+			# Get the role table's json
+			role_table_json = ''
+			with open('dynamo/role_table.json', 'r') as thefile:
+				role_table_json = ast.literal_eval(thefile.read())
+	
+			# Create the role table
+			self.role_table = self.dynamodb.create_table(**role_table_json)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			print e.response['Error']['Message']
+			return False
+
+		# Wait for the role table to be created before continuing
+		created = self.wait_for_table(self.role_table)
+
+		print 'Role table created'
+		return created
+
 	def create_user_table(self):
 		""" Creates a user table. """
 		try:
@@ -191,6 +214,24 @@ class AwsFunc:
 			time.sleep(0.1)
 			response = self.dynamodb.describe_table(TableName=table['TableDescription']['TableName'])
 
+		return True
+
+	def create_admin_role_db_entry(self):
+		""" Creates an entry in the 'Role' database that represents an admin role"""
+		try:
+			print 'Creating admin role db entry'
+			
+			admin_role_json = ''
+			with open('dynamo/role.json', 'r') as thefile:
+				admin_role_json = ast.literal_eval(thefile.read())
+
+			self.dynamodb.put_item(**admin_role_json)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			print e.response['Error']['Message']
+			return False
+
+		print 'Admin role db entry created'
 		return True
 
 	def create_admin_db_entry(self):
