@@ -40,9 +40,9 @@ class User(object):
 			print e.response['Error']['Code']
 			response = Response("Error")
 			response.errorMessage = "Unable to register new user: %s" % e.response['Error']['Code']
-			return response
+			return response.to_JSON()
 		
-		return Response("Success")
+		return Response("Success").to_JSON()
 
 	def login(self):
 		username = self.event["User"]["Username"]
