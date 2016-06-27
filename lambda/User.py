@@ -60,16 +60,16 @@ class User(object):
 
 			for i in result['Items']:
 				if(i['Password'] == hashed):
-			    		return Response("Success")
+			    		return Response("Success").to_JSON()
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
 			response = Response("Error")
 			response.errorMessage = "Unable to log in: %s" % e.response['Error']['Code']
-			return response
+			return response.to_JSON()
 
 		response = Response("Error")
 		response.errorMessage = "Unable to login, username or password incorrect"
-		return response
+		return response.to_JSON()
 
 	def logout(self):
 		# get user credentials
@@ -92,6 +92,6 @@ class User(object):
 			print e.response['Error']['Code']
 			response = Response("Error")
 			response.errorMessage = "Unable to log out: %s" % e.response['Error']['Code']
-			return response
+			return response.to_JSON()
    
-    		return Response("Success") 
+    		return Response("Success").to_JSON()

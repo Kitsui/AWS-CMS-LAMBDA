@@ -30,11 +30,11 @@ class Blog(object):
 			print e.response['Error']['Code']
 			response = Response("Error")
 			response.errorMessage = "Unable to get blog data: %s" % e.response['Error']['Code']
-			return response
+			return response.to_JSON()
 
 		response = Response("Success")
 		response.setData = blogData
-		return response
+		return response.to_JSON()
 
 	def get_all_blogs(self):
 		# Attempt to get all data from table
@@ -47,11 +47,11 @@ class Blog(object):
 			print e.response['Error']['Code']
 			response = Response("Error")
 			response.errorMessage = "Unable to get blog data: %s" % e.response['Error']['Code']
-			return response
+			return response.to_JSON()
 		
 		response = Response("Success")
 		response.setData = data
-		return response
+		return response.to_JSON()
 
 	def save_new_blog(self):		
 		# Get new blog params
@@ -74,9 +74,9 @@ class Blog(object):
 			print e.response['Error']['Code']
 			response = Response("Error")
 			response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
-			return response
+			return response.to_JSON()
 		
-		return Response("Success")
+		return Response("Success").to_JSON()
 
 	def edit_blog(self):
 		blogID = self.event['blog']['blogID']
@@ -92,9 +92,9 @@ class Blog(object):
 	        	print e.response['Error']['Code']
 	        	response = Response("Error")
 			response.errorMessage = "Unable to save edited blog: %s" % e.response['Error']['Code']
-			return response
+			return response.to_JSON()
 
-		return Response("Success")
+		return Response("Success").to_JSON()
 
 	def delete_blog(self):
 		blogID = self.event['blog']['blogID']
@@ -108,6 +108,6 @@ class Blog(object):
 	        	print e.response['Error']['Code']
 	        	response = Response("Error")
 			response.errorMessage = "Unable to delete blog: %s" % e.response['Error']['Code']
-			return response
+			return response.to_JSON()
 
-	    	return Response("Success")
+	    	return Response("Success").to_JSON()
