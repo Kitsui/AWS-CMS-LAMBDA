@@ -1,0 +1,27 @@
+{	
+	"TableName": "Blog",
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "RoleID",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "Name",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "RoleID",
+			"KeyType": "HASH"
+		},
+		{
+			"AttributeName": "Name",
+			"KeyType": "RANGE"
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits":5
+	}
+}

@@ -7,7 +7,7 @@
 import boto3
 import botocore
 import uuid
-import Response
+from Response import Response
 from passlib.apps import custom_app_context as pwd_context
 
 class User(object):
