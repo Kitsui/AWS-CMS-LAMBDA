@@ -10,7 +10,7 @@ and open the template in the editor.
         <script src="../JavaScript/jquery-3.0.0.min.js" type="text/javascript"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" >
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-        <script src="../JavaScript/CMSFunctions.js" type="text/javascript"></script>
+        <script src="../JavaScript/ApiAccess.js" type="text/javascript"></script>
         <script src="../JavaScript/angular.js" type="text/javascript"></script>
         <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
         <script>tinymce.init({ selector:'textarea' });</script>
@@ -81,7 +81,7 @@ and open the template in the editor.
                 $( "#get-blog-button" ).click(function() {
                     var blogID = $('input#blog-id-get-input').val();
                     var author = $('input#blog-author-get-input').val();
-                    DeleteSingleBlog(blogID,author);
+                    deleteSingleBlog(blogID,author);
                 });
             }); 
     </script>
