@@ -305,7 +305,7 @@ class AwsFunc:
 				authorizationType='NONE'
 			)
 			
-			# Add an integration method to the api resource
+			# Set the put integration of the POST method
 			self.apigateway.put_integration(
 				restApiId=self.rest_api['id'],
 				resourceId=root_resource['id'],
@@ -315,23 +315,77 @@ class AwsFunc:
 				uri=self.create_api_invocation_uri()
 			)
 			
-			# Set the put method response for the api resource
+			# Set the put method response of the POST method
 			self.apigateway.put_method_response(
 				restApiId=self.rest_api['id'],
 				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
+				responseParameters={
+					'method.response.header.Access-Control-Allow-Origin': True
+				},
 				responseModels={
 					'application/json': 'Empty'
 				}
 			)
 			
-			# Set the put integration response for the api resource
+			# Set the put integration response of the POST method
 			self.apigateway.put_integration_response(
 				restApiId=self.rest_api['id'],
 				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
+				responseParameters={
+					'method.response.header.Access-Control-Allow-Origin': '\'*\''
+				},
+				responseTemplates={
+					'application/json': ''
+				}
+			)
+			
+			# Add an options method to the rest api
+			api_method = self.apigateway.put_method(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='OPTIONS',
+				authorizationType='NONE'
+			)
+			
+			# Set the put integration of the OPTIONS method
+			self.apigateway.put_integration(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='OPTIONS',
+				type='MOCK'
+			)
+			
+			# Set the put method response of the OPTIONS method
+			self.apigateway.put_method_response(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='OPTIONS',
+				statusCode='200',
+				responseParameters={
+					'method.response.header.Access-Control-Allow-Headers': True,
+					'method.response.header.Access-Control-Allow-Origin': True,
+					'method.response.header.Access-Control-Allow-Methods': True
+				},
+				responseModels={
+					'application/json': 'Empty'
+				}
+			)
+			
+			# Set the put integration response of the OPTIONS method
+			self.apigateway.put_integration_response(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='OPTIONS',
+				statusCode='200',
+				responseParameters={
+					'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with\'',
+					'method.response.header.Access-Control-Allow-Origin': '\'*\'',
+					'method.response.header.Access-Control-Allow-Methods': '\'POST,GET,OPTIONS\''
+				},
 				responseTemplates={
 					'application/json': ''
 				}
