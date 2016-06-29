@@ -14,9 +14,6 @@ function bindClickEvents() {
                 document.getElementById("passwordInput").value);
             return false;
     }
-
-    
-
 }
 
 
@@ -32,14 +29,59 @@ function postToServer(params, stateChangeFunc) {
     xhr.setRequestHeader("x-api-key", "5cCoxK410ltp2B0ifLSE5msuLthPzfd4yfB76uM7");
     xhr.onreadystatechange = stateChangeFunc(xhr);
     xhr.send(params);
-    alert(xhr.responseText);
     return false;
 }
 
+/**
+* Testing
+***/
+function saveBlog(title, content, author) {
+    var req = {
+     method: 'POST',
+     url: 'https://9zqydkl7h8.execute-api.us-east-1.amazonaws.com/prod',
+     headers: {
+       'Content-Type': application/json, 
+       'x-api-key': '5cCoxK410ltp2B0ifLSE5msuLthPzfd4yfB76uM7'
+     },
+     data: { request: "saveNewBlog",
+        blog:{ 
+            title: title,
+            content: content,
+            author : author
+            } 
+        }
+    }
+}
+ 
+// Doesnt work 400 error
+// function saveBlog(title, content, author) {
+//     var request = $.ajax({
+//         url: "https://9zqydkl7h8.execute-api.us-east-1.amazonaws.com/prod",
+//         headers: { "x-api-key": "5cCoxK410ltp2B0ifLSE5msuLthPzfd4yfB76uM7", 
+//         "Content-type": "application/json" },
+//         method: "POST",
+//         data: { 
+//         request: "saveNewBlog",
+//         blog:{ 
+//             title: title,
+//             content: content,
+//             author : author
+//             }
+//         }
+//         });
+     
+//     request.done(function( data ) {
+//         var data=xhr.responseText;
+//         var jsonResponse = JSON.parse(data);
+//         alert(jsonResponse); 
+//     });
+     
+//     request.fail(function( jqXHR, textStatus ) {
+//       alert( "Request failed: " + textStatus );
+//     });
 
-
-
-
+    
+// }
 
 function saveBlog(title, content, author) {
     var params = JSON.stringify({
@@ -54,7 +96,6 @@ function saveBlog(title, content, author) {
     postToServer(params, saveBlogStateChange);
 }
 function saveBlogStateChange(xhr) {
-    alert("hello");
     if(xhr.readyState === 4){
         if(xhr.status === 200){
             alert("Save New Post Successful");
