@@ -392,7 +392,7 @@ class AwsFunc:
 				}
 			)
 			
-			"""
+			'''
 			# Add an options method to the rest api
 			api_method = self.apigateway.put_method(
 				restApiId=self.rest_api['id'],
@@ -444,7 +444,7 @@ class AwsFunc:
 					'application/json': ''
 				}
 			)
-			"""
+			'''
 			
 			# Create a deployment of the rest api
 			self.apigateway.create_deployment(
