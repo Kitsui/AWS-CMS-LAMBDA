@@ -13,6 +13,7 @@
 </div>
 <script type="text/javascript">
 
+<<<<<<< HEAD
     // function post_request() {
     //     var xhr = new XMLHttpRequest();
     //     var params = JSON.stringify({
@@ -39,6 +40,34 @@
     //     xhr.send(params);
     //     return false;
     // }
+=======
+    function post_request() {
+        var xhr = new XMLHttpRequest();
+        var params = JSON.stringify({
+            request: "registerUser",
+            user:{ 
+                username: document.getElementById("usernameInput").value, 
+                email: document.getElementById("emailInput").value,
+                password: document.getElementById("passwordInput").value
+            }
+        });
+        xhr.open("POST", "$(endpoint_url)", true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.setRequestHeader("x-api-key", "$(api_key)");
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState === 4){
+                if(xhr.status === 200){
+                    alert("You are registered!");
+                }
+                else{
+                    alert("Could not register. Please try again later.");
+                }
+            }
+        };
+        xhr.send(params);
+        return false;
+    }
+>>>>>>> Master
 
     // document.getElementById("email_form").onsubmit = function() {
     //         post_request();

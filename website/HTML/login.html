@@ -42,9 +42,9 @@ function post_request() {
             Password: document.getElementById("passwordInput").value
         }
     });
-    xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
+    xhr.open("POST", "$(endpoint_url)", true);
         xhr.setRequestHeader("Content-type", "application/json");
-        xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
+        xhr.setRequestHeader("x-api-key", "$(api_key)");
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4){
             if(xhr.status === 200){

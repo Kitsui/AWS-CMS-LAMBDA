@@ -6,6 +6,7 @@ import os
 import mimetypes
 import time
 import ast
+from replace_variables import replace_variables
 
 class AwsFunc:
 	""" Contains functions for creating, modifying and deleting elements of the AWSCMS.
@@ -35,6 +36,7 @@ class AwsFunc:
 		
 		self.apigateway = boto3.client('apigateway')
 		self.rest_api = None
+		self.api_key = None
 
 	def create_bucket(self, bucket_region=None):
 		""" Creates a bucket with the name 'bucket_name' in region 'bucket_region'. 
@@ -68,10 +70,12 @@ class AwsFunc:
 					key = directory[8:]
 					mime = mimetypes.guess_type(directory)
 					with open(directory, 'rb') as file_body:
+						body = file_body.read()
+						body = replace_variables(body, endpoint_url=self.create_api_call_uri(), api_key=self.api_key)
 						put_kwargs = {
 							'Bucket': self.bucket['Location'][1:],
 							'ACL': 'public-read',
-							'Body': file_body.read(),
+							'Body': body,
 							'Key': key
 						}
 					if mime[0] != None:
@@ -94,6 +98,29 @@ class AwsFunc:
 			return False
 
 		return True
+
+	def create_role_table(self):
+		""" Creates a role table. """
+		try:
+			print 'Creating role table'
+
+			# Get the role table's json
+			role_table_json = ''
+			with open('dynamo/role_table.json', 'r') as thefile:
+				role_table_json = ast.literal_eval(thefile.read())
+	
+			# Create the role table
+			self.role_table = self.dynamodb.create_table(**role_table_json)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			print e.response['Error']['Message']
+			return False
+
+		# Wait for the role table to be created before continuing
+		created = self.wait_for_table(self.role_table)
+
+		print 'Role table created'
+		return created
 
 	def create_user_table(self):
 		""" Creates a user table. """
@@ -193,6 +220,24 @@ class AwsFunc:
 
 		return True
 
+	def create_admin_role_db_entry(self):
+		""" Creates an entry in the 'Role' database that represents an admin role"""
+		try:
+			print 'Creating admin role db entry'
+			
+			admin_role_json = ''
+			with open('dynamo/role.json', 'r') as thefile:
+				admin_role_json = ast.literal_eval(thefile.read())
+
+			self.dynamodb.put_item(**admin_role_json)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			print e.response['Error']['Message']
+			return False
+
+		print 'Admin role db entry created'
+		return True
+
 	def create_admin_db_entry(self):
 		""" Creates an entry in the 'User' database that represents an admin """
 		try:
@@ -260,8 +305,9 @@ class AwsFunc:
 				PolicyArn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 			)
 			
-			time.sleep(5)	# This prevents an error from being thrown about the lambda role
+			time.sleep(10)
 			
+			# Create the lambda function
 			self.lmda_function = self.lmda.create_function(
 				FunctionName='controller',
 				Runtime='python2.7',
@@ -281,7 +327,7 @@ class AwsFunc:
 		print 'Lambda function created'
 
 		return True
-
+		
 	def create_api_gateway(self):
 		""" Creates the api gateway and links it to the lambda function """
 		try:
@@ -297,7 +343,7 @@ class AwsFunc:
 				restApiId=self.rest_api['id']
 			)['items'][0]
 			
-			# Add a post method to the rest api resource
+			# Add a post method to the rest api
 			api_method = self.apigateway.put_method(
 				restApiId=self.rest_api['id'],
 				resourceId=root_resource['id'],
@@ -312,7 +358,10 @@ class AwsFunc:
 				httpMethod='POST',
 				type='AWS',
 				integrationHttpMethod='POST',
-				uri=self.create_api_invocation_uri()
+				uri=self.create_api_invocation_uri(),
+				requestTemplates={
+					'application/json': ''
+				}
 			)
 			
 			# Set the put method response of the POST method
@@ -321,9 +370,9 @@ class AwsFunc:
 				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
-				responseParameters={
-					'method.response.header.Access-Control-Allow-Origin': True
-				},
+#				responseParameters={
+#					'method.response.header.Access-Control-Allow-Origin': False
+#				},
 				responseModels={
 					'application/json': 'Empty'
 				}
@@ -335,14 +384,15 @@ class AwsFunc:
 				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
-				responseParameters={
-					'method.response.header.Access-Control-Allow-Origin': '\'*\''
-				},
+#				responseParameters={
+#					'method.response.header.Access-Control-Allow-Origin': '\'*\''
+#				},
 				responseTemplates={
 					'application/json': ''
 				}
 			)
 			
+			'''
 			# Add an options method to the rest api
 			api_method = self.apigateway.put_method(
 				restApiId=self.rest_api['id'],
@@ -356,7 +406,10 @@ class AwsFunc:
 				restApiId=self.rest_api['id'],
 				resourceId=root_resource['id'],
 				httpMethod='OPTIONS',
-				type='MOCK'
+				type='MOCK',
+				requestTemplates={
+					'application/json': ''
+				}
 			)
 			
 			# Set the put method response of the OPTIONS method
@@ -366,15 +419,15 @@ class AwsFunc:
 				httpMethod='OPTIONS',
 				statusCode='200',
 				responseParameters={
-					'method.response.header.Access-Control-Allow-Headers': True,
-					'method.response.header.Access-Control-Allow-Origin': True,
-					'method.response.header.Access-Control-Allow-Methods': True
+					'method.response.header.Access-Control-Allow-Headers': False,
+					'method.response.header.Access-Control-Allow-Origin': False,
+					'method.response.header.Access-Control-Allow-Methods': False
 				},
 				responseModels={
 					'application/json': 'Empty'
 				}
 			)
-			
+
 			# Set the put integration response of the OPTIONS method
 			self.apigateway.put_integration_response(
 				restApiId=self.rest_api['id'],
@@ -382,14 +435,16 @@ class AwsFunc:
 				httpMethod='OPTIONS',
 				statusCode='200',
 				responseParameters={
-					'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with\'',
-					'method.response.header.Access-Control-Allow-Origin': '\'*\'',
-					'method.response.header.Access-Control-Allow-Methods': '\'POST,GET,OPTIONS\''
+					'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token\'',
+					'method.response.header.Access-Control-Allow-Methods': '\'POST,OPTIONS\'',
+					'method.response.header.Access-Control-Allow-Origin': '\'*\''
+					
 				},
 				responseTemplates={
 					'application/json': ''
 				}
 			)
+			'''
 			
 			# Create a deployment of the rest api
 			self.apigateway.create_deployment(
@@ -397,10 +452,23 @@ class AwsFunc:
 				stageName='prod'
 			)
 			
+			# Create an api key linked to the rest api
+			self.api_key = self.apigateway.create_api_key(
+				name='AWS_CMS_Api_Key',
+				description='Allows sending of requests to the AWS CMS',
+				enabled=True,
+				stageKeys=[
+					{
+						'restApiId': self.rest_api['id'],
+						'stageName': 'prod'
+					},
+				]
+			)['id']
+			
 			# Give the api deployment permission to trigger the lambda function
 			self.lmda.add_permission(
 				FunctionName=self.lmda_function['FunctionName'],
-				StatementId='apigateway-production-aws-cms',
+				StatementId='c67ytfvu65ytd5tsrdghk',
 				Action='lambda:InvokeFunction',
 				Principal='apigateway.amazonaws.com',
 				SourceArn=self.create_api_permission_uri()
@@ -432,4 +500,12 @@ class AwsFunc:
 		uri += ':'
 		uri += self.rest_api['id']
 		uri += '/*/POST/'
+		return uri
+		
+	def create_api_call_uri(self):
+		uri = 'https://'
+		uri += self.apigateway.get_rest_api(
+			restApiId=self.rest_api['id']
+		)['id']
+		uri += '.execute-api.us-east-1.amazonaws.com/prod'
 		return uri

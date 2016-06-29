@@ -13,13 +13,14 @@ s3 = boto3.client('s3')
 
 # Resources to be deleted
 rest_api_names = ['AWS_CMS_Operations']
+api_key_names = ['AWS_CMS_Api_Key']
 lmda_function_names = ['controller']
 role_names = ['lambda_basic_execution']
 dynamodb_table_names = ['User', 'Token', 'Blog']
 s3_bucket_names = sys.argv[1:]
 
 # Remove all AWSCMS api gateways
-print "Removing api gateways"
+print 'Removing api gateways'
 
 rest_apis_deleted = 0
 rest_apis = apigateway.get_rest_apis()['items']
@@ -36,6 +37,23 @@ if rest_apis_deleted > 0:
 	print rest_apis_deleted, 'api gateway(s) removed'
 else:
 	print 'No api gateways to remove'
+
+# Remove all AWSCMS api keys
+print 'Removing api keys'
+
+api_keys_deleted = 0
+api_keys = apigateway.get_api_keys()['items']
+for api_key in api_keys:
+	if api_key['name'] in api_key_names:
+		apigateway.delete_api_key(
+			apiKey=api_key['id']
+		)
+		api_keys_deleted += 1
+
+if api_keys_deleted > 0:
+	print api_keys_deleted, 'api key(s) removed'
+else:
+	print 'No api keys to remove'
 
 # Remove all AWSCMS lambda funtions
 print 'Removing lambda functions'
@@ -106,14 +124,15 @@ for bucket in s3.list_buckets()['Buckets']:
 	if bucket['Name'] in s3_bucket_names:
 		print 'Deleting bucket:', bucket['Name']
 		# Delete all bucket contents
-		for obj in s3.list_objects_v2(Bucket=bucket['Name'])['Contents']:
-			print 'Deleting object:', obj['Key']
-			s3.delete_object(
-				Bucket=bucket['Name'],
-				Key=obj['Key']
-			)
-			print 'Object deleted'
-			objects_deleted += 1
+		if 'Contents' in s3.list_objects_v2(Bucket=bucket['Name']).keys():
+			for obj in s3.list_objects_v2(Bucket=bucket['Name'])['Contents']:
+				print 'Deleting object:', obj['Key']
+				s3.delete_object(
+					Bucket=bucket['Name'],
+					Key=obj['Key']
+				)
+				print 'Object deleted'
+				objects_deleted += 1
 		# Delete bucket
 		s3.delete_bucket(
 			Bucket=bucket['Name']
