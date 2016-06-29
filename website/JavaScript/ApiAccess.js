@@ -27,13 +27,15 @@ function bindClickEvents() {
 ***/
 function postToServer(params, stateChangeFunc) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
+    xhr.open("POST", "https://9zqydkl7h8.execute-api.us-east-1.amazonaws.com/prod", true);
     xhr.setRequestHeader("Content-type", "application/json");
-    xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
+    xhr.setRequestHeader("x-api-key", "5cCoxK410ltp2B0ifLSE5msuLthPzfd4yfB76uM7");
     xhr.onreadystatechange = stateChangeFunc(xhr);
     xhr.send(params);
+    alert(xhr.responseText);
     return false;
 }
+
 
 
 
@@ -52,6 +54,7 @@ function saveBlog(title, content, author) {
     postToServer(params, saveBlogStateChange);
 }
 function saveBlogStateChange(xhr) {
+    alert("hello");
     if(xhr.readyState === 4){
         if(xhr.status === 200){
             alert("Save New Post Successful");
@@ -67,7 +70,7 @@ function saveBlogStateChange(xhr) {
 
 
 function registerUser(username, email, password) {
-    alert(username + email + password)
+    alert(username + email + password);
     var params = JSON.stringify({
         request: "registerUser",
         user:{ 
