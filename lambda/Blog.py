@@ -49,8 +49,8 @@ class Blog(object):
 			response.errorMessage = "Unable to get blog data: %s" % e.response['Error']['Code']
 			return response.to_JSON()
 		
-		response = Response("Success")
-		response.setData = data
+		response = Response("Success", data)
+		# response.setData = data
 		return response.to_JSON()
 
 	def save_new_blog(self):		

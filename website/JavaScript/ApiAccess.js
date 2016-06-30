@@ -35,23 +35,23 @@ function postToServer(params, stateChangeFunc) {
 /**
 * Testing
 ***/
-function saveBlog(title, content, author) {
-    var req = {
-     method: 'POST',
-     url: 'https://9zqydkl7h8.execute-api.us-east-1.amazonaws.com/prod',
-     headers: {
-       'Content-Type': application/json, 
-       'x-api-key': '5cCoxK410ltp2B0ifLSE5msuLthPzfd4yfB76uM7'
-     },
-     data: { request: "saveNewBlog",
-        blog:{ 
-            title: title,
-            content: content,
-            author : author
-            } 
-        }
-    }
-}
+// function saveBlog(title, content, author) {
+//     var req = {
+//      method: 'POST',
+//      url: 'https://9zqydkl7h8.execute-api.us-east-1.amazonaws.com/prod',
+//      headers: {
+//        'Content-Type': application/json, 
+//        'x-api-key': '5cCoxK410ltp2B0ifLSE5msuLthPzfd4yfB76uM7'
+//      },
+//      data: { request: "saveNewBlog",
+//         blog:{ 
+//             title: title,
+//             content: content,
+//             author : author
+//             } 
+//         }
+//     }
+// }
  
 // Doesnt work 400 error
 // function saveBlog(title, content, author) {
