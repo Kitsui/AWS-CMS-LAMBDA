@@ -12,39 +12,68 @@
     </form> 
 </div>
 <script type="text/javascript">
+    // function post_request() {
+    //     var xhr = new XMLHttpRequest();
+    //     var params = JSON.stringify({
+    //         request: "registerUser",
+    //         user:{ 
+    //             username: document.getElementById("usernameInput").value, 
+    //             email: document.getElementById("emailInput").value,
+    //             password: document.getElementById("passwordInput").value
+    //         }
+    //     });
+    //     xhr.open("POST", "https://mvmc85y3c0.execute-api.us-east-1.amazonaws.com/prod", true);
+    //     xhr.setRequestHeader("Content-type", "application/json");
+    //     xhr.setRequestHeader("x-api-key", "I1Q7GanG5U68KTNFIIqsZ7TL2k90z3s76ulEXsS8");
+    //     xhr.onreadystatechange = function(){
+    //         if(xhr.readyState === 4){
+    //             if(xhr.status === 200){
+    //                 alert("You are registered!");
+    //             }
+    //             else{
+    //                 alert("Could not register. Please try again later.");
+    //             }
+    //         }
+    //     };
+    //     xhr.send(params);
+    //     return false;
+    // }
 
-    function post_request() {
-        var xhr = new XMLHttpRequest();
-        var params = JSON.stringify({
-            request: "registerUser",
-            user:{ 
-                username: document.getElementById("usernameInput").value, 
-                email: document.getElementById("emailInput").value,
-                password: document.getElementById("passwordInput").value
-            }
-        });
-        xhr.open("POST", "$(endpoint_url)", true);
-        xhr.setRequestHeader("Content-type", "application/json");
-        xhr.setRequestHeader("x-api-key", "$(api_key)");
-        xhr.onreadystatechange = function(){
-            if(xhr.readyState === 4){
-                if(xhr.status === 200){
-                    alert("You are registered!");
-                }
-                else{
-                    alert("Could not register. Please try again later.");
-                }
-            }
-        };
-        xhr.send(params);
-        return false;
-    }
+    // function post_request() {
+    //     var xhr = new XMLHttpRequest();
+    //     var params = JSON.stringify({
+    //         request: "registerUser",
+    //         user:{ 
+    //             username: document.getElementById("usernameInput").value, 
+    //             email: document.getElementById("emailInput").value,
+    //             password: document.getElementById("passwordInput").value
+    //         }
+    //     });
+    //     xhr.open("POST", "$(endpoint_url)", true);
+    //     xhr.setRequestHeader("Content-type", "application/json");
+    //     xhr.setRequestHeader("x-api-key", "$(api_key)");
+    //     xhr.onreadystatechange = function(){
+    //         if(xhr.readyState === 4){
+    //             if(xhr.status === 200){
+    //                 alert("You are registered!");
+    //             }
+    //             else{
+    //                 alert("Could not register. Please try again later.");
+    //             }
+    //         }
+    //     };
+    //     xhr.send(params);
+    //     return false;
+    // }
 
-    document.getElementById("email_form").onsubmit = function() {
-            post_request();
-            return false;
-    }
+
+    // document.getElementById("email_form").onsubmit = function() {
+    //         post_request();
+    //         return false;
+    // }
 
 </script>
+
+<script src="../JavaScript/ApiAccess.js" type="text/javascript"></script>
 </body>
 </html>

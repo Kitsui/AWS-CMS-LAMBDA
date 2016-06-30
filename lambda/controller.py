@@ -2,6 +2,7 @@
 # controller.py
 # Created: 23/06/2016
 # Author: Adam Campbell
+# Edited By: Miguel Saavedra
 """
 
 import User

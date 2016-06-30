@@ -2,6 +2,7 @@
 # User.py
 # Created: 23/06/2016
 # Author: Adam Campbell
+# Edited By: Miguel Saavedra
 """
 
 import boto3
@@ -9,6 +10,7 @@ import botocore
 import uuid
 from Response import Response
 from passlib.apps import custom_app_context as pwd_context
+from boto3.dynamodb.conditions import Key, Attr
 
 class User(object):
 
@@ -45,30 +47,28 @@ class User(object):
 		return Response("Success").to_JSON()
 
 	def login(self):
-		username = self.event["User"]["Username"]
 		password =  self.event["User"]["Password"]
 		# hash password for comparison
 		hashed = pwd_context.encrypt(password)
 
 		# Attempt to check dynamo
-		try:			
+		try:
 			dynamodb = boto3.resource('dynamodb')
-			from boto3.dynamodb.conditions import Key, Attr
-	    		table = dynamodb.Table('User')    
-			# response = table.scan()
-			result = table.query(KeyConditionExpression=Key('Username').eq(username))
+			table = dynamodb.Table('User')
+			password =  event["User"]["Password"]
+			result = table.query(KeyConditionExpression=Key('ID').eq(event["User"]["UserID"]))
 
 			for i in result['Items']:
 				if(i['Password'] == hashed):
-			    		return Response("Success").to_JSON()
+					return Response("Success").to_JSON()
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
-			response = Response("Error")
+			response = Response("Error", None)
 			response.errorMessage = "Unable to log in: %s" % e.response['Error']['Code']
 			return response.to_JSON()
 
-		response = Response("Error")
-		response.errorMessage = "Unable to login, username or password incorrect"
+		response = Response("Success", None)
+		#Cookie Code here
 		return response.to_JSON()
 
 	def logout(self):
