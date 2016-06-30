@@ -13,7 +13,6 @@ class Response(object):
 		self.data = data
 		if(self.data is not None):
 			self.columns = data["Items"][0].keys()
-			self.format()
 
 	def format(self):
 		dct = {}

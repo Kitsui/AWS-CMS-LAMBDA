@@ -9,6 +9,7 @@ import botocore
 import datetime
 import uuid
 from Response import Response
+from boto3.dynamodb.conditions import Key, Attr
 
 class Blog(object):
 
@@ -19,21 +20,17 @@ class Blog(object):
 	def get_blog_data(self):
 		# Attempt to read blog data from dynamo
 		try:
-			dynamodb = boto3.client('dynamodb')
-			blogData = dynamodb.get_item(
-				TableName="Blog",
-				Key={
-					"BlogID": {"S": self.event["blog"]["blogID"]},
-					"Author": {"S": self.event["blog"]["author"]}},
-				ConsistentRead=True)
+			dynamodb = boto3.resource('dynamodb')
+			table = dynamodb.Table('Blog')
+			blogData = table.query(KeyConditionExpression=Key('BlogID').eq(self.event["blog"]["blogID"]))
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
 			response = Response("Error")
 			response.errorMessage = "Unable to get blog data: %s" % e.response['Error']['Code']
 			return response.to_JSON()
 
-		response = Response("Success")
-		response.setData = blogData
+		response = Response("Success", blogData)
+		# response.setData = blogData
 		return response.to_JSON()
 
 	def get_all_blogs(self):
@@ -51,6 +48,7 @@ class Blog(object):
 		
 		response = Response("Success", data)
 		# response.setData = data
+		response.format()
 		return response.to_JSON()
 
 	def save_new_blog(self):		

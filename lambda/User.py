@@ -9,6 +9,7 @@ import botocore
 import uuid
 from Response import Response
 from passlib.apps import custom_app_context as pwd_context
+from boto3.dynamodb.conditions import Key, Attr
 
 class User(object):
 
