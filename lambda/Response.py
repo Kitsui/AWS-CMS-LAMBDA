@@ -2,6 +2,7 @@
 # Response.py
 # Created: 27/06/2016
 # Author: Adam Campbell
+# Edited By: Miguel Saavedra
 """
 
 import jsonpickle
