@@ -24,9 +24,7 @@ function bindClickEvents() {
 ***/
 function postToServer(params, stateChangeFunc) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://9zqydkl7h8.execute-api.us-east-1.amazonaws.com/prod", true);
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.setRequestHeader("x-api-key", "5cCoxK410ltp2B0ifLSE5msuLthPzfd4yfB76uM7");
+    xhr.open("POST", "$(endpoint_url)", true);
     xhr.onreadystatechange = stateChangeFunc(xhr);
     xhr.send(params);
     return false;

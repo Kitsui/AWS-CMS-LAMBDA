@@ -10,14 +10,15 @@ from replace_variables import replace_variables
 
 class AwsFunc:
 	""" Contains functions for creating, modifying and deleting elements of the AWSCMS.
-	
 	Requires awscli configured or an aws configuration file. 
 	"""
-	def __init__(self, bucket_name, account_id, region):
+	def __init__(self, bucket_name, region):
 		""" Gets low-level clients for services to be used and creates containers for
 		AWS objects that will be filled by creation functions.
 		"""
-		self.account_id = account_id
+		self.sts = boto3.client('sts')
+		self.account_id = self.sts.get_caller_identity()['Account']
+		
 		self.region = region
 		
 		self.s3 = boto3.client('s3')
@@ -370,9 +371,6 @@ class AwsFunc:
 				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
-#				responseParameters={
-#					'method.response.header.Access-Control-Allow-Origin': False
-#				},
 				responseModels={
 					'application/json': 'Empty'
 				}
@@ -384,23 +382,60 @@ class AwsFunc:
 				resourceId=root_resource['id'],
 				httpMethod='POST',
 				statusCode='200',
-#				responseParameters={
-#					'method.response.header.Access-Control-Allow-Origin': '\'*\''
-#				},
 				responseTemplates={
 					'application/json': ''
 				}
 			)
 			
-			'''
+			# Add headers to the method response of the POST method
+			self.apigateway.update_method_response(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='POST',
+				statusCode='200',
+				patchOperations=[
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
+						'value': 'False'
+					}
+				]
+			)
+			
+			# Add headers to the integration response of the POST method
+			self.apigateway.update_integration_response(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='POST',
+				statusCode='200',
+				patchOperations=[
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
+						'value': '\'*\''
+					}
+				]
+			)
+			
 			# Add an options method to the rest api
-			api_method = self.apigateway.put_method(
+			self.apigateway.put_method(
 				restApiId=self.rest_api['id'],
 				resourceId=root_resource['id'],
 				httpMethod='OPTIONS',
 				authorizationType='NONE'
 			)
-			
+
+			# Set the put method response of the OPTIONS method
+			self.apigateway.put_method_response(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='OPTIONS',
+				statusCode='200',
+				responseModels={
+					'application/json': 'Empty'
+				}
+			)
+
 			# Set the put integration of the OPTIONS method
 			self.apigateway.put_integration(
 				restApiId=self.rest_api['id'],
@@ -411,22 +446,6 @@ class AwsFunc:
 					'application/json': ''
 				}
 			)
-			
-			# Set the put method response of the OPTIONS method
-			self.apigateway.put_method_response(
-				restApiId=self.rest_api['id'],
-				resourceId=root_resource['id'],
-				httpMethod='OPTIONS',
-				statusCode='200',
-				responseParameters={
-					'method.response.header.Access-Control-Allow-Headers': False,
-					'method.response.header.Access-Control-Allow-Origin': False,
-					'method.response.header.Access-Control-Allow-Methods': False
-				},
-				responseModels={
-					'application/json': 'Empty'
-				}
-			)
 
 			# Set the put integration response of the OPTIONS method
 			self.apigateway.put_integration_response(
@@ -434,17 +453,60 @@ class AwsFunc:
 				resourceId=root_resource['id'],
 				httpMethod='OPTIONS',
 				statusCode='200',
-				responseParameters={
-					'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token\'',
-					'method.response.header.Access-Control-Allow-Methods': '\'POST,OPTIONS\'',
-					'method.response.header.Access-Control-Allow-Origin': '\'*\''
-					
-				},
 				responseTemplates={
 					'application/json': ''
 				}
 			)
-			'''
+			
+			# Add headers to the method response of the OPTIONS method
+			self.apigateway.update_method_response(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='OPTIONS',
+				statusCode='200',
+				patchOperations=[
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Methods',
+						'value': 'False'
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Headers',
+						'value': 'False'
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
+						'value': 'False'
+					}
+				]
+			)
+			
+			# Add headers to the integration response of the OPTIONS method
+			self.apigateway.update_integration_response(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='OPTIONS',
+				statusCode='200',
+				patchOperations=[
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Methods',
+						'value': '\'POST,OPTIONS\''
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Headers',
+						'value': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token\''
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
+						'value': '\'*\''
+					}
+				]
+			)
 			
 			# Create a deployment of the rest api
 			self.apigateway.create_deployment(
