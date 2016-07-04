@@ -22,6 +22,7 @@ def handler(event, context):
 		
 		"getBlogData": blog.get_blog_data,
 		"getBlogs": blog.get_all_blogs,
+		"editBlog": blog.edit_blog,
 		"saveNewBlog": blog.save_new_blog,
 		"deleteSingleBlog": blog.delete_blog,
 		"registerUser": user.register,
