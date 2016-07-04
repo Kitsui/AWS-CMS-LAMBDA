@@ -20,6 +20,24 @@
 			"KeyType": "RANGE"
 		}
 	],
+ 	"GlobalSecondaryIndexes":[
+    	{
+            "IndexName": "Username",
+            "KeySchema": [
+                {
+                    "AttributeName": "Username",
+                    "KeyType": "HASH"
+                },
+            ],
+            "Projection": {
+                "ProjectionType": "ALL",
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 5,
+                "WriteCapacityUnits": 5
+            }
+        },
+    ],
 	"ProvisionedThroughput": {
 		"ReadCapacityUnits": 5,
 		"WriteCapacityUnits":5
