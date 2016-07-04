@@ -6,7 +6,7 @@
 			"AttributeType": "S"
 		},
 		{
-			"AttributeName": "Username",
+			"AttributeName": "Email",
 			"AttributeType": "S"
 		}
 	],
@@ -16,16 +16,16 @@
 			"KeyType": "HASH"
 		},
 		{
-			"AttributeName": "Username",
+			"AttributeName": "Email",
 			"KeyType": "RANGE"
 		}
 	],
  	"GlobalSecondaryIndexes":[
     	{
-            "IndexName": "Username",
+            "IndexName": "Email",
             "KeySchema": [
                 {
-                    "AttributeName": "Username",
+                    "AttributeName": "Email",
                     "KeyType": "HASH"
                 },
             ],
