@@ -55,8 +55,8 @@ class User(object):
 		try:
 			dynamodb = boto3.resource('dynamodb')
 			table = dynamodb.Table('User')
-			password =  event["User"]["Password"]
-			result = table.query(KeyConditionExpression=Key('ID').eq(event["User"]["UserID"]))
+			password =  self.event["User"]["Password"]
+			result = table.query(IndexName='Username', KeyConditionExpression=Key('Username').eq(self.event["User"]["Username"]))
 
 			for i in result['Items']:
 				if(i['Password'] == hashed):
