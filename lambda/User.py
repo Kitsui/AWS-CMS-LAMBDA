@@ -8,6 +8,8 @@
 import boto3
 import botocore
 import uuid
+import Cookie
+import datetime
 from Response import Response
 from passlib.apps import custom_app_context as pwd_context
 from boto3.dynamodb.conditions import Key, Attr
@@ -47,10 +49,6 @@ class User(object):
 		return Response("Success").to_JSON()
 
 	def login(self):
-		password =  self.event["User"]["Password"]
-		# hash password for comparison
-		hashed = pwd_context.encrypt(password)
-
 		# Attempt to check dynamo
 		try:
 			dynamodb = boto3.resource('dynamodb')
@@ -59,16 +57,22 @@ class User(object):
 			result = table.query(IndexName='Email', KeyConditionExpression=Key('Email').eq(self.event["User"]["Email"]))
 
 			for i in result['Items']:
-				if(i['Password'] == hashed):
-					return Response("Success").to_JSON()
+				if(pwd_context.verify(password, i['Password'])):
+					expiration = datetime.datetime.now() + datetime.timedelta(days=14)
+					cookie = Cookie.SimpleCookie()
+					cookie["token"] = "abc123"
+					cookie["token"]["path"] = "/"
+					cookie["token"]["expires"] = \
+					  expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
+
+			  		return {"Cookie": cookie.output(header="").lstrip()}
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
 			response = Response("Error", None)
 			response.errorMessage = "Unable to log in: %s" % e.response['Error']['Code']
 			return response.to_JSON()
 
-		response = Response("Success", None)
-		#Cookie Code here
+		response = Response("Error", None)
 		return response.to_JSON()
 
 	def logout(self):

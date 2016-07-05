@@ -18,7 +18,7 @@
             <form class="form-horizontal" id="email_form" action="/register" method="post">
               <div class="form-group form-group-lg">
                 <div class="col-sm-12">
-                  <input class="form-control input-lg" type="text" name="username" id="usernameInput" placeholder="Username">
+                  <input class="form-control input-lg" type="text" name="email" id="emailInput" placeholder="Email">
                 </div>
                 <div class="col-sm-12">
                   <input class="form-control input-lg" type="password" name="password" id="passwordInput" placeholder="Password">
@@ -38,13 +38,11 @@ function post_request() {
     var params = JSON.stringify({
         request: "loginUser",
         User:{ 
-            Username: document.getElementById("usernameInput").value, 
+            Email: document.getElementById("emailInput").value, 
             Password: document.getElementById("passwordInput").value
         }
     });
     xhr.open("POST", "$(endpoint_url)", true);
-        xhr.setRequestHeader("Content-type", "application/json");
-        xhr.setRequestHeader("x-api-key", "$(api_key)");
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4){
             if(xhr.status === 200){
