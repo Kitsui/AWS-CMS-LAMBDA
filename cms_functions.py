@@ -365,7 +365,7 @@ class AwsFunc:
 				integrationHttpMethod='POST',
 				uri=self.create_api_invocation_uri(),
 				requestTemplates={
-					'application/json': ''
+					'application/json': '{"statusCode": 200}'
 				}
 			)
 			
@@ -447,7 +447,7 @@ class AwsFunc:
 				httpMethod='OPTIONS',
 				type='MOCK',
 				requestTemplates={
-					'application/json': ''
+					'application/json': '{"statusCode": 200}'
 				}
 			)
 

@@ -141,7 +141,7 @@ for bucket in s3.list_buckets()['Buckets']:
 		buckets_deleted += 1
 
 if buckets_deleted > 0:
-	print buckets_deleted, 'S3 buckets deleted'
+	print buckets_deleted, 'S3 buckets removed'
 	print objects_deleted, 'objects deleted'
 else:
 	print 'No S3 buckets to remove'
