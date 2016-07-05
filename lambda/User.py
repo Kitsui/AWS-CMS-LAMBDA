@@ -94,8 +94,8 @@ class User(object):
 	        	)
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
-			response = Response("Error")
+			response = Response("Error", None)
 			response.errorMessage = "Unable to log out: %s" % e.response['Error']['Code']
 			return response.to_JSON()
    
-    		return Response("Success").to_JSON()
+    		return Response("Success", None).to_JSON()
