@@ -351,6 +351,20 @@ class AwsFunc:
 				httpMethod='POST',
 				authorizationType='NONE'
 			)
+
+			# Add headers to the method of the POST method
+			self.apigateway.update_method(
+				restApiId=self.rest_api['id'],
+				resourceId=root_resource['id'],
+				httpMethod='POST',
+				patchOperations=[
+					{
+						'op': 'add',
+						'path': '/requestParameters/method.request.header.Cookie',
+						'value': 'False'
+					}
+				]
+			)
 			
 			# Set the put integration of the POST method
 			self.apigateway.put_integration(
@@ -398,6 +412,11 @@ class AwsFunc:
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
 						'value': 'False'
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Set-Cookie',
+						'value': 'False'
 					}
 				]
 			)
@@ -413,6 +432,11 @@ class AwsFunc:
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
 						'value': '\'*\''
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Set-Cookie',
+						'value': 'integration.response.body.Cookie'
 					}
 				]
 			)
