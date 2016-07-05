@@ -10,6 +10,7 @@ import botocore
 import datetime
 import uuid
 from Response import Response
+from Json_handler import Json_handler
 from boto3.dynamodb.conditions import Key, Attr
 
 class Blog(object):
@@ -54,12 +55,17 @@ class Blog(object):
 
 	def save_new_blog(self):		
 		# Get new blog params
+		blogID = str(uuid.uuid4())
+		author = self.event["blog"]["author"]
+		title = self.event["blog"]["title"]
+		content = self.event["blog"]["content"]
+		saveDate = str(datetime.datetime.now())
 		blog_params = {
-			"BlogID": {"S": str(uuid.uuid4())},
-			"Author": {"S": self.event["blog"]["author"]},
-			"Title": {"S": self.event["blog"]["title"]},
-			"Content": {"S": self.event["blog"]["content"]},
-			"SavedDate": {"S": str(datetime.datetime.now())}
+			"BlogID": {"S": blogID},
+			"Author": {"S": author},
+			"Title": {"S": title},
+			"Content": {"S": content},
+			"SavedDate": {"S": saveDate}
 		}
 		# Attempt to add to dynamo
 		try:
@@ -75,6 +81,25 @@ class Blog(object):
 			response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
 			return response.to_JSON()
 		
+		s3 = boto3.client('s3')
+		fileName= "File.html"
+		put_kwargs = {
+			'Bucket': 'la-newslettter',
+			'Key': fileName
+		}
+		put_blog_item_kwargs = {
+	        'Bucket': 'la-newslettter',
+	        'ACL': 'public-read',
+	        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
+	        'Key': 'blog' + blog_params['BlogID']['S']
+		}
+		put_blog_item_kwargs['ContentType'] = 'text/html'
+		s3.put_object(**put_blog_item_kwargs)
+
+		# result =  s3.get_object(**put_kwargs)
+		# encoded_json = Json_handler(result).to_JSON()
+		# return encoded_json['data']['body']['object'].read(int(result['ContentLength'])
+		# return Json_handler(result).to_JSON()
 		return Response("Success", None).to_JSON()
 
 	def edit_blog(self):
