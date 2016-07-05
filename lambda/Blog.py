@@ -75,31 +75,41 @@ class Blog(object):
 				Item=blog_params,
 				ReturnConsumedCapacity='TOTAL'
 			)
+			s3 = boto3.client('s3')
+			Index_file= "Index.html"
+			bucket_name = "la-newslettter"
+			blog_key = 'blog' + blog_params['BlogID']['S']
+
+			put_blog_item_kwargs = {
+		        'Bucket': bucket_name,
+		        'ACL': 'public-read',
+		        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
+		        'Key': blog_key
+			}
+			# create Blog post in s3
+			put_blog_item_kwargs['ContentType'] = 'text/html'
+			s3.put_object(**put_blog_item_kwargs)
+			# get blog Index body to concatinate
+			indexBody = s3.get_object(Bucket=bucket_name,
+				Key=Index_file)['Body'].read()
+			# add new link to index
+			put_index_item_kwargs = {
+		        'Bucket': bucket_name,
+		        'ACL': 'public-read',
+		        'Body': indexBody + '<br>' + '<a href="' + 
+		        	'https://s3.amazonaws.com/' + bucket_name + 
+		        	'/' + blog_key + '">'+ title +'</a>',
+		        'Key': Index_file
+			}
+			put_index_item_kwargs['ContentType'] = 'text/html'
+			s3.put_object(**put_index_item_kwargs)
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
 			response = Response("Error", None)
 			response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
 			return response.to_JSON()
 		
-		s3 = boto3.client('s3')
-		fileName= "File.html"
-		put_kwargs = {
-			'Bucket': 'la-newslettter',
-			'Key': fileName
-		}
-		put_blog_item_kwargs = {
-	        'Bucket': 'la-newslettter',
-	        'ACL': 'public-read',
-	        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
-	        'Key': 'blog' + blog_params['BlogID']['S']
-		}
-		put_blog_item_kwargs['ContentType'] = 'text/html'
-		s3.put_object(**put_blog_item_kwargs)
-
-		# result =  s3.get_object(**put_kwargs)
-		# encoded_json = Json_handler(result).to_JSON()
-		# return encoded_json['data']['body']['object'].read(int(result['ContentLength'])
-		# return Json_handler(result).to_JSON()
+		
 		return Response("Success", None).to_JSON()
 
 	def edit_blog(self):
