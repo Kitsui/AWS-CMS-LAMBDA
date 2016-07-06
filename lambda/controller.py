@@ -7,11 +7,28 @@
 
 import User
 import Blog
+from Response import Response
+import boto3
+import botocore
+from boto3.dynamodb.conditions import Key, Attr
 
 def handler(event, context):
-	
-	isAuth = True
+
+	isAuth = False
 	request = event["request"]
+	# Authentication check token
+	if(request != "loginUser"):
+		try:
+			dynamodb = boto3.resource('dynamodb')
+			table = dynamodb.Table('Token')
+			auth = table.query(KeyConditionExpression=
+				Key('TokenString').eq(event["token"]))
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			return response.to_JSON()
+		if(len(auth['Items']) > 0):
+			isAuth = True
 
 	# Custom object instances
 	user = User.User(event, context)
@@ -33,4 +50,6 @@ def handler(event, context):
 	if isAuth:
 		return functionMapping[request]()
 	else:
-		print "You are not authorized"
+		response = Response("Authentication_Error", None)
+		return response.to_JSON()
+	
