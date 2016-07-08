@@ -111,6 +111,8 @@ class Blog(object):
 		author = self.event['blog']['author']
 		content = self.event['blog']['content']
 		title = self.event['blog']['title']
+		metaDescription = self.event["blog"]["metaDescription"]
+		metaKeywords = self.event["blog"]["metaKeywords"]
 
 		if not Validator.validateBlog(content):
 			response = Response("Error", None)
@@ -120,14 +122,17 @@ class Blog(object):
 	    	try:
 	    		dynamodb = boto3.resource('dynamodb')
 	    		table = dynamodb.Table('Blog')
-	    		blogData = table.query(KeyConditionExpression=Key('BlogID').eq(self.event["blog"]["blogID"]))
+	    		blogData = table.query(KeyConditionExpression=Key('BlogID').eq
+	    			(self.event["blog"]["blogID"]))
 	    		saveDate = blogData['Items'][0]['SavedDate']
 
-	    		self.put_blog_object(blogID, author, title, content, saveDate)
+	    		self.put_blog_object(blogID, author, title, content, 
+	    			saveDate, metaDescription, metaKeywords)
 	    		
-	    		table.update_item(Key={'BlogID': blogID, 'Author': author }, UpdateExpression=
-	    			"set Title = :t, Content=:c, SavedDate=:s", ExpressionAttributeValues=
-	    			{ ':t': title, ':c': content, ':s': saveDate})
+	    		table.update_item(Key={'BlogID': blogID, 'Author': author }, 
+	    			UpdateExpression="set Title = :t, Content=:c, SavedDate=:s, MetaDescription=:d, MetaKeywords=:k"
+	    			, ExpressionAttributeValues={ ':t': title, ':c': content, ':s': saveDate,
+	    			':d': metaDescription, ':k': metaKeywords})
 	    	except botocore.exceptions.ClientError as e:
 	        	print e.response['Error']['Code']
 	        	if e.response['Error']['Code'] == "NoSuchKey":
