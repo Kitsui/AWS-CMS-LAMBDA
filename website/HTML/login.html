@@ -2,6 +2,7 @@
 <head>
     <link rel="stylesheet" type="text/css" href="public/main.css">
     <link rel="stylesheet" type="text/css" href="public/bootstrap.min.css">
+    <script src="../JavaScript/jquery-3.0.0.min.js" type="text/javascript"></script>
 </head>
 <body>
 <div class="container-fluid">
@@ -15,17 +16,15 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="col-lg-6 col-md-offset-3">    
-            <form class="form-horizontal" id="email_form" action="/register" method="post">
-              <div class="form-group form-group-lg">
-                <div class="col-sm-12">
-                  <input class="form-control input-lg" type="text" name="email" id="emailInput" placeholder="Email">
-                </div>
-                <div class="col-sm-12">
-                  <input class="form-control input-lg" type="password" name="password" id="passwordInput" placeholder="Password">
-                </div>
-              </div>
-              <button type="submit" id="submit_form" class="btn btn-lg btn-default">Login</button>
-            </form> 
+          <div class="form-group form-group-lg">
+            <div class="col-sm-12">
+              <input class="form-control input-lg" type="text" name="email" id="emailInput" placeholder="Email">
+            </div>
+            <div class="col-sm-12">
+              <input class="form-control input-lg" type="password" name="password" id="passwordInput" placeholder="Password">
+            </div>
+          </div>
+          <button type="submit" id="submit_form" class="btn btn-lg btn-default">Login</button>
         </div>
     </div>
 </div>
@@ -33,36 +32,39 @@
 </div>
 <script type="text/javascript">
 
-function post_request() {
-    var xhr = new XMLHttpRequest();
-    var params = JSON.stringify({
-        request: "loginUser",
-        User:{ 
-            Email: document.getElementById("emailInput").value, 
-            Password: document.getElementById("passwordInput").value
-        }
+    $("#submit_form").click(function() {
+      alert("Submitting form to API Gateway");
+      post_request();
     });
-    xhr.open("POST", "$(endpoint_url)", true);
-    xhr.onreadystatechange = function(){
-        if(xhr.readyState === 4){
-            if(xhr.status === 200){
-                alert("You are Logged in!");
-            }
-            else{
-                alert("Could not Login. Please try again later.");
-            }
-        }
-    };
-    xhr.send(params);
-    return false;
-}
 
-(function() {
-    document.getElementById("email_form").onsubmit = function() {
-        post_request();
-        return false;
+    function post_request() {
+
+        var params = JSON.stringify({
+            request: "loginUser",
+            User:{ 
+                Email: document.getElementById("emailInput").value, 
+                Password: document.getElementById("passwordInput").value
+            }
+        });
+
+        $.ajax( {
+            type: "POST",
+            url: "https://ouovq7pp4e.execute-api.us-east-1.amazonaws.com/prod",
+            xhrFields: {
+                withCredentials: true
+            },
+            data: params,
+            dataType: 'json',
+            success: function() {
+                alert("Success!");
+            },
+            error: function(xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                alert(err.Message);
+            }
+        })
     }
-})();
+
 </script>
 </body>
 </html>
