@@ -115,26 +115,12 @@ class Blog(object):
 			print e.response['Error']['Code']
 			response = Response("Error", None)
 			response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
-			try:
-				if e.response['Error']['Code'] == "NoSuchKey":
-					print "no index found ... creating Index"
-					put_index_item_kwargs = {
-			        'Bucket': self.bucket_name,
-			        'ACL': 'public-read',
-			        'Body':'<h1>Index</h1> <br>',
-			        'Key': self.Index_file
-					}
-					put_index_item_kwargs['ContentType'] = 'text/html'
-					self.s3.put_object(**put_index_item_kwargs)
-					self.save_new_blog()
-					return Response("Success", None).to_JSON()
-			except botocore.exceptions.ClientError as e:
-				print e.response['Error']['Code']
-				response = Response("Error", None)
-				response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
 
-			return response.to_JSON()
-		
+			if e.response['Error']['Code'] == "NoSuchKey":
+				self.create_new_index()
+				self.save_new_blog()
+			else:
+				return response.to_JSON()
 		
 		return Response("Success", None).to_JSON()
 
@@ -176,3 +162,19 @@ class Blog(object):
 			return response.to_JSON()
 
 	    	return Response("Success", None).to_JSON()
+
+	def create_new_index(self):
+		print "no index found ... creating Index"
+		try:
+			put_index_item_kwargs = {
+	        'Bucket': self.bucket_name,
+	        'ACL': 'public-read',
+	        'Body':'<h1>Index</h1> <br>',
+	        'Key': self.Index_file
+			}
+			put_index_item_kwargs['ContentType'] = 'text/html'
+			self.s3.put_object(**put_index_item_kwargs)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
