@@ -15,14 +15,14 @@ from boto3.dynamodb.conditions import Key, Attr
 def handler(event, context):
 
 	isAuth = False
-	request = event["request"]
+	request = event["params"]["request"]
 	# Authentication check token
 	if(request != "loginUser"):
 		try:
 			dynamodb = boto3.resource('dynamodb')
 			table = dynamodb.Table('Token')
 			auth = table.query(KeyConditionExpression=
-				Key('TokenString').eq(event["token"]))
+				Key('TokenString').eq(event["params"]["token"]))
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
 			response = Response("Error", None)
@@ -34,8 +34,8 @@ def handler(event, context):
 
 
 	# Custom object instances
-	user = User.User(event, context)
-	blog = Blog.Blog(event, context)
+	user = User.User(event["params"], context)
+	blog = Blog.Blog(event["params"], context)
 
 	# Map request type to function calls
 	functionMapping = {
