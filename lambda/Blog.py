@@ -79,30 +79,7 @@ class Blog(object):
 		}
 		# Attempt to add to dynamo
 		try:
-			
-			blog_key = 'blog' + blog_params['BlogID']['S']
-
-			indexBody = self.s3.get_object(Bucket=self.bucket_name, Key=self.Index_file)['Body'].read()
-			put_index_item_kwargs = {
-		        'Bucket': self.bucket_name,
-		        'ACL': 'public-read',
-		        'Body': indexBody + '<br>' + '<a href="' + 
-		        	'https://s3.amazonaws.com/' + self.bucket_name + 
-		        	'/' + blog_key + '">'+ title +'</a>',
-		        'Key': self.Index_file
-			}
-			put_index_item_kwargs['ContentType'] = 'text/html'
-			self.s3.put_object(**put_index_item_kwargs)
-
-			put_blog_item_kwargs = {
-		        'Bucket': self.bucket_name,
-		        'ACL': 'public-read',
-		        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
-		        'Key': blog_key
-			}
-
-			put_blog_item_kwargs['ContentType'] = 'text/html'
-			self.s3.put_object(**put_blog_item_kwargs)
+			self.put_blog_object(blogID, author, title, content, saveDate)
 
 			dynamodb = boto3.client('dynamodb')
 			dynamodb.put_item(
@@ -162,6 +139,34 @@ class Blog(object):
 			return response.to_JSON()
 
 	    	return Response("Success", None).to_JSON()
+
+
+	def put_blog_object(self, blogID, author, title, content, saveDate):
+		blog_key = 'blog' + blogID
+		indexBody = self.s3.get_object(Bucket=self.bucket_name, Key=self.Index_file)['Body'].read()
+		
+		put_index_item_kwargs = {
+	        'Bucket': self.bucket_name,
+	        'ACL': 'public-read',
+	        'Body': indexBody + '<br>' + '<a href="' + 
+	        	'https://s3.amazonaws.com/' + self.bucket_name + 
+	        	'/' + blog_key + '">'+ title +'</a>',
+	        'Key': self.Index_file
+		}
+
+		put_index_item_kwargs['ContentType'] = 'text/html'
+		self.s3.put_object(**put_index_item_kwargs)
+
+		put_blog_item_kwargs = {
+	        'Bucket': self.bucket_name,
+	        'ACL': 'public-read',
+	        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
+	        'Key': blog_key
+		}
+
+		put_blog_item_kwargs['ContentType'] = 'text/html'
+		self.s3.put_object(**put_blog_item_kwargs)
+
 
 	def create_new_index(self):
 		print "no index found ... creating Index"
