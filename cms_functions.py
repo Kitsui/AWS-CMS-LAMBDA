@@ -305,6 +305,10 @@ class AwsFunc:
 				RoleName=self.lmda_role['Role']['RoleName'],
 				PolicyArn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 			)
+			self.iam.attach_role_policy(
+				RoleName=self.lmda_role['Role']['RoleName'],
+				PolicyArn='arn:aws:iam::aws:policy/AmazonS3FullAccess'
+			)
 			
 			time.sleep(10)
 			
@@ -375,7 +379,7 @@ class AwsFunc:
 				integrationHttpMethod='POST',
 				uri=self.create_api_invocation_uri(),
 				requestTemplates={
-					'application/json': ''
+					'application/json': '{"statusCode": 200}'
 				}
 			)
 			
@@ -448,7 +452,7 @@ class AwsFunc:
 				httpMethod='OPTIONS',
 				authorizationType='NONE'
 			)
-
+			
 			# Set the put method response of the OPTIONS method
 			self.apigateway.put_method_response(
 				restApiId=self.rest_api['id'],
@@ -467,7 +471,7 @@ class AwsFunc:
 				httpMethod='OPTIONS',
 				type='MOCK',
 				requestTemplates={
-					'application/json': ''
+					'application/json': '{"statusCode": 200}'
 				}
 			)
 
@@ -491,12 +495,12 @@ class AwsFunc:
 				patchOperations=[
 					{
 						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Methods',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Headers',
 						'value': 'False'
 					},
 					{
 						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Headers',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Methods',
 						'value': 'False'
 					},
 					{
@@ -516,13 +520,13 @@ class AwsFunc:
 				patchOperations=[
 					{
 						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Methods',
-						'value': '\'POST,OPTIONS\''
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Headers',
+						'value': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token\''
 					},
 					{
 						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Headers',
-						'value': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token\''
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Methods',
+						'value': '\'POST,OPTIONS\''
 					},
 					{
 						'op': 'add',
