@@ -59,8 +59,18 @@ class User(object):
 			for i in result['Items']:
 				if(pwd_context.verify(password, i['Password'])):
 					expiration = datetime.datetime.now() + datetime.timedelta(days=14)
+					token = str(uuid.uuid4())
+					table2 = dynamodb.Table('Token')
+					result = table2.put_item(
+						Item={
+				            'TokenString': token,
+				            'UserID': i['ID'],
+				            'Expiration': \
+				            	expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
+				        }
+				    )
 					cookie = Cookie.SimpleCookie()
-					cookie["token"] = "abc123"
+					cookie["token"] = token
 					cookie["token"]["path"] = "/"
 					cookie["token"]["expires"] = \
 					  expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")

@@ -29,6 +29,9 @@ def handler(event, context):
 			return response.to_JSON()
 		if(len(auth['Items']) > 0):
 			isAuth = True
+	elif request == "loginUser":
+		isAuth = True
+
 
 	# Custom object instances
 	user = User.User(event, context)
