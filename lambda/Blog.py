@@ -63,6 +63,8 @@ class Blog(object):
 		author = self.event["blog"]["author"]
 		title = self.event["blog"]["title"]
 		content = self.event["blog"]["content"]
+		metaDescription = self.event["blog"]["metaDescription"]
+		metaKeywords = self.event["blog"]["metaKeywords"]
 		saveDate = str(datetime.datetime.now())
 
 		if not Validator.validateBlog(content):
@@ -75,11 +77,14 @@ class Blog(object):
 			"Author": {"S": author},
 			"Title": {"S": title},
 			"Content": {"S": content},
-			"SavedDate": {"S": saveDate}
+			"SavedDate": {"S": saveDate},
+			"MetaDescription": {"S": metaDescription},
+			"MetaKeywords": {"S": metaKeywords},
 		}
 
 		try:
-			self.put_blog_object(blogID, author, title, content, saveDate)
+			self.put_blog_object(blogID, author, title, content, saveDate, 
+				metaDescription, metaKeywords)
 
 			dynamodb = boto3.client('dynamodb')
 			dynamodb.put_item(
@@ -152,7 +157,8 @@ class Blog(object):
 	    	return Response("Success", None).to_JSON()
 
 
-	def put_blog_object(self, blogID, author, title, content, saveDate):
+	def put_blog_object(self, blogID, author, title, content, saveDate,
+	 mDescription, mKeywords):
 		blog_key = 'blog' + blogID
 		indexBody = self.s3.get_object(Bucket=self.bucket_name, Key=self.Index_file)['Body'].read()
 		
@@ -171,7 +177,12 @@ class Blog(object):
 		put_blog_item_kwargs = {
 	        'Bucket': self.bucket_name,
 	        'ACL': 'public-read',
-	        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
+	        'Body': '<head> <title>' + title + '</title>' + 
+	        ' <meta name="description" content="' + mDescription+ '">' 
+	        + '<meta name="keywords" content="' + mKeywords + '">' +
+	        '<meta http-equiv="content-type" content="text/html;charset=UTF-8">' +
+	        '</head><p>' + author + '<br>' + title + '<br>' + 
+	        content + '<br>' + saveDate + '</p>',
 	        'Key': blog_key
 		}
 
