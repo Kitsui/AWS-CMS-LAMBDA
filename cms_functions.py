@@ -419,6 +419,11 @@ class AwsFunc:
 					},
 					{
 						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Credentials',
+						'value': 'False'
+					},
+					{
+						'op': 'add',
 						'path': '/responseParameters/method.response.header.Set-Cookie',
 						'value': 'False'
 					}
@@ -435,7 +440,12 @@ class AwsFunc:
 					{
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
-						'value': '\'*\''
+						'value': '\'https://s3.amazonaws.com\''
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Credentials',
+						'value': '\'true\''
 					},
 					{
 						'op': 'add',
@@ -502,11 +512,6 @@ class AwsFunc:
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Access-Control-Allow-Methods',
 						'value': 'False'
-					},
-					{
-						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
-						'value': 'False'
 					}
 				]
 			)
@@ -521,17 +526,12 @@ class AwsFunc:
 					{
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Access-Control-Allow-Headers',
-						'value': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token\''
+						'value': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Cookie\''
 					},
 					{
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Access-Control-Allow-Methods',
 						'value': '\'POST,OPTIONS\''
-					},
-					{
-						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
-						'value': '\'*\''
 					}
 				]
 			)

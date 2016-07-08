@@ -46,7 +46,7 @@ class User(object):
 			response.errorMessage = "Unable to register new user: %s" % e.response['Error']['Code']
 			return response.to_JSON()
 		
-		return Response("Success").to_JSON()
+		return Response("Success", None).to_JSON()
 
 	def login(self):
 		# Attempt to check dynamo
@@ -65,7 +65,7 @@ class User(object):
 					cookie["token"]["expires"] = \
 					  expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
 
-			  		return {"Cookie": cookie.output(header="").lstrip()}
+					return {"Cookie": cookie.output(header="").lstrip(), "Response": Response("Success", None).to_JSON()}
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
 			response = Response("Error", None)
