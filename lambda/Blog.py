@@ -10,7 +10,7 @@ import botocore
 import datetime
 import uuid
 from Response import Response
-from Json_handler import Json_handler
+from Validator import Validator
 from boto3.dynamodb.conditions import Key, Attr
 
 class Blog(object):
@@ -18,6 +18,10 @@ class Blog(object):
 	def __init__(self, event, context):
 		self.event = event
 		self.context = context
+		# Blog variables
+		self.s3 = boto3.client('s3')
+		self.Index_file= "Index.html"
+		self.bucket_name = "la-newslettter"
 
 	def get_blog_data(self):
 		# Attempt to read blog data from dynamo
@@ -60,6 +64,12 @@ class Blog(object):
 		title = self.event["blog"]["title"]
 		content = self.event["blog"]["content"]
 		saveDate = str(datetime.datetime.now())
+
+		if not Validator.validateBlog(content):
+			response = Response("Error", None)
+			response.errorMessage = "Invalid blog content"
+			return response.to_JSON()
+
 		blog_params = {
 			"BlogID": {"S": blogID},
 			"Author": {"S": author},
@@ -69,44 +79,60 @@ class Blog(object):
 		}
 		# Attempt to add to dynamo
 		try:
+			
+			blog_key = 'blog' + blog_params['BlogID']['S']
+
+			indexBody = self.s3.get_object(Bucket=self.bucket_name, Key=self.Index_file)['Body'].read()
+			put_index_item_kwargs = {
+		        'Bucket': self.bucket_name,
+		        'ACL': 'public-read',
+		        'Body': indexBody + '<br>' + '<a href="' + 
+		        	'https://s3.amazonaws.com/' + self.bucket_name + 
+		        	'/' + blog_key + '">'+ title +'</a>',
+		        'Key': self.Index_file
+			}
+			put_index_item_kwargs['ContentType'] = 'text/html'
+			self.s3.put_object(**put_index_item_kwargs)
+
+			put_blog_item_kwargs = {
+		        'Bucket': self.bucket_name,
+		        'ACL': 'public-read',
+		        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
+		        'Key': blog_key
+			}
+
+			put_blog_item_kwargs['ContentType'] = 'text/html'
+			self.s3.put_object(**put_blog_item_kwargs)
+
 			dynamodb = boto3.client('dynamodb')
 			dynamodb.put_item(
 				TableName='Blog',
 				Item=blog_params,
 				ReturnConsumedCapacity='TOTAL'
 			)
-			s3 = boto3.client('s3')
-			Index_file= "Index.html"
-			bucket_name = "la-newslettter"
-			blog_key = 'blog' + blog_params['BlogID']['S']
 
-			put_blog_item_kwargs = {
-		        'Bucket': bucket_name,
-		        'ACL': 'public-read',
-		        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
-		        'Key': blog_key
-			}
-			# create Blog post in s3
-			put_blog_item_kwargs['ContentType'] = 'text/html'
-			s3.put_object(**put_blog_item_kwargs)
-			# get blog Index body to concatinate
-			indexBody = s3.get_object(Bucket=bucket_name,
-				Key=Index_file)['Body'].read()
-			# add new link to index
-			put_index_item_kwargs = {
-		        'Bucket': bucket_name,
-		        'ACL': 'public-read',
-		        'Body': indexBody + '<br>' + '<a href="' + 
-		        	'https://s3.amazonaws.com/' + bucket_name + 
-		        	'/' + blog_key + '">'+ title +'</a>',
-		        'Key': Index_file
-			}
-			put_index_item_kwargs['ContentType'] = 'text/html'
-			s3.put_object(**put_index_item_kwargs)
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
 			response = Response("Error", None)
 			response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
+			try:
+				if e.response['Error']['Code'] == "NoSuchKey":
+					print "no index found ... creating Index"
+					put_index_item_kwargs = {
+			        'Bucket': self.bucket_name,
+			        'ACL': 'public-read',
+			        'Body':'<h1>Index</h1> <br>',
+			        'Key': self.Index_file
+					}
+					put_index_item_kwargs['ContentType'] = 'text/html'
+					self.s3.put_object(**put_index_item_kwargs)
+					self.save_new_blog()
+					return Response("Success", None).to_JSON()
+			except botocore.exceptions.ClientError as e:
+				print e.response['Error']['Code']
+				response = Response("Error", None)
+				response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
+
 			return response.to_JSON()
 		
 		
@@ -117,6 +143,11 @@ class Blog(object):
 		author = self.event['blog']['author']
 		content = self.event['blog']['content']
 		title = self.event['blog']['title']
+
+		if not Validator.validateBlog(content):
+			response = Response("Error", None)
+			response.errorMessage = "Invalid blog content"
+			return response.to_JSON()
 
 	    	try:
 			dynamodb = boto3.resource('dynamodb')
