@@ -18,6 +18,10 @@ class Blog(object):
 	def __init__(self, event, context):
 		self.event = event
 		self.context = context
+		# Blog variables
+		self.s3 = boto3.client('s3')
+		self.Index_file= "Index.html"
+		self.bucket_name = "la-newslettter"
 
 	def get_blog_data(self):
 		# Attempt to read blog data from dynamo
@@ -75,33 +79,30 @@ class Blog(object):
 		}
 		# Attempt to add to dynamo
 		try:
-
-			s3 = boto3.client('s3')
-			Index_file= "Index.html"
-			bucket_name = "la-newslettter"
+			
 			blog_key = 'blog' + blog_params['BlogID']['S']
 
-			indexBody = s3.get_object(Bucket=bucket_name, Key=Index_file)['Body'].read()
+			indexBody = self.s3.get_object(Bucket=self.bucket_name, Key=self.Index_file)['Body'].read()
 			put_index_item_kwargs = {
-		        'Bucket': bucket_name,
+		        'Bucket': self.bucket_name,
 		        'ACL': 'public-read',
 		        'Body': indexBody + '<br>' + '<a href="' + 
-		        	'https://s3.amazonaws.com/' + bucket_name + 
+		        	'https://s3.amazonaws.com/' + self.bucket_name + 
 		        	'/' + blog_key + '">'+ title +'</a>',
-		        'Key': Index_file
+		        'Key': self.Index_file
 			}
 			put_index_item_kwargs['ContentType'] = 'text/html'
-			s3.put_object(**put_index_item_kwargs)
+			self.s3.put_object(**put_index_item_kwargs)
 
 			put_blog_item_kwargs = {
-		        'Bucket': bucket_name,
+		        'Bucket': self.bucket_name,
 		        'ACL': 'public-read',
 		        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
 		        'Key': blog_key
 			}
 
 			put_blog_item_kwargs['ContentType'] = 'text/html'
-			s3.put_object(**put_blog_item_kwargs)
+			self.s3.put_object(**put_blog_item_kwargs)
 
 			dynamodb = boto3.client('dynamodb')
 			dynamodb.put_item(
@@ -118,13 +119,13 @@ class Blog(object):
 				if e.response['Error']['Code'] == "NoSuchKey":
 					print "no index found ... creating Index"
 					put_index_item_kwargs = {
-			        'Bucket': bucket_name,
+			        'Bucket': self.bucket_name,
 			        'ACL': 'public-read',
 			        'Body':'<h1>Index</h1> <br>',
-			        'Key': Index_file
+			        'Key': self.Index_file
 					}
 					put_index_item_kwargs['ContentType'] = 'text/html'
-					s3.put_object(**put_index_item_kwargs)
+					self.s3.put_object(**put_index_item_kwargs)
 					self.save_new_blog()
 					return Response("Success", None).to_JSON()
 			except botocore.exceptions.ClientError as e:
