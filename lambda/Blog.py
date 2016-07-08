@@ -77,7 +77,7 @@ class Blog(object):
 			"Content": {"S": content},
 			"SavedDate": {"S": saveDate}
 		}
-		# Attempt to add to dynamo
+
 		try:
 			self.put_blog_object(blogID, author, title, content, saveDate)
 
@@ -113,14 +113,25 @@ class Blog(object):
 			return response.to_JSON()
 
 	    	try:
-			dynamodb = boto3.resource('dynamodb')
-			table = dynamodb.Table('Blog')
-			table.update_item(Key={'BlogID': blogID, 'Author': author }, UpdateExpression="set Title = :t, Content=:c", ExpressionAttributeValues={ ':t': title, ':c': content})
+	    		dynamodb = boto3.resource('dynamodb')
+	    		table = dynamodb.Table('Blog')
+	    		blogData = table.query(KeyConditionExpression=Key('BlogID').eq(self.event["blog"]["blogID"]))
+	    		saveDate = blogData['Items'][0]['SavedDate']
+
+	    		self.put_blog_object(blogID, author, title, content, saveDate)
+	    		
+	    		table.update_item(Key={'BlogID': blogID, 'Author': author }, UpdateExpression=
+	    			"set Title = :t, Content=:c, SavedDate=:s", ExpressionAttributeValues=
+	    			{ ':t': title, ':c': content, ':s': saveDate})
 	    	except botocore.exceptions.ClientError as e:
 	        	print e.response['Error']['Code']
-	        	response = Response("Error", None)
-			response.errorMessage = "Unable to save edited blog: %s" % e.response['Error']['Code']
-			return response.to_JSON()
+	        	if e.response['Error']['Code'] == "NoSuchKey":
+	        		self.create_new_index()
+	        		self.save_new_blog()
+	        	else:
+	        		response = Response("Error", None)
+	        		response.errorMessage = "Unable to save edited blog: %s" % e.response['Error']['Code']
+	        		return response.to_JSON()
 
 		return Response("Success", None).to_JSON()
 
