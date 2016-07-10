@@ -29,8 +29,7 @@ for rest_api in rest_apis:
 		if rest_api != rest_apis[-1]:
 			time.sleep(30.5)
 		apigateway.delete_rest_api(
-			restApiId=rest_api['id']
-		)
+			restApiId=rest_api['id'])
 		rest_apis_deleted += 1
 
 if rest_apis_deleted > 0:
@@ -46,8 +45,7 @@ api_keys = apigateway.get_api_keys()['items']
 for api_key in api_keys:
 	if api_key['name'] in api_key_names:
 		apigateway.delete_api_key(
-			apiKey=api_key['id']
-		)
+			apiKey=api_key['id'])
 		api_keys_deleted += 1
 
 if api_keys_deleted > 0:
@@ -62,8 +60,7 @@ functions_removed = 0
 for lmda_function in lmda.list_functions()['Functions']:
 	if lmda_function['FunctionName'] in lmda_function_names:
 		lmda.delete_function(
-			FunctionName=lmda_function['FunctionName']
-		)
+			FunctionName=lmda_function['FunctionName'])
 		functions_removed += 1
 
 if functions_removed > 0:
@@ -81,17 +78,14 @@ for role in iam.list_roles()['Roles']:
 		for policy in iam.list_attached_role_policies(RoleName=role['RoleName'])['AttachedPolicies']:
 			iam.detach_role_policy(
 				RoleName=role['RoleName'],
-				PolicyArn=policy['PolicyArn']
-			)
+				PolicyArn=policy['PolicyArn'])
 		for policy_name in iam.list_role_policies(RoleName=role['RoleName'])['PolicyNames']:
 			iam.delete_role_policy(
 				RoleName=role['RoleName'],
-				PolicyName=policy_name
-			)
+				PolicyName=policy_name)
 		# Delete role
 		iam.delete_role(
-			RoleName=role['RoleName']
-		)
+			RoleName=role['RoleName'])
 		roles_removed += 1
 
 if roles_removed > 0:
@@ -106,8 +100,7 @@ tables_removed = 0
 for table_name in dynamodb.list_tables()['TableNames']:
 	if table_name in dynamodb_table_names:
 		dynamodb.delete_table(
-			TableName=table_name
-		)
+			TableName=table_name)
 		tables_removed += 1
 
 if tables_removed > 0:
@@ -129,14 +122,12 @@ for bucket in s3.list_buckets()['Buckets']:
 				print 'Deleting object:', obj['Key']
 				s3.delete_object(
 					Bucket=bucket['Name'],
-					Key=obj['Key']
-				)
+					Key=obj['Key'])
 				print 'Object deleted'
 				objects_deleted += 1
 		# Delete bucket
 		s3.delete_bucket(
-			Bucket=bucket['Name']
-		)
+			Bucket=bucket['Name'])
 		print 'Bucket deleted'
 		buckets_deleted += 1
 
