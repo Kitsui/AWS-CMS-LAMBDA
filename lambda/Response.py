@@ -13,7 +13,8 @@ class Response(object):
 		self.status = status;
 		self.data = data
 		if(self.data is not None):
-			self.columns = data["Items"][0].keys()
+			if(data["Items"][0] is not None):
+				self.columns = data["Items"][0].keys()
 
 	def format(self):
 		dct = {}
