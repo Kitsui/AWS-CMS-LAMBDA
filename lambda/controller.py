@@ -47,7 +47,8 @@ def handler(event, context):
 		"deleteSingleBlog": blog.delete_blog,
 		"registerUser": user.register,
 		"loginUser": user.login,
-		"logoutUser": user.logout
+		"logoutUser": user.logout,
+		"createRole": user.create_role
 	}
 
 	if isAuth:

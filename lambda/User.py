@@ -109,3 +109,37 @@ class User(object):
 			return response.to_JSON()
    
     		return Response("Success", None).to_JSON()
+
+	def create_role(self):
+		role_params = {
+		"Name": {"S" : self.event["role"]["name"]},
+		"RoleID": {"S" : str(uuid.uuid4())},
+		"Permissions": { "M" :{
+			"Blog_CanCreate": {"N" : self.event["role"]["permissions"]["blog_canCreate"]},
+			"Blog_CanDelete": {"N" : self.event["role"]["permissions"]["blog_canDelete"]},
+			"Blog_CanRead": {"N" : self.event["role"]["permissions"]["blog_canRead"]},
+			"Blog_CanUpdate": {"N" : self.event["role"]["permissions"]["blog_canUpdate"]},
+			"User_CanCreate": {"N" : self.event["role"]["permissions"]["user_canCreate"]}, 
+			"User_CanDelete": {"N" : self.event["role"]["permissions"]["user_canDelete"]},
+			"User_CanRead": {"N" : self.event["role"]["permissions"]["user_canRead"]},
+			"User_CanUpdate": {"N" : self.event["role"]["permissions"]["user_canUpdate"]},
+			"Page_CanCreate": {"N" : self.event["role"]["permissions"]["page_canCreate"]},
+			"Page_CanDelete": {"N" : self.event["role"]["permissions"]["page_canDelete"]},
+			"Page_CanRead": {"N" : self.event["role"]["permissions"]["page_canRead"]},
+			"Page_CanUpdate": {"N" : self.event["role"]["permissions"]["page_canUpdate"]}
+			}}
+		}
+		try:
+			dynamodb = boto3.client('dynamodb')
+			dynamodb.put_item(
+				TableName='Role',
+				Item=role_params,
+				ReturnConsumedCapacity='TOTAL'
+			)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to create role: %s" % e.response['Error']['Code']
+			return response.to_JSON()
+   
+		return Response("Success", None).to_JSON()
