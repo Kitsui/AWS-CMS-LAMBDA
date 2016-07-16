@@ -10,6 +10,22 @@ Login py test json
     }
 }
 
+Edit User
+
+{
+  "params": {
+    "request": "editUser",
+    "token": "1",
+    "user": {
+      "email": "1",
+      "userID": "1", 
+      "newUsername": "johnny",
+      "newPassword": "newPassword",
+      "newRoles": ["role1", "role2"]
+    }
+  }
+}
+
 Delete user
 
 {

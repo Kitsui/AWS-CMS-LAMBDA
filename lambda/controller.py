@@ -48,10 +48,11 @@ def handler(event, context):
 		"registerUser": user.register,
 		"loginUser": user.login,
 		"logoutUser": user.logout,
+		"editUser": user.edit_user,
 		"deleteUser": user.delete_user,
 		"createRole": user.create_role,
 		"editRole": user.edit_role,
-		"deleteRole": user.delete_role
+		"deleteRole": user.delete_role,
 	}
 
 	if isAuth:

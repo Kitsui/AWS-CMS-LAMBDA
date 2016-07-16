@@ -68,6 +68,31 @@ class User(object):
    
 		return Response("Success", None).to_JSON()
 
+	def edit_user(self):
+		email = self.event["user"]["email"]
+		userID = self.event["user"]["userID"]
+		newUsername = self.event["user"]["newUsername"]
+		newRoles = self.event["user"]["newRoles"]
+		newPassword = self.event["user"]["newPassword"]
+		try:
+			dynamodb = boto3.resource('dynamodb')
+			table = dynamodb.Table('User')
+			table.update_item(
+				Key={
+				'ID': userID, 
+				'Email': email
+				}, 
+				UpdateExpression='SET Username = :u, UserRoles = :r, Password = :p', 
+				ExpressionAttributeValues={':u': newUsername,':r': newRoles, ':p': newPassword }
+			)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to edit user: %s" % e.response['Error']['Code']
+			return response.to_JSON()
+   
+		return Response("Success", None).to_JSON()
+
 	def login(self):
 		# Attempt to check dynamo
 		try:
