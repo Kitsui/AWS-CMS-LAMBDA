@@ -181,3 +181,23 @@ class User(object):
 			return response.to_JSON()
    
 		return Response("Success", None).to_JSON()
+
+	def delete_role(self):
+		roleID = self.event["role"]["roleID"]
+		roleType = self.event["role"]["type"]
+		try:
+			dynamodb = boto3.resource('dynamodb')
+			table = dynamodb.Table('Role')
+			table.delete_item(
+				Key={
+					'RoleID': '1',
+					'RoleType': 'admin'
+					}
+				)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to delete role: %s" % e.response['Error']['Code']
+			return response.to_JSON()
+   
+		return Response("Success", None).to_JSON()
