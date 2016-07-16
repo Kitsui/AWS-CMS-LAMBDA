@@ -195,6 +195,30 @@ class AwsFunc:
 
 		return created
 
+	def create_page_table(self):
+		""" Creates a page table. """
+		try:
+			print 'Creating page table'
+			
+			# Get the blog table's json
+			page_table_json = ''
+			with open('dynamo/page_table.json', 'r') as thefile:
+				page_table_json = ast.literal_eval(thefile.read())
+			
+			# Create the blog table
+			self.blog_table = self.dynamodb.create_table(**page_table_json)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			print e.response['Error']['Message']
+			return False
+
+		# Wait for the blog table to be created before continuing
+		created = self.wait_for_table(self.blog_table)
+
+		print 'Blog table created'
+
+		return created
+
 	def wait_for_table(self, table):
 		""" Waits for a table to finish being created. """
 		response = {}
