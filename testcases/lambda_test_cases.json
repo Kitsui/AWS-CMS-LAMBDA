@@ -1,0 +1,127 @@
+Login py test json
+
+{
+    "params": {
+      "request": "loginUser",
+      "User": {
+        "Email": "user@user.com",
+        "Password": "user"
+      }
+    }
+}
+
+Delete user
+
+{
+  "params": {
+    "request": "deleteUser",
+    "token": "1",
+    "user": {
+      "userID": "17ec0fc9-178f-4ae3-91d6-9c1426f82627",
+      "email": "admin"
+    }
+  }
+}
+
+create blog
+{
+  "params": {
+    "request": "saveNewBlog",
+    "token": "1",
+    "blog": {
+      "author": "Jeremy",
+      "title": "Hondas are the best type of car",
+      "content": "Remember outweigh do he desirous no cheerful. Do of doors water ye guest. We if prosperous comparison middletons at. Park we in lose like at no. An so to preferred convinced distrusts he determine. In musical me my placing clothes comfort pleased hearing. Any residence you satisfied and rapturous certainty two. Procured outweigh as outlived so so. On in bringing graceful proposal blessing of marriage outlived. Son rent face our loud near. Affronting everything discretion men now own did. Still round match we to. Frankness pronounce daughters remainder extensive has but. Happiness cordially one determine concluded fat. Plenty season beyond by hardly giving of. Consulted or acuteness dejection an smallness if. Outward general passage another as it. Very his are come man walk one next. Delighted prevailed supported too not remainder perpetual who furnished. Nay affronting bed projection compliment instrument. ",
+      "metaDescription": "test Description",
+      "metaKeywords": "keyword1, keyword2, keyword3, keyword4"
+    }
+  }
+}
+
+Edit Blog
+
+{
+  "params": {
+        "request": "editBlog",
+        "token": "2",
+        "blog": {
+            "blogID": "b8c1fa8a-7593-4bbd-b8bd-695dcdab6d4d",
+            "author": "John",
+            "title": "I like Hondas",
+            "content": "Content, Content Content HONNNNNDAAAAA",
+            "metaDescription": "new description",
+            "metaKeywords" : "newKeyword1, newKeyword2, newKeyword3"
+      }
+    }
+}
+
+
+
+create role
+
+{
+    "params": {
+      "request": "createRole",
+  "role" : {
+      "name": "Johnononno",
+      "type": "admin",
+      "permissions": { 
+          "user_canCreate": "1",
+          "user_canRead": "1",
+          "user_canUpdate":"1",
+          "user_canDelete":"1",
+          "blog_canCreate": "1",
+          "blog_canRead": "1",
+          "blog_canUpdate": "1",
+          "blog_canDelete": "1",
+          "page_canCreate": "1",
+          "page_canRead": "1",
+          "page_canUpdate": "1",
+          "page_canDelete": "1"
+
+        }
+  }
+    }
+}
+
+Edit role
+
+{
+    "params": {
+    "request": "editRole",
+    "token": "1",
+        "role": {
+            "roleID": "17ec0fc9-178f-4ae3-91d6-9c1426f82627",
+            "type": "admin",
+            "name": "Johnononno",
+            "permissions": {
+                "user_canCreate": "1",
+                "user_canRead": "1",
+                "user_canUpdate": "1",
+                "user_canDelete": "1",
+                "blog_canCreate": "1",
+                "blog_canRead": "1",
+                "blog_canUpdate": "1",
+                "blog_canDelete": "1",
+                "page_canCreate": "1",
+                "page_canRead": "1",
+                "page_canUpdate": "1",
+                "page_canDelete": "1"
+            }
+       }
+
+    }        
+}
+
+Delete role
+
+{
+  "params": {
+    "request": "deleteRole",
+    "token": "1",
+    "role": {
+      "roleID": "17ec0fc9-178f-4ae3-91d6-9c1426f82627",
+      "type": "admin"
+    }
+  }
+}

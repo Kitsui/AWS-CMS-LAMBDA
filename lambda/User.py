@@ -48,6 +48,26 @@ class User(object):
 		
 		return Response("Success", None).to_JSON()
 
+	def delete_user(self):
+		userID = self.event["user"]["userID"]
+		email = self.event["user"]["email"]
+		try:
+			dynamodb = boto3.resource('dynamodb')
+			table = dynamodb.Table('User')
+			table.delete_item(
+				Key={
+					'ID': userID,
+					'Email': email
+					}
+				)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to delete role: %s" % e.response['Error']['Code']
+			return response.to_JSON()
+   
+		return Response("Success", None).to_JSON()
+
 	def login(self):
 		# Attempt to check dynamo
 		try:
@@ -190,8 +210,8 @@ class User(object):
 			table = dynamodb.Table('Role')
 			table.delete_item(
 				Key={
-					'RoleID': '1',
-					'RoleType': 'admin'
+					'RoleID': roleID,
+					'RoleType': roleType
 					}
 				)
 		except botocore.exceptions.ClientError as e:
