@@ -6,7 +6,7 @@
 			"AttributeType": "S"
 		},
 		{
-			"AttributeName": "Name",
+			"AttributeName": "RoleType",
 			"AttributeType": "S"
 		}
 	],
@@ -16,7 +16,7 @@
 			"KeyType": "HASH"
 		},
 		{
-			"AttributeName": "Name",
+			"AttributeName": "RoleType",
 			"KeyType": "RANGE"
 		}
 	],
