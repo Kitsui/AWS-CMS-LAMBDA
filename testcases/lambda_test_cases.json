@@ -1,3 +1,5 @@
+/* User Tests */
+
 Login py test json
 
 {
@@ -39,6 +41,11 @@ Delete user
   }
 }
 
+
+/* Blog tests */
+
+
+
 create blog
 {
   "params": {
@@ -70,6 +77,11 @@ Edit Blog
       }
     }
 }
+
+
+
+/* Role Tests */
+
 
 
 
@@ -141,3 +153,47 @@ Delete role
     }
   }
 }
+
+/* Page Tests*/
+
+Create page
+
+{
+  "params": {
+    "request": "createPage",
+    "token": "1",
+    "page": {
+      "pageTitle": "title", 
+      "pageAuthor": "author",
+      "pageContent": "content",
+      "metaDescription": "test Description",
+      "metaKeywords": "keyword1, keyword2, keyword3, keyword4"
+    }
+  }
+}
+
+
+Delete page
+
+{
+  "params": {
+    "request": "deletePage",
+    "token": "1",
+    "page": {
+      "pageID": "title", 
+      "pageAuthor": "author"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+

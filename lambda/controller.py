@@ -7,6 +7,7 @@
 
 import User
 import Blog
+import Page
 from Response import Response
 import boto3
 import botocore
@@ -36,6 +37,7 @@ def handler(event, context):
 	# Custom object instances
 	user = User.User(event["params"], context)
 	blog = Blog.Blog(event["params"], context)
+	page = Page.Page(event["params"], context)
 
 	# Map request type to function calls
 	functionMapping = {
@@ -53,6 +55,8 @@ def handler(event, context):
 		"createRole": user.create_role,
 		"editRole": user.edit_role,
 		"deleteRole": user.delete_role,
+		"createPage": page.create_page,
+		"deletePage": page.delete_page
 	}
 
 	if isAuth:
