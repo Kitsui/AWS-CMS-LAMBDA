@@ -20,7 +20,7 @@ class Blog(object):
 		self.context = context
 		# Blog variables
 		self.s3 = boto3.client('s3')
-		self.Index_file= "Index.html"
+		self.Index_file= "BlogIndex.html"
 		self.bucket_name = "la-newslettter"
 
 	def get_blog_data(self):
@@ -63,6 +63,8 @@ class Blog(object):
 		author = self.event["blog"]["author"]
 		title = self.event["blog"]["title"]
 		content = self.event["blog"]["content"]
+		metaDescription = self.event["blog"]["metaDescription"]
+		metaKeywords = self.event["blog"]["metaKeywords"]
 		saveDate = str(datetime.datetime.now())
 
 		if not Validator.validateBlog(content):
@@ -75,12 +77,12 @@ class Blog(object):
 			"Author": {"S": author},
 			"Title": {"S": title},
 			"Content": {"S": content},
-			"SavedDate": {"S": saveDate}
+			"SavedDate": {"S": saveDate},
+			"MetaDescription": {"S": metaDescription},
+			"MetaKeywords": {"S": metaKeywords},
 		}
 
 		try:
-			self.put_blog_object(blogID, author, title, content, saveDate)
-
 			dynamodb = boto3.client('dynamodb')
 			dynamodb.put_item(
 				TableName='Blog',
@@ -94,11 +96,13 @@ class Blog(object):
 			response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
 
 			if e.response['Error']['Code'] == "NoSuchKey":
-				self.create_new_index()
+				self.update_index(blogID, title)
 				self.save_new_blog()
 			else:
 				return response.to_JSON()
-		
+
+		self.put_blog_object(blogID, author, title, content, saveDate, 
+				metaDescription, metaKeywords)
 		return Response("Success", None).to_JSON()
 
 	def edit_blog(self):
@@ -106,6 +110,8 @@ class Blog(object):
 		author = self.event['blog']['author']
 		content = self.event['blog']['content']
 		title = self.event['blog']['title']
+		metaDescription = self.event["blog"]["metaDescription"]
+		metaKeywords = self.event["blog"]["metaKeywords"]
 
 		if not Validator.validateBlog(content):
 			response = Response("Error", None)
@@ -115,14 +121,14 @@ class Blog(object):
 	    	try:
 	    		dynamodb = boto3.resource('dynamodb')
 	    		table = dynamodb.Table('Blog')
-	    		blogData = table.query(KeyConditionExpression=Key('BlogID').eq(self.event["blog"]["blogID"]))
+	    		blogData = table.query(KeyConditionExpression=Key('BlogID').eq
+	    			(self.event["blog"]["blogID"]))
 	    		saveDate = blogData['Items'][0]['SavedDate']
-
-	    		self.put_blog_object(blogID, author, title, content, saveDate)
 	    		
-	    		table.update_item(Key={'BlogID': blogID, 'Author': author }, UpdateExpression=
-	    			"set Title = :t, Content=:c, SavedDate=:s", ExpressionAttributeValues=
-	    			{ ':t': title, ':c': content, ':s': saveDate})
+	    		table.update_item(Key={'BlogID': blogID, 'Author': author }, 
+	    			UpdateExpression="set Title = :t, Content=:c, SavedDate=:s, MetaDescription=:d, MetaKeywords=:k"
+	    			, ExpressionAttributeValues={ ':t': title, ':c': content, ':s': saveDate,
+	    			':d': metaDescription, ':k': metaKeywords})
 	    	except botocore.exceptions.ClientError as e:
 	        	print e.response['Error']['Code']
 	        	if e.response['Error']['Code'] == "NoSuchKey":
@@ -133,6 +139,8 @@ class Blog(object):
 	        		response.errorMessage = "Unable to save edited blog: %s" % e.response['Error']['Code']
 	        		return response.to_JSON()
 
+		self.put_blog_object(blogID, author, title, content, 
+	    			saveDate, metaDescription, metaKeywords)
 		return Response("Success", None).to_JSON()
 
 	def delete_blog(self):
@@ -151,27 +159,43 @@ class Blog(object):
 
 	    	return Response("Success", None).to_JSON()
 
+	def update_index(self, blogID, title):
+		indexContent = '<html><head><title>Blog Index</title></head><body><h1>Index</h1>'
+		blogData = {'items': [None]}
+		blogTitle = ''
+		dynamodb = boto3.client('dynamodb')
 
-	def put_blog_object(self, blogID, author, title, content, saveDate):
-		blog_key = 'blog' + blogID
-		indexBody = self.s3.get_object(Bucket=self.bucket_name, Key=self.Index_file)['Body'].read()
-		
+		data = dynamodb.scan(TableName="Blog", ConsistentRead=True)
+		for item in data['Items']:
+			indexContent = indexContent + '<br>' + '<a href="https://s3.amazonaws.com/' + self.bucket_name + '/blog' + item['BlogID']['S'] + '">'+ item['Title']['S'] +'</a>'
+		indexContent = indexContent + '<body></html>'
+		print indexContent
 		put_index_item_kwargs = {
-	        'Bucket': self.bucket_name,
-	        'ACL': 'public-read',
-	        'Body': indexBody + '<br>' + '<a href="' + 
-	        	'https://s3.amazonaws.com/' + self.bucket_name + 
-	        	'/' + blog_key + '">'+ title +'</a>',
-	        'Key': self.Index_file
+			'Bucket': self.bucket_name,
+			'ACL': 'public-read',
+			'Body': indexContent,
+			'Key': self.Index_file
 		}
-
+		print indexContent
 		put_index_item_kwargs['ContentType'] = 'text/html'
 		self.s3.put_object(**put_index_item_kwargs)
+
+
+	def put_blog_object(self, blogID, author, title, content, saveDate,
+	 mDescription, mKeywords):
+		blog_key = 'blog' + blogID
+		
+		self.update_index(blogID, title)
 
 		put_blog_item_kwargs = {
 	        'Bucket': self.bucket_name,
 	        'ACL': 'public-read',
-	        'Body': '<p>' + author + '<br>' + title + '<br>' + content + '<br>' + saveDate + '</p>',
+	        'Body': '<head> <title>' + title + '</title>' + 
+	        ' <meta name="description" content="' + mDescription+ '">' 
+	        + '<meta name="keywords" content="' + mKeywords + '">' +
+	        '<meta http-equiv="content-type" content="text/html;charset=UTF-8">' +
+	        '</head><p>' + author + '<br>' + title + '<br>' + 
+	        content + '<br>' + saveDate + '</p>',
 	        'Key': blog_key
 		}
 
