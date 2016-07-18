@@ -5,7 +5,7 @@
 		"Username": {"S": "Admin"},
 		"Password": {"S": "password123"},
 		"Email": {"S": "email@gmail.com"},
-		"Roles": {"L": [
+		"UserRoles": {"L": [
 				{"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"}
 			]
 		}
