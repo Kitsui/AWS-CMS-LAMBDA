@@ -376,10 +376,17 @@ class AwsFunc:
 				resourceId=root_resource['id'],
 				httpMethod='POST',
 				type='AWS',
+				passthroughBehavior='NEVER',
 				integrationHttpMethod='POST',
 				uri=self.create_api_invocation_uri(),
 				requestTemplates={
-					'application/json': '{"statusCode": 200}'
+					'application/json':'{"params": $input.body, \
+    					#if($input.params(\'Cookie\') && $input.params(\'Cookie\') != "") \
+						"Cookie": "$input.params(\'Cookie\')" \
+						#else \
+						"Cookie": "" \
+						#end \
+					}'
 				}
 			)
 			
@@ -414,16 +421,6 @@ class AwsFunc:
 				patchOperations=[
 					{
 						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
-						'value': 'False'
-					},
-					{
-						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Credentials',
-						'value': 'False'
-					},
-					{
-						'op': 'add',
 						'path': '/responseParameters/method.response.header.Set-Cookie',
 						'value': 'False'
 					}
@@ -437,16 +434,6 @@ class AwsFunc:
 				httpMethod='POST',
 				statusCode='200',
 				patchOperations=[
-					{
-						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
-						'value': '\'https://s3.amazonaws.com\''
-					},
-					{
-						'op': 'add',
-						'path': '/responseParameters/method.response.header.Access-Control-Allow-Credentials',
-						'value': '\'true\''
-					},
 					{
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Set-Cookie',
@@ -510,6 +497,16 @@ class AwsFunc:
 					},
 					{
 						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
+						'value': 'False'
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Credentials',
+						'value': 'False'
+					},
+					{
+						'op': 'add',
 						'path': '/responseParameters/method.response.header.Access-Control-Allow-Methods',
 						'value': 'False'
 					}
@@ -526,7 +523,17 @@ class AwsFunc:
 					{
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Access-Control-Allow-Headers',
-						'value': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Cookie\''
+						'value': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Cookie,Accept,Access-Control-Allow-Origin\''
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
+						'value': '\'https://s3.amazonaws.com\''
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Credentials',
+						'value': '\'true\''
 					},
 					{
 						'op': 'add',
