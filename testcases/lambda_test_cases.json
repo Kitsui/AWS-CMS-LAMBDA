@@ -12,6 +12,20 @@ Login py test json
     }
 }
 
+Register user
+
+{
+  "params": {
+    "request": "registerUser",
+    "token": "1",
+    "user": {
+      "username": "billybob",
+      "email": "email",
+      "password": "password"
+    }
+  }
+}
+
 Edit User
 
 {
