@@ -49,12 +49,15 @@
 
         $.ajax( {
             type: "POST",
-            url: "https://ouovq7pp4e.execute-api.us-east-1.amazonaws.com/prod",
+            url: "https://xlttvyymw5.execute-api.us-east-1.amazonaws.com/prod",
+            headers: { 'Access-Control-Allow-Origin': document.domain },
+            data: params,
+            contentType: "application/json",
+            dataType: "json",
+            jsonp: false,
             xhrFields: {
                 withCredentials: true
             },
-            data: params,
-            dataType: 'json',
             success: function() {
                 alert("Success!");
             },
