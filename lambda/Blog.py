@@ -54,8 +54,7 @@ class Blog(object):
 		
 		response = Response("Success", data)
 		# response.setData = data
-		response.format()
-		return response.to_JSON()
+		return response.format()
 
 	def save_new_blog(self):		
 		# Get new blog params

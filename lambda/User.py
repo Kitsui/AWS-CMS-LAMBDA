@@ -20,6 +20,23 @@ class User(object):
 		self.event = event
 		self.context = context
 
+	def get_all_users(self):
+		# Attempt to get all data from table
+		try:
+			dynamodb = boto3.client('dynamodb')
+			data = dynamodb.scan(
+				TableName="User",
+				ConsistentRead=True)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to get user data: %s" % e.response['Error']['Code']
+			return response.to_JSON()
+		
+		response = Response("Success", data)
+		# response.setData = data
+		return response.format()
+
 	def register(self):
 		# Get password for hashing
 		password = self.event["user"]["password"]
@@ -46,6 +63,51 @@ class User(object):
 			response.errorMessage = "Unable to register new user: %s" % e.response['Error']['Code']
 			return response.to_JSON()
 		
+		return Response("Success", None).to_JSON()
+
+	def delete_user(self):
+		userID = self.event["user"]["userID"]
+		email = self.event["user"]["email"]
+		try:
+			dynamodb = boto3.resource('dynamodb')
+			table = dynamodb.Table('User')
+			table.delete_item(
+				Key={
+					'ID': userID,
+					'Email': email
+					}
+				)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to delete role: %s" % e.response['Error']['Code']
+			return response.to_JSON()
+   
+		return Response("Success", None).to_JSON()
+
+	def edit_user(self):
+		email = self.event["user"]["email"]
+		userID = self.event["user"]["userID"]
+		newUsername = self.event["user"]["newUsername"]
+		newRoles = self.event["user"]["newRoles"]
+		newPassword = self.event["user"]["newPassword"]
+		try:
+			dynamodb = boto3.resource('dynamodb')
+			table = dynamodb.Table('User')
+			table.update_item(
+				Key={
+				'ID': userID, 
+				'Email': email
+				}, 
+				UpdateExpression='SET Username = :u, UserRoles = :r, Password = :p', 
+				ExpressionAttributeValues={':u': newUsername,':r': newRoles, ':p': newPassword }
+			)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to edit user: %s" % e.response['Error']['Code']
+			return response.to_JSON()
+   
 		return Response("Success", None).to_JSON()
 
 	def login(self):
@@ -109,6 +171,23 @@ class User(object):
 			return response.to_JSON()
    
     		return Response("Success", None).to_JSON()
+
+	# def get_all_roles(self):
+	# 	# Attempt to get all data from table
+	# 	try:
+	# 		dynamodb = boto3.client('dynamodb')
+	# 		data = dynamodb.scan(
+	# 			TableName="Role",
+	# 			ConsistentRead=True)
+	# 	except botocore.exceptions.ClientError as e:
+	# 		print e.response['Error']['Code']
+	# 		response = Response("Error", None)
+	# 		response.errorMessage = "Unable to get user data: %s" % e.response['Error']['Code']
+	# 		return response.to_JSON()
+		
+	# 	response = Response("Success", data)
+	# 	# response.setData = data
+	# 	return response.format()
 
 	def create_role(self):
 		role_params = {
@@ -190,8 +269,8 @@ class User(object):
 			table = dynamodb.Table('Role')
 			table.delete_item(
 				Key={
-					'RoleID': '1',
-					'RoleType': 'admin'
+					'RoleID': roleID,
+					'RoleType': roleType
 					}
 				)
 		except botocore.exceptions.ClientError as e:

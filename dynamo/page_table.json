@@ -1,0 +1,27 @@
+{	
+	"TableName": "Pages",
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "PageID",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "Author",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "PageID",
+			"KeyType": "HASH"
+		},
+		{
+			"AttributeName": "Author",
+			"KeyType": "RANGE"
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits":5
+	}
+}

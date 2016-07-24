@@ -16,18 +16,20 @@ class Response(object):
 			if(data["Items"][0] is not None):
 				self.columns = data["Items"][0].keys()
 
+	# used to format replies querying dynamo
 	def format(self):
-		dct = {}
-		i = 0
-		items = []
+		replyData = {}
+		colm = []
+		rows = []
+		item = {}
 		columns = self.data["Items"][0].keys()
-		for item in self.data["Items"]:
-		    i += 1
-		    for col in columns:
-		        items.append({col : item[col]['S']})
-		        dct[i] = items
-	        self.data = dct
-
+		for i in self.data["Items"]:
+			for j in columns:
+				item[j] = (i[j]['S'])
+			rows.append(item)
+		replyData["rows"] = rows
+		replyData["columns"] = columns
+		return replyData
 
 	def to_JSON(self):
 		return jsonpickle.encode(self)

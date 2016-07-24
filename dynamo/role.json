@@ -3,7 +3,7 @@
 	"Item": {
 	    "RoleID": {"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"},
         "RoleType": {"S": "admin"},
-    	"Username": {"S": "Admin"},
+    	"RoleName": {"S": "Admin"},
     	"Permissions": {"M": 
     		{ "User_CanCreate": { "N": "1"},
     		  "User_CanRead": { "N": "1"},

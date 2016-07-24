@@ -22,4 +22,5 @@ cms.create_token_table()			# Create a dynamodb token table
 cms.create_token_db_entry()			# Add an entry to the token table
 cms.create_blog_table()				# Create a dynamodb blog table
 cms.create_role_table()				# Create the dynamodb role table
+cms.create_page_table()				# Create the dynamodb page table
 cms.create_admin_role_db_entry()	# Add Admin role entry to role table
