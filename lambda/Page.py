@@ -21,6 +21,23 @@ class Page(object):
 		self.Index_file= "PageIndex.html"
 		self.bucket_name = "la-newslettter"
 
+	def get_all_pages(self):
+		# Attempt to get all data from table
+		try:
+			dynamodb = boto3.client('dynamodb')
+			data = dynamodb.scan(
+				TableName="Pages",
+				ConsistentRead=True)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to get page data: %s" % e.response['Error']['Code']
+			return response.to_JSON()
+		
+		response = Response("Success", data)
+		# response.setData = data
+		return response.format()
+
 	def create_page(self):		
 		# Get new blog params
 		pageID = str(uuid.uuid4())

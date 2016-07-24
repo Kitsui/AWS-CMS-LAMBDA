@@ -12,6 +12,15 @@ Login py test json
     }
 }
 
+Get all users
+
+{
+  "params": {
+    "request": "getUsers",
+    "token": "1"
+  }
+}
+
 Register user
 
 {
@@ -96,8 +105,15 @@ Edit Blog
 
 /* Role Tests */
 
+Get all Roles - work in progress
 
 
+{
+  "params": {
+    "request": "getRoles",
+    "token": "1"
+  }
+}
 
 create role
 
@@ -169,6 +185,15 @@ Delete role
 }
 
 /* Page Tests*/
+
+Get all Pages
+
+{
+  "params": {
+    "request": "getPages",
+    "token": "1"
+  }
+}
 
 Create page
 

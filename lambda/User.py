@@ -20,6 +20,23 @@ class User(object):
 		self.event = event
 		self.context = context
 
+	def get_all_users(self):
+		# Attempt to get all data from table
+		try:
+			dynamodb = boto3.client('dynamodb')
+			data = dynamodb.scan(
+				TableName="User",
+				ConsistentRead=True)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			response = Response("Error", None)
+			response.errorMessage = "Unable to get user data: %s" % e.response['Error']['Code']
+			return response.to_JSON()
+		
+		response = Response("Success", data)
+		# response.setData = data
+		return response.format()
+
 	def register(self):
 		# Get password for hashing
 		password = self.event["user"]["password"]
@@ -154,6 +171,23 @@ class User(object):
 			return response.to_JSON()
    
     		return Response("Success", None).to_JSON()
+
+	# def get_all_roles(self):
+	# 	# Attempt to get all data from table
+	# 	try:
+	# 		dynamodb = boto3.client('dynamodb')
+	# 		data = dynamodb.scan(
+	# 			TableName="Role",
+	# 			ConsistentRead=True)
+	# 	except botocore.exceptions.ClientError as e:
+	# 		print e.response['Error']['Code']
+	# 		response = Response("Error", None)
+	# 		response.errorMessage = "Unable to get user data: %s" % e.response['Error']['Code']
+	# 		return response.to_JSON()
+		
+	# 	response = Response("Success", data)
+	# 	# response.setData = data
+	# 	return response.format()
 
 	def create_role(self):
 		role_params = {

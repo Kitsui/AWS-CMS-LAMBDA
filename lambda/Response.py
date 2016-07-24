@@ -16,12 +16,11 @@ class Response(object):
 			if(data["Items"][0] is not None):
 				self.columns = data["Items"][0].keys()
 
-
+	# used to format replies querying dynamo
 	def format(self):
 		replyData = {}
 		colm = []
 		rows = []
-
 		item = {}
 		columns = self.data["Items"][0].keys()
 		for i in self.data["Items"]:
