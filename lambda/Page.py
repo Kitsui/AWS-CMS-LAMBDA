@@ -36,7 +36,7 @@ class Page(object):
 		
 		response = Response("Success", data)
 		# response.setData = data
-		return response.format()
+		return response.format("All Pages")
 
 	def create_page(self):		
 		# Get new blog params

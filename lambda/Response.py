@@ -17,18 +17,20 @@ class Response(object):
 				self.columns = data["Items"][0].keys()
 
 	# used to format replies querying dynamo
-	def format(self):
+	def format(self, pTitle):
 		replyData = {}
 		colm = []
 		rows = []
 		item = {}
 		columns = self.data["Items"][0].keys()
 		for i in self.data["Items"]:
+			item = {}
 			for j in columns:
 				item[j] = (i[j]['S'])
 			rows.append(item)
 		replyData["rows"] = rows
-		replyData["columns"] = columns
+		replyData["cols"] = columns
+		replyData["page_title"] = pTitle;
 		return replyData
 
 	def to_JSON(self):
