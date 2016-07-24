@@ -25,13 +25,8 @@ class Response(object):
 		item = {}
 		columns = self.data["Items"][0].keys()
 		for i in self.data["Items"]:
-			item["ID"] = (i['BlogID']['S'])
-			item["Title"] = (i['Title']['S'])
-			item["Author"] = (i['Author']['S'])
-			item["Content"] = (i['Content']['S'])
-			item["Meta_Description"] = (i['MetaDescription']['S'])
-			item["Meta_Keywords"] = (i['MetaKeywords']['S'])
-			item["Save_Date"] = (i['SavedDate']['S'])
+			for j in columns:
+				item[j] = (i[j]['S'])
 			rows.append(item)
 		replyData["rows"] = rows
 		replyData["columns"] = columns
