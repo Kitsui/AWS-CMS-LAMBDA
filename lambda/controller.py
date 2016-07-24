@@ -53,7 +53,7 @@ def handler(event, context):
 		"logoutUser": user.logout,
 		"editUser": user.edit_user,
 		"deleteUser": user.delete_user,
-		"getRoles": user.get_all_roles,
+		# "getRoles": user.get_all_roles,
 		"createRole": user.create_role,
 		"editRole": user.edit_role,
 		"deleteRole": user.delete_role,
