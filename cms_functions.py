@@ -447,6 +447,16 @@ class AwsFunc:
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Set-Cookie',
 						'value': 'False'
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Credentials',
+						'value': 'False'
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
+						'value': 'False'
 					}
 				]
 			)
@@ -462,6 +472,16 @@ class AwsFunc:
 						'op': 'add',
 						'path': '/responseParameters/method.response.header.Set-Cookie',
 						'value': 'integration.response.body.Cookie'
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Credentials',
+						'value': '\'true\''
+					},
+					{
+						'op': 'add',
+						'path': '/responseParameters/method.response.header.Access-Control-Allow-Origin',
+						'value': '\'https://s3.amazonaws.com\''
 					}
 				]
 			)
