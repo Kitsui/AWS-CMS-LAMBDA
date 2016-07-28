@@ -72,7 +72,7 @@ class AwsFunc:
 					mime = mimetypes.guess_type(directory)
 					with open(directory, 'rb') as file_body:
 						body = file_body.read()
-						body = replace_variables(body, endpoint_url=self.create_api_call_uri(), api_key=self.api_key)
+						body = replace_variables(body, endpoint_url=self.create_api_call_uri())
 						put_kwargs = {
 							'Bucket': self.bucket['Location'][1:],
 							'ACL': 'public-read',
