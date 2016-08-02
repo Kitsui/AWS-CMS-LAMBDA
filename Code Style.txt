@@ -39,34 +39,46 @@ Template (do not indent):
     # Author: <Name>
     # Date: <Date>
     # Edited: DD/MM/YYYY | <Name>
-    #         N/D        | <Name> (N/D is only for old files where date is 
+    #         N/D        | <Name> (N/D is only for old files where date is
     """                            missing)
 
 
 VARIABLES
 =========
 
-aaaaa
+Variables should be named with no capital letters with underscores used
+to split up words as in:
+
+    variable_name
+    
+Attempt to keep variable names concise while not resorting to unuseful names
+such as: a, temp, or variable1.
 
 
 FUNCTIONS
 =========
 
-aaaaa
+Functions should follow the same naming conventions as variables. They should
+contain a short docstring immediately below the function definition as in:
+
+    def add_two(num):
+        """ Takes a number and adds two to it """
+        
+        return num + 2
 
 
 WHITE SPACE
 ===========
 
-White space should only be added where needed and on occassion to improve 
+White space should only be added where needed and on occassion to improve
 readability. There should be no whitespace at the end of lines for instance.
  
-A case that is not particularly obvious is keyword argument use. Where unlike 
+A case that is not particularly obvious is keyword argument use. Where unlike
 variable assignment, there should be no whitespace between the variable name,
 assignment operator, and value.
 
 Though it can occasionally improve readibility, variable declarations should
-not be lined up with one another unless they are related to one another and are 
+not be lined up with one another unless they are related to one another and are
 only 1-2 characters offset.
 
 Inline comments should be seperated from the # symbol by a single space, and
@@ -121,7 +133,8 @@ MULTIPLE LINE STATEMENTS
 In order to conform to the 79 character per line limit, statements will
 frequently have to be split over multiple lines. This is one of the trickiest
 aspects to writing readable code, so I will to my best to provide tools
-that make the job easier.
+that make the job easier. All examples in this section use parentheses but
+apply also when braces and brackets are used.
 
 Firstly, I will describe practices for multi-line function definitions and
 calls. I'm sure you will have on occasion found yourself writing a line of code
@@ -135,8 +148,8 @@ level increases. Fortunaly, fixing the problem is quite simple:
     def function(argument1, argument3, argument3, argument4, argument5,
                  argument6, argument7, argument8)
 
-Much more readable. Now, this solution works great in the case that there is 
-plenty of space after the opening parenthesis, but what if there isn't? Here's 
+Much more readable. Now, this solution works great in the case that there is
+plenty of space after the opening parenthesis, but what if there isn't? Here's
 an example:
 
     indent_level_one:
@@ -162,9 +175,9 @@ Sends shivers down your spine right? However again there is a simple solution:
                     argument6, argument7, argument8
                 )
                 
-Much better. Make sure to note the position of the closing parenthesis. In 
-cases where an argument list goes more than a single line below the beginning 
-of the function definition, the closing parenthesis goes on its on line with 
+Much better. Make sure to note the position of the closing parenthesis. In
+cases where an argument list goes more than a single line below the beginning
+of the function definition, the closing parenthesis goes on its on line with
 its indentation the same as the beginning on the function definition.
 
 For example this is what it would look like if the argument list wasn't so
@@ -176,7 +189,7 @@ long:
                 class.disgustingly_long_function_name_why_oh_why(
                     argument1, argument2, argument3, argument4, argument5)
                     
-As an important note: Unless vertical alignment is being used (as in the first 
+As an important note: Unless vertical alignment is being used (as in the first
 example of this section), no arguments should appear on the first line.
 
 Now onto multi-line strings. Splitting a string over multiple lines is
@@ -193,7 +206,7 @@ fortunately extremely simple in python:
     
 Which would print:
 
-    "I am a happy donut covered in delicious treats please don't eat me oh god 
+    "I am a happy donut covered in delicious treats please don't eat me oh god
      I have a family." (Minus the newline)
      
 The same effect can be achieved using the escape character "\", however this is
