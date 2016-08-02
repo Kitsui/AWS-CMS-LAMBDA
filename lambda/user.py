@@ -1,18 +1,21 @@
 """
-# User.py
-# Created: 23/06/2016
+# user.py
 # Author: Adam Campbell
-# Edited By: Miguel Saavedra
+# Date: 23/06/2016
+# Edited: N/D        | Miguel Saavedra
+#         02/08/2016 | Christopher Treadgold
 """
+
+import Cookie
+import datetime
+import uuid
 
 import boto3
 import botocore
-import uuid
-import Cookie
-import datetime
-from Response import Response
+from boto3.dynamodb.conditions import Attr, Key
 from passlib.apps import custom_app_context as pwd_context
-from boto3.dynamodb.conditions import Key, Attr
+
+from response import Response
 
 class User(object):
 

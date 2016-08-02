@@ -1,23 +1,25 @@
 """
 # controller.py
-# Created: 23/06/2016
 # Author: Adam Campbell
-# Edited By: Miguel Saavedra
+# Date: 23/06/2016
+# Edited: N/D        | Miguel Saavedra
+#         02/08/2016 | Chistopher Treadgold
 """
 
-import User
-import Blog
-import Page
-from Response import Response
 import boto3
 import botocore
-from boto3.dynamodb.conditions import Key, Attr
+from boto3.dynamodb.conditions import Attr, Key
+
+from blog import Blog
+from page import Page
+from response import Response
+from user import User
 
 def handler(event, context):
 
 	isAuth = False
 	request = event["params"]["request"]
-	# Authentication check token
+	# Check authentication token
 	if(request != "loginUser"):
 		try:
 			dynamodb = boto3.resource('dynamodb')
@@ -33,15 +35,13 @@ def handler(event, context):
 	elif request == "loginUser":
 		isAuth = True
 
-
 	# Custom object instances
-	user = User.User(event["params"], context)
-	blog = Blog.Blog(event["params"], context)
-	page = Page.Page(event["params"], context)
+	user = User(event["params"], context)
+	blog = Blog(event["params"], context)
+	page = Page(event["params"], context)
 
 	# Map request type to function calls
 	functionMapping = {
-		
 		"getBlogData": blog.get_blog_data,
 		"getBlogs": blog.get_all_blogs,
 		"editBlog": blog.edit_blog,
@@ -67,4 +67,3 @@ def handler(event, context):
 	else:
 		response = Response("Authentication_Error", None)
 		return response.to_JSON()
-	

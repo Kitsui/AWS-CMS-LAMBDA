@@ -1,5 +1,5 @@
 """
-# Blog.py
+# blog.py
 # Author: Adam Campbell
 # Date: 23/06/2016
 # Edited: N/D        | Miguel Saavedra
@@ -13,8 +13,8 @@ import boto3
 import botocore
 from boto3.dynamodb.conditions import Attr, Key
 
-from Response import Response
-from Validator import Validator
+from response import Response
+from validator import Validator
 
 class Blog(object):
 
@@ -113,24 +113,23 @@ class Blog(object):
 
 
     def edit_blog(self):
-        blogID           = self.event["blog"]["blogID"]
-        author           = self.event["blog"]["author"]
-        content          = self.event["blog"]["content"]
-        title            = self.event["blog"]["title"]
+        blogID = self.event["blog"]["blogID"]
+        author = self.event["blog"]["author"]
+        content = self.event["blog"]["content"]
+        title = self.event["blog"]["title"]
         meta_description = self.event["blog"]["metaDescription"]
-        meta_keywords    = self.event["blog"]["metaKeywords"]
+        meta_keywords = self.event["blog"]["metaKeywords"]
 
         if not Validator.validateBlog(content):
-            response              = Response("Error", None)
+            response = Response("Error", None)
             response.errorMessage = "Invalid blog content"
             return response.to_JSON()
 
         try:
-            dynamodb  = boto3.resource("dynamodb")
+            dynamodb  = boto3.client("dynamodb")
             blog_post = dynamodb.query(
                 TableName="Blog",
-                KeyConditionExpression=Key("BlogID").eq(
-                    self.event["blog"]["blogID"])
+                KeyConditionExpression=Key("BlogID").eq(blogID)
             )
             saved_date = blog_post["Items"][0]["SavedDate"]
             
@@ -138,18 +137,12 @@ class Blog(object):
                 TableName="Blog",
                 Key={"BlogID": blogID, "Author": author},
                 UpdateExpression=(
-                    "set Title=:t"
-                       " Content=:c"
-                       " SavedDate=:s"
-                       " MetaDescription=:d"
-                       " MetaKeywords=:k"
+                    "set Title=:t Content=:c SavedDate=:s "
+                    "MetaDescription=:d MetaKeywords=:k"
                 ),
                 ExpressionAttributeValues={
-                    ":t": title,
-                    ":c": content,
-                    ":s": saved_date,
-                    ":d": meta_description,
-                    ":k": meta_keywords
+                    ":t": title, ":c": content, ":s": saved_date,
+                    ":d": meta_description, ":k": meta_keywords
                 }
             )
         except botocore.exceptions.ClientError as e:
@@ -158,14 +151,14 @@ class Blog(object):
                 self.create_new_index()
                 self.save_new_blog()
             else:
-                response              = Response("Error", None)
+                response = Response("Error", None)
                 response.errorMessage = "Unable to save edited blog: %s" % (
                     e.response["Error"]["Code"])
                 return response.to_JSON()
 
-    self.put_blog_object(blogID, author, title, content, saveDate,
-                         metaDescription, metaKeywords)
-    
+    self.put_blog_object(blogID, author, title, content, saved_date,
+                         meta_description, meta_keywords)
+                         
     return Response("Success", None).to_JSON()
 
 

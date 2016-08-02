@@ -1,8 +1,9 @@
 """
-# Response.py
-# Created: 27/06/2016
+# response.py
 # Author: Adam Campbell
-# Edited By: Miguel Saavedra
+# Date: 27/06/2016
+# Edited: N/D        | Miguel Saavedra
+#         02/08/2016 | Christopher Treadgold
 """
 
 import jsonpickle
