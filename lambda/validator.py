@@ -1,3 +1,10 @@
+"""
+# validator.py
+# Author: Unknown
+# Created: N/D
+# Edited: 02/08/2016 | Christopher Treadgold
+"""
+
 class Validator(object):
 	@staticmethod
 	def validateBlog(dataString):
