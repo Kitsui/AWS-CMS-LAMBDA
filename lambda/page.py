@@ -132,20 +132,19 @@ class Page(object):
 
     def delete_page(self):
         page_id =self.event['page']['pageID']
-            author = self.event['page']['pageAuthor']
-            
-            try:
-                dynamodb = boto3.resource('dynamodb')
-                table = dynamodb.Table('Pages')
+        author = self.event['page']['pageAuthor']
+        try:
+            dynamodb = boto3.resource('dynamodb')
+            table = dynamodb.Table('Pages')
             table.delete_item(Key={'PageID': page_id, 'Author': author})
-            except botocore.exceptions.ClientError as e:
-                print e.response['Error']['Code']
-                response = Response("Error", None)
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
             response.errorMessage = "Unable to delete page: %s" % e.response['Error']['Code']
             return response.to_JSON()
 
-            self.update_index()
-            return Response("Success", None).to_JSON()
+        self.update_index()
+        return Response("Success", None).to_JSON()
 
 
     def update_index(self):

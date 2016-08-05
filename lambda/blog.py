@@ -22,7 +22,7 @@ class Blog(object):
         self.event = event
         self.context = context
         self.index_file= "BlogIndex.html"
-        self.bucket_name = $(bucket_name)
+        self.bucket_name = "la-newslettter"
     
     
     def get_blog_data(self):
