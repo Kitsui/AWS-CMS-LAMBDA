@@ -348,7 +348,7 @@ class AwsFunc:
 					'ZipFile': code
 				},
 				Description='Central management function designed to handle any API Gateway request',
-				Timeout=10
+				Timeout=30
 			)
 		except botocore.exceptions.ClientError as e:
 			print e.response['Error']['Code']
