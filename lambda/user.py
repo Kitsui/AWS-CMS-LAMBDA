@@ -175,6 +175,3 @@ class User(object):
 			return response.to_JSON()
    
     		return Response("Success", None).to_JSON()
-
-	def assign_role(self):
-		pass
