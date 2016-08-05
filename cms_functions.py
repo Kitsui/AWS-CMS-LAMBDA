@@ -1,11 +1,13 @@
 #!/usr/bin/python2.7
 
+import ast
+import mimetypes
+import os
+import time
+
 import boto3
 import botocore
-import os
-import mimetypes
-import time
-import ast
+
 from replace_variables import replace_variables
 
 class AwsFunc:
