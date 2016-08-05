@@ -31,7 +31,7 @@ class Blog(object):
         
         try:
             dynamodb = boto3.client("dynamodb")
-            blog_data = table.query(
+            blog_data = dynamodb.query(
                 TableName="Blog",
                 KeyConditionExpression=Key("BlogID").eq(blog_id)
             )
@@ -182,7 +182,7 @@ class Blog(object):
         
         try:
             dynamodb = boto3.client("dynamodb")
-            table.delete_item(
+            dynamodb.delete_item(
                 TableName="Blog",
                 Key={"BlogID": blog_id, "Author" : author}
             )
