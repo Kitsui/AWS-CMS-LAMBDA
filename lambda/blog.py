@@ -17,14 +17,14 @@ from response import Response
 from validator import Validator
 
 class Blog(object):
-
+    
     def __init__(self, event, context):
         self.event = event
         self.context = context
         self.index_file= "BlogIndex.html"
         self.bucket_name = $(bucket_name)
-
-
+    
+    
     def get_blog_data(self):
         """ Gets blog data from Blog table """
         blog_id = self.event["blog"]["blogID"]
@@ -172,7 +172,7 @@ class Blog(object):
                     e.response["Error"]["Code"])
                 return response.to_JSON()
             
-    return Response("Success", None).to_JSON()
+        return Response("Success", None).to_JSON()
 
 
     def delete_blog(self):
@@ -205,9 +205,9 @@ class Blog(object):
             s3 = boto3.client("s3")
             
             data = dynamodb.scan(TableName="Blog", ConsistentRead=True)
-            blog_prefix = "https://s3.amazonaws.com/" + self.bucket_name
-                + "/blog"
-            index_links = ( 
+            blog_prefix = ("https://s3.amazonaws.com/" + self.bucket_name
+                          + "/blog")
+            index_links = (
                 "<html>"
                     "<head><title>Blog Index</title></head>"
                         "<body>"
