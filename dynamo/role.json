@@ -13,6 +13,10 @@
     		  "Blog_CanRead": { "N": "1"},
     		  "Blog_CanUpdate": { "N": "1"},
     		  "Blog_CanDelete": { "N": "1"},
+			  "Page_CanCreate": {"N" : "1"},
+			  "Page_CanDelete": {"N" : "1"},
+			  "Page_CanRead": {"N" : "1"},
+			  "Page_CanUpdate": {"N" : "1"}
     		}
     	}
 	},
