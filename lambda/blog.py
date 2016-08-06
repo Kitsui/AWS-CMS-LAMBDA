@@ -156,10 +156,10 @@ class Blog(object):
                     e.response["Error"]["Code"])
                 return response.to_JSON()
 
-    self.put_blog_object(blogID, author, title, content, saved_date,
-                         meta_description, meta_keywords)
-                         
-    return Response("Success", None).to_JSON()
+        self.put_blog_object(blogID, author, title, content, saved_date,
+            meta_description, meta_keywords)
+
+        return Response("Success", None).to_JSON()
 
 
     def delete_blog(self):
@@ -169,7 +169,7 @@ class Blog(object):
         try:
             dynamodb = boto3.resource("dynamodb")
             table = dynamodb.Table("Blog")
-        table.delete_item(Key={"BlogID": blogID, "Author" : author})
+            table.delete_item(Key={"BlogID": blogID, "Author" : author})
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             response = Response("Error", None)
@@ -177,7 +177,6 @@ class Blog(object):
         return response.to_JSON()
 
         return Response("Success", None).to_JSON()
-
 
     def update_index(self, blogID, title):
         indexContent = "<html><head><title>Blog Index</title></head><body><h1>Index</h1>"
@@ -187,14 +186,15 @@ class Blog(object):
 
         data = dynamodb.scan(TableName="Blog", ConsistentRead=True)
         for item in data["Items"]:
-            indexContent = indexContent + "<br>" + "<a href="https://s3.amazonaws.com/" + self.bucket_name + "/blog" + item["BlogID"]["S"] + "">"+ item["Title"]["S"] +"</a>"
+            indexContent += "<br>" + '<a href="https://s3.amazonaws.com/"' + self.bucket_name + "/blog" + item["BlogID"]["S"] + '">'+ item["Title"]["S"] +"</a>"
+
         indexContent = indexContent + "<body></html>"
         print indexContent
         put_index_item_kwargs = {
-            "Bucket": self.bucket_name,
-            "ACL": "public-read",
-            "Body": indexContent,
-            "Key": self.Index_file
+        "Bucket": self.bucket_name,
+        "ACL": "public-read",
+        "Body": indexContent,
+        "Key": self.Index_file
         }
         print indexContent
         put_index_item_kwargs["ContentType"] = "text/html"
@@ -211,9 +211,9 @@ class Blog(object):
             "Bucket": self.bucket_name,
             "ACL": "public-read",
             "Body": "<head> <title>" + title + "</title>" +
-            " <meta name="description" content="" + mDescription+ "">"
-            + "<meta name="keywords" content="" + mKeywords + "">" +
-            "<meta http-equiv="content-type" content="text/html;charset=UTF-8">" +
+            ' <meta name="description" content="' + mDescription+ '"">'
+            + '<meta name="keywords" content="' + mKeywords + '"">' +
+            '<meta http-equiv="content-type" content="text/html;charset=UTF-8">' +
             "</head><p>" + author + "<br>" + title + "<br>" +
             content + "<br>" + saveDate + "</p>",
             "Key": blog_key

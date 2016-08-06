@@ -39,7 +39,7 @@ class User(object):
 		
 		response = Response("Success", data)
 		# response.setData = data
-		return response.format()
+		return response.format("All Users")
 
 	def register(self):
 		# Get password for hashing
