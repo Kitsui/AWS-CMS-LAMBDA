@@ -232,7 +232,7 @@ Set Site Settings
 {
   "params": {
     "request": "setSiteSettings",
-    "token": "1",
+    "token": "testToken1234567",
     "site": {
       "siteName": "SiteName",
       "siteURL": "url.com",
@@ -265,8 +265,8 @@ Get Site Settings
 
 {
   "params": {
-    "request": "setSiteSettings",
-    "token": "1",
+    "request": "getSiteSettings",
+    "token": "1"
   }
 }
 

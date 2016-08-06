@@ -28,59 +28,78 @@ class Page(object):
         try:
             dynamodb = boto3.client('dynamodb')
             data = dynamodb.scan(
-                TableName="Pages",
+                TableName="SiteSettings",
                 ConsistentRead=True)
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
-            response.errorMessage = "Unable to get page data: %s" % e.response['Error']['Code']
+            response.errorMessage = "Unable to get site setting data: %s" % e.response['Error']['Code']
             return response.to_JSON()
         
         response = Response("Success", data)
         # response.setData = data
-        return response.format("All Pages")
+        return response.format("Site Settings")
 
     def set_site_settings(self):
         # Get new blog params
-        page_id = str(uuid.uuid4())
-        author = self.event["site"]["pageAuthor"]
-        title = self.event["site"]["pageTitle"]
-        content = self.event["page"]["pageContent"]
-        meta_description = self.event["site"]["metaDescription"]
-        meta_keywords = self.event["site"]["metaKeywords"]
+        site_name = self.event["site"]["siteName"]
+        site_url = self.event["site"]["siteURL"]
+        nav_items = self.event["site"]["navItems"]
+        meta_data = self.event["site"]["metaData"]
+        header = self.event["site"]["header"]
+        footer = self.event["site"]["footer"]
         saved_date = str(datetime.datetime.now())
 
-        page_params = {
-            "PageID": {"S": page_id},
-            "Author": {"S": author},
-            "Title": {"S": title},
-            "Content": {"S": content},
-            "SavedDate": {"S": saved_date},
-            "MetaDescription": {"S": meta_description},
-            "MetaKeywords": {"S": meta_keywords},
-        }
+        # init strings
+        nav_items_string = ''
+        meta_data_string = ''
+        header_string = ''
+        footer_string = ''
 
+        # put dict var into string format
+        for key, value in nav_items.iteritems():
+            nav_items_string+= """
+            """+str(key)+ """: """ +str(value)+ ""","""
+
+        for key, value in meta_data.iteritems():
+            meta_data_string+= """
+            """+str(key)+ """: """ +str(value)+ ""","""
+        
+        for key, value in header.iteritems():
+            header_string+= """
+            """+str(key)+ """: """ +str(value)+ ""","""
+
+        for key, value in footer.iteritems():
+            footer_string+= """
+            """+str(key)+ """: """ +str(value)+ ""","""
+
+        # site settings item parameters
+        site_params = {
+            "SiteName": {"S": site_name},
+            "SiteUrl": {"S": site_url},
+            "NavItems": {"S": nav_items_string},
+            "MetaData": {"S": meta_data_string},
+            "Header": {"S": header_string},
+            "Footer": {"S": footer_string},
+            "LastSaved" : {"S": saved_date}
+        }
+        # put into dynamo
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.put_item(
-                TableName='Pages',
-                Item=page_params,
+                TableName='SiteSettings',
+                Item=site_params,
                 ReturnConsumedCapacity='TOTAL'
             )
 
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
-            response.errorMessage = "Unable to save new page: %s" % e.response['Error']['Code']
+            response.errorMessage = "Unable to set new site settings: %s" % e.response['Error']['Code']
 
-            if e.response['Error']['Code'] == "NoSuchKey":
-                self.update_index(page_id, title)
-                self.save_new_index()
-            else:
-                return response.to_JSON()
-
-        self.put_page_object(page_id, author, title, content, saved_date,
-                meta_description, meta_keywords)
+        # put site settings object into s3
+        self.put_site_settings_object(site_name, site_url, nav_items_string, 
+            meta_data_string, header, footer_string)
         return Response("Success", None).to_JSON()
 
     def get_all_pages(self):
@@ -227,12 +246,12 @@ class Page(object):
         put_index_item_kwargs['ContentType'] = 'text/html'
         self.s3.put_object(**put_index_item_kwargs)
 
-
     def put_page_object(self, page_id, author, title, content, saved_date,
      mDescription, mKeywords):
         page_key = 'page-json-' + title
         
         self.update_index()
+        # page body
         page_json ="""{    
         page : {
             title: """+title+""",
@@ -246,8 +265,7 @@ class Page(object):
             }
     }"""
 
-
-
+        # put into s3 init
         put_page_item_kwargs = {
             'Bucket': self.bucket_name,
             'ACL': 'public-read',
@@ -260,48 +278,31 @@ class Page(object):
 
 
     def put_site_settings_object(self, siteName, siteUrl, navItems, metaData,
-     header, footerItems):
+     header, footer):
         # file name
-        site_settings_key = 'site-settings'        
+        site_settings_key = 'site-settings'
 
-        # init strings
-        navString = ''
-        footerString = ''
-        metaDatString = ''
-
-        # put dict var into string format
-        for key, value in navItems.iteritems():
-            navString+= """
-            """+str(key)+ """: """ +str(value)+ ""","""
-
-        for key, value in footerItems.iteritems():
-            footerString+= """
-            """+str(key)+ """: """ +str(value)+ ""","""
-
-        for key, value in metaDatString.iteritems():
-            metaDatString+= """
-            """+str(key)+ """: """ +str(value)+ ""","""
-
-        # file body
+        # site settings body
         ss_json ="""{    
         site-settings : {
             site-name : """+siteName+""",
             site-url : """+siteUrl+""",             
             nav-items : {
-            """+navString+"""
+            """+navItems+"""
             },
             meta-data : {
-            """+metaDatString+"""
+            """+metaData+"""
             },
             header : {
             alt : """+header['alt']+""",
             url : """+header['url']+"""
             },
             footer : {
-            """+footerString+"""
+            """+footer+"""
             },    
     }"""
 
+        # put into s3 init
         put_ss_item_kwargs = {
             'Bucket': self.bucket_name,
             'ACL': 'public-read',
