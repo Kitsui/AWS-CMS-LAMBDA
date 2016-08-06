@@ -21,6 +21,16 @@ class Blog(object):
     def __init__(self, event, context):
         self.event = event
         self.context = context
+<<<<<<< HEAD
+=======
+        self.index_file= "BlogIndex.html"
+        self.bucket_name = "la-newslettter"
+    
+    
+    def get_blog_data(self):
+        """ Gets blog data from Blog table """
+        blog_id = self.event["blog"]["blogID"]
+>>>>>>> c9a060cc8b71ece0aeb6c918b8bc46655bab5dc4
         
         self.s3 = boto3.client("s3")
         self.Index_file= "BlogIndex.html"

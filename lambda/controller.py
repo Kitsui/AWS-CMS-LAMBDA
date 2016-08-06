@@ -4,6 +4,7 @@
 # Date: 23/06/2016
 # Edited: N/D        | Miguel Saavedra
 #         02/08/2016 | Chistopher Treadgold
+#         05/08/2016 | Adam Campbell
 """
 
 import boto3
@@ -14,6 +15,7 @@ from blog import Blog
 from page import Page
 from response import Response
 from user import User
+from role import Role
 
 def handler(event, context):
 
@@ -39,6 +41,7 @@ def handler(event, context):
 	user = User(event["params"], context)
 	blog = Blog(event["params"], context)
 	page = Page(event["params"], context)
+	role = Role(event["params"], context)
 
 	# Map request type to function calls
 	functionMapping = {
@@ -53,10 +56,10 @@ def handler(event, context):
 		"logoutUser": user.logout,
 		"editUser": user.edit_user,
 		"deleteUser": user.delete_user,
-		"getRoles": user.get_all_roles,
-		"createRole": user.create_role,
-		"editRole": user.edit_role,
-		"deleteRole": user.delete_role,
+		#"getRoles": role.get_all_roles,
+		"createRole": role.create_role,
+		"editRole": role.edit_role,
+		"deleteRole": role.delete_role,
 		"getPages": page.get_all_pages,
 		"createPage": page.create_page,
 		"deletePage": page.delete_page
