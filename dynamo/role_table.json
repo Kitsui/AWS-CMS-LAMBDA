@@ -1,5 +1,4 @@
 {	
-	"TableName": "Role",
 	"AttributeDefinitions": [
 		{
 			"AttributeName": "RoleID",

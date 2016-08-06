@@ -9,7 +9,7 @@ if len(sys.argv) != 3:
 	for arg in sys.argv:
 		command += arg + ' '
 	print 'Invalid command: ' + command
-	print 'Usage: %s <bucket-name> <region>' % sys.argv[0]
+	print 'Usage: %s <cms_prefix> <region>' % sys.argv[0]
 	sys.exit()
 
 cms = cms_functions.AwsFunc(sys.argv[1], sys.argv[2])	# Instantiate an AwsFunc class

@@ -1,8 +1,10 @@
 #!/usr/bin/python2.7
 
-import boto3
+import os
 import sys
 import time
+
+import boto3
 
 # AWS clients used by the AWSCMS
 apigateway = boto3.client('apigateway')
@@ -136,3 +138,6 @@ if buckets_deleted > 0:
 	print objects_deleted, 'objects deleted'
 else:
 	print 'No S3 buckets to remove'
+
+# Delete names.json
+os.remove("lambda/names.json")

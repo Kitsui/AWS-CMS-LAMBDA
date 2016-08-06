@@ -205,8 +205,8 @@ class Blog(object):
             s3 = boto3.client("s3")
             
             data = dynamodb.scan(TableName="Blog", ConsistentRead=True)
-            blog_prefix = ("https://s3.amazonaws.com/" + self.bucket_name
-                          + "/blog")
+            blog_prefix = "https://s3.amazonaws.com/%s/blog" % (
+                self.bucket_name)
             index_links = (
                 "<html>"
                     "<head><title>Blog Index</title></head>"
@@ -217,17 +217,17 @@ class Blog(object):
                 blog_id = item["BlogID"]["S"]
                 blog_title = item["Title"]["S"]
                 index_links += (
-                    "<br><a href=\"" + blog_prefix + blog_id + "\">"
-                    + blog_title + "</a>"
+                    "<br><a href=\"%s%s\">%s</a>" % (
+                        blog_prefix, blog_id, blog_title)
                 )
-            index_links = indexContent + ("</body></html>")
+            index_links = "%s</body></html>" % (index_links)
             
             put_index_item_kwargs = {
                 "Bucket": self.bucket_name, "ACL": "public-read",
                 "Body": indexContent, "Key": self.index_file,
                 "ContentType": "text/html"
             }
-            print indexContent
+            print index_links
             
             s3.put_object(**put_index_item_kwargs)
         except botocore.exceptions.ClientError as e:
@@ -249,19 +249,20 @@ class Blog(object):
         
         blog_body = (
             "<head>"
-                "<title>" + title + "</title>"
-                "<meta name=description content=" + meta_description + ">"
-                "<meta name=keywords content=" + meta_keywords + ">"
+                "<title>%s</title>"
+                "<meta name=description content=%s>"
+                "<meta name=keywords content=%s>"
                 "<meta http-equiv=content-type content=text/html;charset=UTF-8>"
             "</head>"
             "<p>"
-                + author + "<br>"
-                + title + "<br>"
-                + content + "<br>"
-                + saved_date
-          + "</p>"
-        )
-        blog_key = "blog" + blog_id
+                "%s<br>"
+                "%s<br>"
+                "%s<br>"
+                "%s"
+            "</p>"
+        ) % (title, meta_description, meta_keywords, author, title, content,
+             saved_date)
+        blog_key = "blog%s" % (blog_id)
         put_blog_item_kwargs = {
             "Bucket": self.bucket_name,
             "ACL": "public-read",

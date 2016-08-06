@@ -1,5 +1,4 @@
 {
-	"TableName": "Role",
 	"Item": {
 	    "RoleID": {"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"},
         "RoleType": {"S": "admin"},
