@@ -230,28 +230,32 @@ Delete page
 Set Site Settings
 
 {
-  "site" : {
-    "siteName": "SiteName",
-    "siteURL": "url.com",
-    "navItems": {
-      "title1": "url1",
-      "title2": "url2",
-      "title3": "url3",
-      "title4": "url4"
-    },
-    "metaData": {
-      "description": "Sample Description",
-      "keyworkds": "keyword1, keyword2, keyword3, keyword4"
-    },
-    "header": {
-      "alt": "site-header",
-      "url": "imgs/header.png"
-    },
-    "footer": {
-      "title1": "url1",
-      "title2": "url2",
-      "title3": "url3",
-      "title4": "url4"
+  "params": {
+    "request": "setSiteSettings",
+    "token": "1",
+    "site": {
+      "siteName": "SiteName",
+      "siteURL": "url.com",
+      "navItems": {
+        "title1": "url1",
+        "title2": "url2",
+        "title3": "url3",
+        "title4": "url4"
+      },
+      "metaData": {
+        "description": "Sample Description",
+        "keyworkds": "keyword1, keyword2, keyword3, keyword4"
+      },
+      "header": {
+        "alt": "site-header",
+        "url": "imgs/header.png"
+      },
+      "footer": {
+        "title1": "url1",
+        "title2": "url2",
+        "title3": "url3",
+        "title4": "url4"
+      }
     }
   }
 }
@@ -259,8 +263,12 @@ Set Site Settings
 
 Get Site Settings
 
-
-
+{
+  "params": {
+    "request": "setSiteSettings",
+    "token": "1",
+  }
+}
 
 
 

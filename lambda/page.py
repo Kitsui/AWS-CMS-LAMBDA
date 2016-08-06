@@ -43,11 +43,11 @@ class Page(object):
     def set_site_settings(self):
         # Get new blog params
         page_id = str(uuid.uuid4())
-        author = self.event["page"]["pageAuthor"]
-        title = self.event["page"]["pageTitle"]
+        author = self.event["site"]["pageAuthor"]
+        title = self.event["site"]["pageTitle"]
         content = self.event["page"]["pageContent"]
-        meta_description = self.event["page"]["metaDescription"]
-        meta_keywords = self.event["page"]["metaKeywords"]
+        meta_description = self.event["site"]["metaDescription"]
+        meta_keywords = self.event["site"]["metaKeywords"]
         saved_date = str(datetime.datetime.now())
 
         page_params = {
