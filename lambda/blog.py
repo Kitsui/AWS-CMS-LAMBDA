@@ -164,19 +164,19 @@ class Blog(object):
 
     def delete_blog(self):
         blogID = self.event["blog"]["blogID"]
-            author = self.event["blog"]["author"]
-            
-            try:
-                dynamodb = boto3.resource("dynamodb")
-                table = dynamodb.Table("Blog")
-            table.delete_item(Key={"BlogID": blogID, "Author" : author})
-            except botocore.exceptions.ClientError as e:
-                print e.response["Error"]["Code"]
-                response = Response("Error", None)
-            response.errorMessage = "Unable to delete blog: %s" % e.response["Error"]["Code"]
-            return response.to_JSON()
+        author = self.event["blog"]["author"]
+        
+        try:
+            dynamodb = boto3.resource("dynamodb")
+            table = dynamodb.Table("Blog")
+        table.delete_item(Key={"BlogID": blogID, "Author" : author})
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            response = Response("Error", None)
+        response.errorMessage = "Unable to delete blog: %s" % e.response["Error"]["Code"]
+        return response.to_JSON()
 
-            return Response("Success", None).to_JSON()
+        return Response("Success", None).to_JSON()
 
 
     def update_index(self, blogID, title):
