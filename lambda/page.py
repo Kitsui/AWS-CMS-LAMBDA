@@ -23,6 +23,65 @@ class Page(object):
         self.Index_file= "PageIndex.html"
         self.bucket_name = "la-newslettter"
 
+    def get_site_settings(self):
+        # Attempt to get all data from table
+        try:
+            dynamodb = boto3.client('dynamodb')
+            data = dynamodb.scan(
+                TableName="Pages",
+                ConsistentRead=True)
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
+            response.errorMessage = "Unable to get page data: %s" % e.response['Error']['Code']
+            return response.to_JSON()
+        
+        response = Response("Success", data)
+        # response.setData = data
+        return response.format("All Pages")
+
+    def set_site_settings(self):
+        # Get new blog params
+        page_id = str(uuid.uuid4())
+        author = self.event["page"]["pageAuthor"]
+        title = self.event["page"]["pageTitle"]
+        content = self.event["page"]["pageContent"]
+        meta_description = self.event["page"]["metaDescription"]
+        meta_keywords = self.event["page"]["metaKeywords"]
+        saved_date = str(datetime.datetime.now())
+
+        page_params = {
+            "PageID": {"S": page_id},
+            "Author": {"S": author},
+            "Title": {"S": title},
+            "Content": {"S": content},
+            "SavedDate": {"S": saved_date},
+            "MetaDescription": {"S": meta_description},
+            "MetaKeywords": {"S": meta_keywords},
+        }
+
+        try:
+            dynamodb = boto3.client('dynamodb')
+            dynamodb.put_item(
+                TableName='Pages',
+                Item=page_params,
+                ReturnConsumedCapacity='TOTAL'
+            )
+
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
+            response.errorMessage = "Unable to save new page: %s" % e.response['Error']['Code']
+
+            if e.response['Error']['Code'] == "NoSuchKey":
+                self.update_index(page_id, title)
+                self.save_new_index()
+            else:
+                return response.to_JSON()
+
+        self.put_page_object(page_id, author, title, content, saved_date,
+                meta_description, meta_keywords)
+        return Response("Success", None).to_JSON()
 
     def get_all_pages(self):
         # Attempt to get all data from table
@@ -171,24 +230,88 @@ class Page(object):
 
     def put_page_object(self, page_id, author, title, content, saved_date,
      mDescription, mKeywords):
-        page_key = 'page' + page_id
+        page_key = 'page-json-' + title
         
         self.update_index()
+        page_json ="""{    
+        page : {
+            title: """+title+""",
+            content: """+content+""",
+            uuid: """+page_id+""",
+            meta-data : {
+            description : """+mDescription+""",
+            keywords : """+mKeywords+"""
+            },
+            script-src : something
+            }
+    }"""
 
-        put_blog_item_kwargs = {
+
+
+        put_page_item_kwargs = {
             'Bucket': self.bucket_name,
             'ACL': 'public-read',
-            'Body': '<head> <title>' + title + '</title>' +
-            ' <meta name="description" content="' + mDescription+ '">'
-            + '<meta name="keywords" content="' + mKeywords + '">' +
-            '<meta http-equiv="content-type" content="text/html;charset=UTF-8">' +
-            '</head><p>' + author + '<br>' + title + '<br>' +
-            content + '<br>' + saved_date + '</p>',
+            'Body': page_json,
             'Key': page_key
         }
 
-        put_blog_item_kwargs['ContentType'] = 'text/html'
-        self.s3.put_object(**put_blog_item_kwargs)
+        put_page_item_kwargs['ContentType'] = 'application/json'
+        self.s3.put_object(**put_page_item_kwargs)
+
+
+    def put_site_settings_object(self, siteName, siteUrl, navItems, metaData,
+     header, footerItems):
+        # file name
+        site_settings_key = 'site-settings'        
+
+        # init strings
+        navString = ''
+        footerString = ''
+        metaDatString = ''
+
+        # put dict var into string format
+        for key, value in navItems.iteritems():
+            navString+= """
+            """+str(key)+ """: """ +str(value)+ ""","""
+
+        for key, value in footerItems.iteritems():
+            footerString+= """
+            """+str(key)+ """: """ +str(value)+ ""","""
+
+        for key, value in metaDatString.iteritems():
+            metaDatString+= """
+            """+str(key)+ """: """ +str(value)+ ""","""
+
+        # file body
+        ss_json ="""{    
+        site-settings : {
+            site-name : """+siteName+""",
+            site-url : """+siteUrl+""",             
+            nav-items : {
+            """+navString+"""
+            },
+            meta-data : {
+            """+metaDatString+"""
+            },
+            header : {
+            alt : """+header['alt']+""",
+            url : """+header['url']+"""
+            },
+            footer : {
+            """+footerString+"""
+            },    
+    }"""
+
+        put_ss_item_kwargs = {
+            'Bucket': self.bucket_name,
+            'ACL': 'public-read',
+            'Body': ss_json,
+            'Key': site_settings_key
+        }
+
+        put_ss_item_kwargs['ContentType'] = 'application/json'
+        self.s3.put_object(**put_ss_item_kwargs)
+
 
 
     def create_new_index(self):
