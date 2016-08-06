@@ -217,7 +217,31 @@ class AwsFunc:
 		# Wait for the blog table to be created before continuing
 		created = self.wait_for_table(self.blog_table)
 
-		print 'Blog table created'
+		print 'Page table created'
+
+		return created
+
+	def create_site_settings_table(self):
+		""" Creates a site settings table. """
+		try:
+			print 'Creating site settings table'
+			
+			# Get the blog table's json
+			page_table_json = ''
+			with open('dynamo/site_settings_table.json', 'r') as thefile:
+				page_table_json = ast.literal_eval(thefile.read())
+			
+			# Create the blog table
+			self.blog_table = self.dynamodb.create_table(**page_table_json)
+		except botocore.exceptions.ClientError as e:
+			print e.response['Error']['Code']
+			print e.response['Error']['Message']
+			return False
+
+		# Wait for the blog table to be created before continuing
+		created = self.wait_for_table(self.blog_table)
+
+		print 'Site Settings table created'
 
 		return created
 

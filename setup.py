@@ -24,3 +24,4 @@ cms.create_blog_table()				# Create a dynamodb blog table
 cms.create_role_table()				# Create the dynamodb role table
 cms.create_page_table()				# Create the dynamodb page table
 cms.create_admin_role_db_entry()	# Add Admin role entry to role table
+cms.create_site_settings_table()	# Create a dynamodb site settings table

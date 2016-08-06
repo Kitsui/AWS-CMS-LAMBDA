@@ -16,7 +16,8 @@ rest_api_names = ['AWS_CMS_Operations']
 api_key_names = ['AWS_CMS_Api_Key']
 lmda_function_names = ['controller']
 role_names = ['lambda_basic_execution']
-dynamodb_table_names = ['User', 'Token', 'Blog', 'Role']
+dynamodb_table_names = ['User', 'Token', 'Blog', 'Role', 
+'Pages', 'SiteSettings']
 s3_bucket_names = sys.argv[1:]
 
 # Remove all AWSCMS api gateways
