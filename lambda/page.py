@@ -58,20 +58,34 @@ class Page(object):
 
         # put dict var into string format
         for key, value in nav_items.iteritems():
-            nav_items_string+= """
-            """+str(key)+ """: """ +str(value)+ ""","""
+            nav_items_string+= '"'+str(key)+'": "' +str(value)+ '",'
+
+        items_list = list(nav_items_string)
+        items_list[-1] = ''
+        nav_items_string = ''.join(items_list)
+
 
         for key, value in meta_data.iteritems():
-            meta_data_string+= """
-            """+str(key)+ """: """ +str(value)+ ""","""
+            meta_data_string+= '"'+str(key)+'": "' +str(value)+ '",'
+
+        items_list = list(meta_data_string)
+        items_list[-1] = ''
+        meta_data_string = ''.join(items_list)
         
         for key, value in header.iteritems():
-            header_string+= """
-            """+str(key)+ """: """ +str(value)+ ""","""
+            header_string+= '"'+str(key)+'": "' +str(value)+ '",'
+
+        items_list = list(header_string)
+        items_list[-1] = ''
+        header_string = ''.join(items_list)
+
 
         for key, value in footer.iteritems():
-            footer_string+= """
-            """+str(key)+ """: """ +str(value)+ ""","""
+            footer_string+= '"'+str(key)+'": "' +str(value)+ '",'
+
+        items_list = list(footer_string)
+        items_list[-1] = ''
+        footer_string = ''.join(items_list)
 
         # site settings item parameters
         site_params = {
@@ -99,7 +113,7 @@ class Page(object):
 
         # put site settings object into s3
         self.put_site_settings_object(site_name, site_url, nav_items_string, 
-            meta_data_string, header, footer_string)
+            meta_data_string, header_string, footer_string)
         return Response("Success", None).to_JSON()
 
     def get_all_pages(self):
@@ -272,24 +286,7 @@ class Page(object):
         site_settings_key = 'site-settings'
 
         # site settings body
-        ss_json ="""{    
-        site-settings : {
-            site-name : """+siteName+""",
-            site-url : """+siteUrl+""",             
-            nav-items : {
-            """+navItems+"""
-            },
-            meta-data : {
-            """+metaData+"""
-            },
-            header : {
-            alt : """+header['alt']+""",
-            url : """+header['url']+"""
-            },
-            footer : {
-            """+footer+"""
-            },    
-    }"""
+        ss_json ='{ "site-name" : "'+siteName+'", "site-url:" : "'+siteUrl+'", "nav-items" : { '+navItems+'},"meta-data" : {'+metaData+'},"header" : {'+header+'}, "footer" : {'+footer+'}}'
 
         # put into s3 init
         put_ss_item_kwargs = {
