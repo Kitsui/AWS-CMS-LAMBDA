@@ -252,18 +252,7 @@ class Page(object):
         
         self.update_index()
         # page body
-        page_json ="""{    
-        page : {
-            title: """+title+""",
-            content: """+content+""",
-            uuid: """+page_id+""",
-            meta-data : {
-            description : """+mDescription+""",
-            keywords : """+mKeywords+"""
-            },
-            script-src : something
-            }
-    }"""
+        page_json ='{ "title": "'+title+'","content": "'+content+'","uuid": "'+page_id+'","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+'"},"script-src" : "something"}'
 
         # put into s3 init
         put_page_item_kwargs = {
