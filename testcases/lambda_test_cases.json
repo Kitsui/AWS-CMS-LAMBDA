@@ -200,7 +200,7 @@ Create page
 {
   "params": {
     "request": "createPage",
-    "token": "1",
+    "token": "testToken1234567",
     "page": {
       "pageTitle": "title", 
       "pageAuthor": "author",
