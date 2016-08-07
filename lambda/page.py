@@ -1,9 +1,11 @@
 """
 # page.py
-# Created: 17/07/2016
 # Author: Miguel Saavedra
+# Date: 17/07/2016
+# Edited: 07/08/2016 | Christopher Treadgold
 """
 
+import json
 import uuid
 import datetime
 
@@ -21,16 +23,16 @@ class Page(object):
         # Blog variables
         self.s3 = boto3.client('s3')
         self.Index_file= "PageIndex.html"
-        self.bucket_name = "la-newslettter"
+        with open("constants.json", "r") as constants_file:
+            self.constants = json.loads(constants_file.read())
 
 
     def get_all_pages(self):
         # Attempt to get all data from table
         try:
             dynamodb = boto3.client('dynamodb')
-            data = dynamodb.scan(
-                TableName="Pages",
-                ConsistentRead=True)
+            data = dynamodb.scan(TableName=self.constants["PAGE_TABLE"],
+                                 ConsistentRead=True)
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
@@ -65,7 +67,7 @@ class Page(object):
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.put_item(
-                TableName='Pages',
+                TableName=self.constants["PAGE_TABLE"],
                 Item=page_params,
                 ReturnConsumedCapacity='TOTAL'
             )
@@ -97,13 +99,18 @@ class Page(object):
         try:
             dynamodb = boto3.client('dynamodb')
             page = dynamodb.query(
-                TableName="Pages",
-                KeyConditionExpression=Key("PageID").eq(page_id)
+                TableName=self.constants["PAGE_TABLE"],
+                KeyConditionExpression="PageID = :v1",
+                ExpressionAttributeValues={
+                    "v1": {
+                        "S": page_id
+                    }
+                }
             )
             saved_date = page["Items"][0]["SavedDate"]
             
             dynamodb.update_item(
-                TableName="Pages",
+                TableName=self.constants["PAGE_TABLE"],
                 Key={"PageID": page_id, "Author": author},
                 UpdateExpression=(
                     "set Title=:t Content=:c SavedDate=:s "
@@ -132,35 +139,38 @@ class Page(object):
 
     def delete_page(self):
         page_id =self.event['page']['pageID']
-            author = self.event['page']['pageAuthor']
-            
-            try:
-                dynamodb = boto3.resource('dynamodb')
-                table = dynamodb.Table('Pages')
-            table.delete_item(Key={'PageID': page_id, 'Author': author})
-            except botocore.exceptions.ClientError as e:
-                print e.response['Error']['Code']
-                response = Response("Error", None)
-            response.errorMessage = "Unable to delete page: %s" % e.response['Error']['Code']
-            return response.to_JSON()
+        author = self.event['page']['pageAuthor']
+        
+        try:
+            dynamodb = boto3.client('dynamodb')
+            dynamodb.delete_item(
+                TableName=self.constants["PAGE_TABLE"],
+                Key={'PageID': page_id, 'Author': author}
+            )
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
+        response.errorMessage = "Unable to delete page: %s" % e.response['Error']['Code']
+        return response.to_JSON()
 
-            self.update_index()
-            return Response("Success", None).to_JSON()
+        self.update_index()
+        return Response("Success", None).to_JSON()
 
 
     def update_index(self):
         indexContent = '<html><head><title>Page Index</title></head><body><h1>Index</h1>'
         blogData = {'items': [None]}
         blogTitle = ''
+        
         dynamodb = boto3.client('dynamodb')
-
-        data = dynamodb.scan(TableName="Pages", ConsistentRead=True)
+        data = dynamodb.scan(TableName=self.constants["PAGE_TABLE"],
+                             ConsistentRead=True)
         for item in data['Items']:
-            indexContent = indexContent + '<br>' + '<a href="https://s3.amazonaws.com/' + self.bucket_name + '/page' + item['PageID']['S'] + '">'+ item['Title']['S'] +'</a>'
+            indexContent = indexContent + '<br>' + '<a href="https://s3.amazonaws.com/' + self.constants["BUCKET"] + '/page' + item['PageID']['S'] + '">'+ item['Title']['S'] +'</a>'
         indexContent = indexContent + '<body></html>'
         print indexContent
         put_index_item_kwargs = {
-            'Bucket': self.bucket_name,
+            'Bucket': self.constants["BUCKET"],
             'ACL': 'public-read',
             'Body': indexContent,
             'Key': self.Index_file
@@ -171,13 +181,13 @@ class Page(object):
 
 
     def put_page_object(self, page_id, author, title, content, saved_date,
-     mDescription, mKeywords):
+                        mDescription, mKeywords):
         page_key = 'page' + page_id
         
         self.update_index()
 
         put_blog_item_kwargs = {
-            'Bucket': self.bucket_name,
+            'Bucket': self.constants["BUCKET"],
             'ACL': 'public-read',
             'Body': '<head> <title>' + title + '</title>' +
             ' <meta name="description" content="' + mDescription+ '">'
@@ -196,10 +206,10 @@ class Page(object):
         print "no index found ... creating Index"
         try:
             put_index_item_kwargs = {
-            'Bucket': self.bucket_name,
-            'ACL': 'public-read',
-            'Body':'<h1>Index</h1> <br>',
-            'Key': self.Index_file
+                'Bucket': self.constants["BUCKET"],
+                'ACL': 'public-read',
+                'Body':'<h1>Index</h1> <br>',
+                'Key': self.Index_file
             }
             put_index_item_kwargs['ContentType'] = 'text/html'
             self.s3.put_object(**put_index_item_kwargs)

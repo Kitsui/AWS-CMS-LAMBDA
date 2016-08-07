@@ -24,7 +24,7 @@ function bindClickEvents() {
 ***/
 function postToServer(params, stateChangeFunc) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "$(endpoint_url)", true);
+    xhr.open("POST", "$(API_URL)", true);
     xhr.onreadystatechange = stateChangeFunc(xhr);
     xhr.send(params);
     return false;

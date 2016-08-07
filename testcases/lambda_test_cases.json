@@ -6,8 +6,8 @@ Login py test json
     "params": {
       "request": "loginUser",
       "User": {
-        "Email": "user@user.com",
-        "Password": "user"
+        "Email": "email@gmail.com",
+        "Password": "password123"
       }
     }
 }
@@ -17,7 +17,7 @@ Get all users
 {
   "params": {
     "request": "getUsers",
-    "token": "1"
+    "token": "testToken1234567"
   }
 }
 
@@ -26,11 +26,11 @@ Register user
 {
   "params": {
     "request": "registerUser",
-    "token": "1",
+    "token": "testToken1234567",
     "user": {
       "username": "billybob",
       "email": "email",
-      "password": "password"
+      "password": "password123"
     }
   }
 }
@@ -40,7 +40,7 @@ Edit User
 {
   "params": {
     "request": "editUser",
-    "token": "1",
+    "token": "testToken1234567",
     "user": {
       "email": "1",
       "userID": "1", 
@@ -56,7 +56,7 @@ Delete user
 {
   "params": {
     "request": "deleteUser",
-    "token": "1",
+    "token": "testToken1234567",
     "user": {
       "userID": "17ec0fc9-178f-4ae3-91d6-9c1426f82627",
       "email": "admin"
@@ -73,7 +73,7 @@ create blog
 {
   "params": {
     "request": "saveNewBlog",
-    "token": "1",
+    "token": "testToken1234567",
     "blog": {
       "author": "Jeremy",
       "title": "Hondas are the best type of car",
@@ -89,7 +89,7 @@ Edit Blog
 {
   "params": {
         "request": "editBlog",
-        "token": "2",
+        "token": "testToken1234567",
         "blog": {
             "blogID": "b8c1fa8a-7593-4bbd-b8bd-695dcdab6d4d",
             "author": "John",
@@ -111,7 +111,7 @@ Get all Roles - work in progress
 {
   "params": {
     "request": "getRoles",
-    "token": "1"
+    "token": "testToken1234567"
   }
 }
 
@@ -120,26 +120,26 @@ create role
 {
     "params": {
       "request": "createRole",
-  "role" : {
-      "name": "Johnononno",
-      "type": "admin",
-      "permissions": { 
-          "user_canCreate": "1",
-          "user_canRead": "1",
-          "user_canUpdate":"1",
-          "user_canDelete":"1",
-          "blog_canCreate": "1",
-          "blog_canRead": "1",
-          "blog_canUpdate": "1",
-          "blog_canDelete": "1",
-          "page_canCreate": "1",
-          "page_canRead": "1",
-          "page_canUpdate": "1",
-          "page_canDelete": "1"
+      "role" : {
+          "name": "Johnononno",
+          "type": "admin",
+          "permissions": { 
+              "user_canCreate": "1",
+              "user_canRead": "1",
+              "user_canUpdate":"1",
+              "user_canDelete":"1",
+              "blog_canCreate": "1",
+              "blog_canRead": "1",
+              "blog_canUpdate": "1",
+              "blog_canDelete": "1",
+              "page_canCreate": "1",
+              "page_canRead": "1",
+              "page_canUpdate": "1",
+              "page_canDelete": "1"
 
-        }
-  }
-    }
+          }
+     }
+   }
 }
 
 Edit role
@@ -147,7 +147,7 @@ Edit role
 {
     "params": {
     "request": "editRole",
-    "token": "1",
+    "token": "testToken1234567",
         "role": {
             "roleID": "17ec0fc9-178f-4ae3-91d6-9c1426f82627",
             "type": "admin",
@@ -176,7 +176,7 @@ Delete role
 {
   "params": {
     "request": "deleteRole",
-    "token": "1",
+    "token": "testToken1234567",
     "role": {
       "roleID": "17ec0fc9-178f-4ae3-91d6-9c1426f82627",
       "type": "admin"
@@ -191,7 +191,7 @@ Get all Pages
 {
   "params": {
     "request": "getPages",
-    "token": "1"
+    "token": "testToken1234567"
   }
 }
 
@@ -200,7 +200,7 @@ Create page
 {
   "params": {
     "request": "createPage",
-    "token": "1",
+    "token": "testToken1234567",
     "page": {
       "pageTitle": "title", 
       "pageAuthor": "author",
@@ -217,7 +217,7 @@ Delete page
 {
   "params": {
     "request": "deletePage",
-    "token": "1",
+    "token": "testToken1234567",
     "page": {
       "pageID": "title", 
       "pageAuthor": "author"

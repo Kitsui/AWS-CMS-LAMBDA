@@ -1,26 +1,61 @@
 #!/usr/bin/python2.7
 
+"""
+# setup.py
+# Author: Christopher Treadgold
+# Date: N/D
+# Edited: 07/08/2016 | Christopher Treadgold
+"""
+
 import cms_functions
 import sys
 import os
 
-if len(sys.argv) != 3:
-	command = ''
-	for arg in sys.argv:
-		command += arg + ' '
-	print 'Invalid command: ' + command
-	print 'Usage: %s <cms_prefix> <region>' % sys.argv[0]
-	sys.exit()
+if len(sys.argv) not in range(2, 4):
+    command = ''
+    for arg in sys.argv:
+        command += arg + ' '
+    print 'Invalid command: ' + command
+    print 'Usage: %s <cms_prefix> <region (optional)>' % sys.argv[0]
+    sys.exit()
 
-cms = cms_functions.AwsFunc(sys.argv[1], sys.argv[2])	# Instantiate an AwsFunc class
-cms.create_lambda_function()		# Create a lambda function
-cms.create_api_gateway()			# Create an api gateway linked to the lambda function
-cms.create_bucket()					# Create an s3 bucket
-cms.create_user_table()				# Create a dynamodb user table
-cms.create_admin_db_entry()			# Add an entry to the user table that represents an admin
-cms.create_token_table()			# Create a dynamodb token table
-cms.create_token_db_entry()			# Add an entry to the token table
-cms.create_blog_table()				# Create a dynamodb blog table
-cms.create_role_table()				# Create the dynamodb role table
-cms.create_page_table()				# Create the dynamodb page table
-cms.create_admin_role_db_entry()	# Add Admin role entry to role table
+# Instantiate an AwsFunc class
+if len(sys.argv) == 3:
+    cms = cms_functions.AwsFunc(sys.argv[1], region=sys.argv[2])
+else:
+    cms = cms_functions.AwsFunc(sys.argv[1])
+
+# Create tje rest api
+cms.create_rest_api()
+
+# Create the lambda function
+cms.create_lambda_function()
+
+# Setup the rest api
+cms.api_add_post_method()
+cms.api_add_options_method()
+cms.deploy_api()
+
+# Create the s3 bucket
+cms.create_bucket()
+
+# Create the dynamodb blog table
+cms.create_blog_table()
+
+# Create the dynamodb page table
+cms.create_page_table()
+
+# Create the dynamodb role table
+cms.create_role_table()
+# Add an admin role to the role table
+cms.create_admin_role_db_entry()
+
+# Create the dynamodb token table
+cms.create_token_table()
+# Add a token to the token table
+cms.create_token_db_entry()
+
+# Create the dynamodb user table
+cms.create_user_table()
+# Add an admin to the user table
+cms.create_admin_user_db_entry()

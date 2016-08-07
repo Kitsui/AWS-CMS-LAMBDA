@@ -1,5 +1,4 @@
 {	
-	"TableName": "Token",
 	"AttributeDefinitions": [
 		{
 			"AttributeName": "TokenString",

@@ -26,16 +26,16 @@
                 {
                     "AttributeName": "Email",
                     "KeyType": "HASH"
-                },
+                }
             ],
             "Projection": {
-                "ProjectionType": "ALL",
+                "ProjectionType": "ALL"
             },
             "ProvisionedThroughput": {
                 "ReadCapacityUnits": 5,
                 "WriteCapacityUnits": 5
             }
-        },
+        }
     ],
 	"ProvisionedThroughput": {
 		"ReadCapacityUnits": 5,

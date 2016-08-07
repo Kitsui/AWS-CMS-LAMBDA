@@ -1,5 +1,4 @@
 {	
-	"TableName": "Pages",
 	"AttributeDefinitions": [
 		{
 			"AttributeName": "PageID",

@@ -49,7 +49,7 @@
 
         $.ajax( {
             type: "POST",
-            url: "https://xlttvyymw5.execute-api.us-east-1.amazonaws.com/prod",
+            url: "$(API_URL)",
             headers: { 'Access-Control-Allow-Origin': document.domain },
             data: params,
             contentType: "application/json",

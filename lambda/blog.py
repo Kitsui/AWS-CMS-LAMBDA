@@ -4,9 +4,11 @@
 # Date: 23/06/2016
 # Edited: N/D        | Miguel Saavedra
 #         29/07/2016 | Christopher Treadgold
+#         07/08/2016 | Christopher Treadgold
 """
 
 import datetime
+import json
 import uuid
 
 import boto3
@@ -22,7 +24,8 @@ class Blog(object):
         self.event = event
         self.context = context
         self.index_file= "BlogIndex.html"
-        self.bucket_name = $(bucket_name)
+        with open("constants.json", "r") as constants_file:
+            self.constants = json.loads(constants_file.read())
     
     
     def get_blog_data(self):
@@ -32,8 +35,13 @@ class Blog(object):
         try:
             dynamodb = boto3.client("dynamodb")
             blog_data = dynamodb.query(
-                TableName="Blog",
-                KeyConditionExpression=Key("BlogID").eq(blog_id)
+                TableName=self.constants["BLOG_TABLE"],
+                KeyConditionExpression="BlogID = :v1",
+                ExpressionAttributeValues={
+                    ":v1": {
+                        "S": blog_id
+                    }
+                }
             )
             response = Response("Success", blog_data)
         except botocore.exceptions.ClientError as e:
@@ -51,7 +59,8 @@ class Blog(object):
         """ Gets blog data for all blogs from Blog table """
         try:
             dynamodb = boto3.client("dynamodb")
-            data = dynamodb.scan(TableName="Blog", ConsistentRead=True)
+            data = dynamodb.scan(TableName=self.constants["BLOG_TABLE"],
+                                 ConsistentRead=True)
         except botocore.exceptions.ClientError as e:
             error_code = e.response["Error"]["Code"]
             print error_code
@@ -93,8 +102,8 @@ class Blog(object):
 
         try:
             dynamodb = boto3.client("dynamodb")
-            dynamodb.put_item(TableName="Blog", Item=blog_params,
-                              ReturnConsumedCapacity="TOTAL")
+            dynamodb.put_item(TableName=self.constants["BLOG_TABLE"],
+                              Item=blog_params, ReturnConsumedCapacity="TOTAL")
             self.put_blog_object(blog_id, author, title, content, saved_date,
                          meta_description, meta_keywords)
         except botocore.exceptions.ClientError as e:
@@ -136,12 +145,17 @@ class Blog(object):
         try:
             dynamodb  = boto3.client("dynamodb")
             blog_post = dynamodb.query(
-                TableName="Blog",
-                KeyConditionExpression=Key("BlogID").eq(blog_id)
+                TableName=self.constants["BLOG_TABLE"],
+                KeyConditionExpression="BlogID = :v1",
+                ExpressionAttributeValues={
+                    ":v1": {
+                        "S": blog_id
+                    }
+                }
             )
             saved_date = blog_post["Items"][0]["SavedDate"]
             dynamodb.update_item(
-                TableName="Blog",
+                TableName=self.constants["BLOG_TABLE"],
                 Key={"BlogID": blog_id, "Author": author},
                 UpdateExpression=(
                     "set Title=:t Content=:c SavedDate=:s "
@@ -183,7 +197,7 @@ class Blog(object):
         try:
             dynamodb = boto3.client("dynamodb")
             dynamodb.delete_item(
-                TableName="Blog",
+                TableName=self.constants["BLOG_TABLE"],
                 Key={"BlogID": blog_id, "Author" : author}
             )
         except botocore.exceptions.ClientError as e:
@@ -204,9 +218,10 @@ class Blog(object):
             dynamodb = boto3.client("dynamodb")
             s3 = boto3.client("s3")
             
-            data = dynamodb.scan(TableName="Blog", ConsistentRead=True)
+            data = dynamodb.scan(TableName=self.constants["BLOG_TABLE"],
+                                 ConsistentRead=True)
             blog_prefix = "https://s3.amazonaws.com/%s/blog" % (
-                self.bucket_name)
+                self.constants["BUCKET"])
             index_links = (
                 "<html>"
                     "<head><title>Blog Index</title></head>"
@@ -223,7 +238,7 @@ class Blog(object):
             index_links = "%s</body></html>" % (index_links)
             
             put_index_item_kwargs = {
-                "Bucket": self.bucket_name, "ACL": "public-read",
+                "Bucket": self.constants["BUCKET"], "ACL": "public-read",
                 "Body": indexContent, "Key": self.index_file,
                 "ContentType": "text/html"
             }
@@ -264,7 +279,7 @@ class Blog(object):
              saved_date)
         blog_key = "blog%s" % (blog_id)
         put_blog_item_kwargs = {
-            "Bucket": self.bucket_name,
+            "Bucket": self.constants["BUCKET"],
             "ACL": "public-read",
             "Body": blog_body,
             "Key": blog_key
@@ -280,7 +295,7 @@ class Blog(object):
         
         try:
             put_index_item_kwargs = {
-                "Bucket": self.bucket_name, "ACL": "public-read",
+                "Bucket": self.constants["BUCKET"], "ACL": "public-read",
                 "Body":"<h1>Index</h1> <br>", "Key": self.index_file
             }
             put_index_item_kwargs["ContentType"] = "text/html"
