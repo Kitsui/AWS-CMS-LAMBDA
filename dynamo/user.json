@@ -4,10 +4,7 @@
 		"Username": {"S": "Admin"},
 		"Password": {"S": "$6$rounds=606977$rSFisr4oiGy6lxYm$Z.XMSpyyOgcSoWqfonjkyQUClUbcPD2pg8dWKlmyjos4dyzj79F/KFm/z0g2qaMPit3ut1bSszf7dX/aEGxdg0"},
 		"Email": {"S": "email@gmail.com"},
-		"UserRoles": {"L": [
-				{"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"}
-			]
-		}
+		"Role": {"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"}
 	},
 	"ReturnConsumedCapacity": "TOTAL"
 }

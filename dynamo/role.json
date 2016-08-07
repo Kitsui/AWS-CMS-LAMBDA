@@ -1,7 +1,7 @@
 {
 	"Item": {
 	    "RoleID": {"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"},
-        "RoleType": {"S": "admin"},
+        "RoleType": {"S": "Admin"},
     	"RoleName": {"S": "Admin"},
     	"Permissions": {"M": 
     		{ "User_CanCreate": { "N": "1"},
@@ -11,7 +11,11 @@
     		  "Blog_CanCreate": { "N": "1"},
     		  "Blog_CanRead": { "N": "1"},
     		  "Blog_CanUpdate": { "N": "1"},
-    		  "Blog_CanDelete": { "N": "1"}
+    		  "Blog_CanDelete": { "N": "1"},
+			  "Page_CanCreate": {"N" : "1"},
+			  "Page_CanDelete": {"N" : "1"},
+			  "Page_CanRead": {"N" : "1"},
+			  "Page_CanUpdate": {"N" : "1"}
     		}
     	}
 	},

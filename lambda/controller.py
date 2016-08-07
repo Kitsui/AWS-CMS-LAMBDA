@@ -4,6 +4,7 @@
 # Date: 23/06/2016
 # Edited: N/D        | Miguel Saavedra
 #         02/08/2016 | Chistopher Treadgold
+#         05/08/2016 | Adam Campbell
 #         07/08/2016 | Christopher Treadgold
 """
 
@@ -17,6 +18,7 @@ from blog import Blog
 from page import Page
 from response import Response
 from user import User
+from role import Role
 
 def handler(event, context):
     with open("constants.json", "r") as constants_file:

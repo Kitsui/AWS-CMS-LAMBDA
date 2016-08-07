@@ -4,6 +4,7 @@
 # Date: 23/06/2016
 # Edited: N/D        | Miguel Saavedra
 #         02/08/2016 | Christopher Treadgold
+#		  05/08/2016 | Adam Campbell
 #         07/08/2016 | Christopher Treadgold
 """
 
@@ -27,6 +28,7 @@ class User(object):
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
 
+
     def get_all_users(self):
         # Attempt to get all data from table
         try:
@@ -43,6 +45,7 @@ class User(object):
         # response.setData = data
         return response.format()
 
+
     def register(self):
         # Get password for hashing
         password = self.event["user"]["password"]
@@ -53,7 +56,7 @@ class User(object):
             "Username": {"S": self.event["user"]["username"]},
             "Email": {"S": self.event["user"]["email"]},
             "Password": {"S": hashed},
-            "Roles": {"S": str(1)}
+            "Role": {"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"}
         }
         
         # Attempt to add to dynamo
@@ -73,6 +76,7 @@ class User(object):
         
         return Response("Success", None).to_JSON()
 
+
     def delete_user(self):
         userID = self.event["user"]["userID"]
         email = self.event["user"]["email"]
@@ -87,6 +91,7 @@ class User(object):
             return response.to_JSON()
    
         return Response("Success", None).to_JSON()
+
 
     def edit_user(self):
         email = self.event["user"]["email"]
@@ -110,6 +115,7 @@ class User(object):
             return response.to_JSON()
    
         return Response("Success", None).to_JSON()
+
 
     def login(self):
         try:
@@ -157,6 +163,7 @@ class User(object):
         response = Response("Error", None)
         return response.to_JSON()
 
+
     def logout(self):
         # get user credentials
         token = self.event['tokenString']
@@ -177,6 +184,7 @@ class User(object):
    
         return Response("Success", None).to_JSON()
 
+
     # def get_all_roles(self):
     #     # Attempt to get all data from table
     #     try:
@@ -193,6 +201,7 @@ class User(object):
     #     response = Response("Success", data)
     #     # response.setData = data
     #     return response.format()
+
 
     def create_role(self):
         role_params = {
@@ -230,6 +239,7 @@ class User(object):
    
         return Response("Success", None).to_JSON()
 
+
     def edit_role(self):
         roleName = self.event["role"]["name"]
         roleID = self.event["role"]["roleID"]
@@ -264,6 +274,7 @@ class User(object):
             return response.to_JSON()
    
         return Response("Success", None).to_JSON()
+
 
     def delete_role(self):
         roleID = self.event["role"]["roleID"]
