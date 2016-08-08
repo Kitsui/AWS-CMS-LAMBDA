@@ -30,6 +30,7 @@ class Blog(object):
     
     def get_blog_data(self):
         """ Gets blog data from dynamoDB """
+        blog_id = self.event["blog"]["blogID"]
         try:
             dynamodb = boto3.client("dynamodb")
             blog_data = dynamodb.query(
@@ -45,11 +46,12 @@ class Blog(object):
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             response = Response("Error", None)
-            response.errorMessage = "Unable to get blog data: %s" % e.response["Error"]["Code"]
+            response.errorMessage = "Unable to get blog data: %s" % (
+                e.response["Error"]["Code"])
             return response.to_JSON()
 
-        response = Response("Success", blogData)
-        # response.setData = blogData
+        response = Response("Success", blog_data)
+        # response.setData = blog_data
         return response.to_JSON()
 
 
@@ -62,7 +64,8 @@ class Blog(object):
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             response = Response("Error", None)
-            response.errorMessage = "Unable to get blog data: %s" % e.response["Error"]["Code"]
+            response.errorMessage = "Unable to get blog data: %s" % (
+                e.response["Error"]["Code"])
             return response.to_JSON()
         
         response = Response("Success", data)
@@ -143,22 +146,26 @@ class Blog(object):
                     }
                 }
             )
-            saved_date = blog_post["Items"][0]["SavedDate"]
+            saved_date = blog_post["Items"][0]["SavedDate"]["S"]
             
             dynamodb.update_item(
                 TableName=self.constants["BLOG_TABLE"],
-                Key={"BlogID": blog_id, "Author": author},
+                Key={
+                    "BlogID": {"S": blog_id},
+                    "Author": {"S": author}
+                },
                 UpdateExpression=(
-                    "set Title=:t Content=:c SavedDate=:s "
-                    "MetaDescription=:d MetaKeywords=:k"
+                    "SET Title=:t, Content=:c, SavedDate=:s, "
+                    "MetaDescription=:d, MetaKeywords=:k"
                 ),
                 ExpressionAttributeValues={
-                    ":t": title, ":c": content, ":s": saved_date,
-                    ":d": meta_description, ":k": meta_keywords
+                    ":t": {"S": title}, ":c": {"S": content},
+                    ":s": {"S": saved_date}, ":d": {"S": meta_description},
+                    ":k": {"S": meta_keywords}
                 }
             )
         except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
+            print e
             if e.response["Error"]["Code"] == "NoSuchKey":
                 self.create_new_index()
                 self.save_new_blog()
@@ -182,13 +189,16 @@ class Blog(object):
             dynamodb = boto3.client("dynamodb")
             dynamodb.delete_item(
                 TableName=self.constants["BLOG_TABLE"],
-                Key={"BlogID": blog_id, "Author" : author}
+                Key={
+                    "BlogID": {"S": blog_id},
+                    "Author" : {"S": author}
+                }
             )
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             response = Response("Error", None)
-        response.errorMessage = "Unable to delete blog: %s" % e.response["Error"]["Code"]
-        return response.to_JSON()
+            response.errorMessage = "Unable to delete blog: %s" % e.response["Error"]["Code"]
+            return response.to_JSON()
 
         return Response("Success", None).to_JSON()
 
@@ -220,7 +230,7 @@ class Blog(object):
             
             put_index_item_kwargs = {
                 "Bucket": self.constants["BUCKET"], "ACL": "public-read",
-                "Body": indexContent, "Key": self.index_file,
+                "Body": index_links, "Key": self.index_file,
                 "ContentType": "text/html"
             }
             print index_links
@@ -272,18 +282,25 @@ class Blog(object):
         }
 
         put_blog_item_kwargs["ContentType"] = "text/html"
-        self.s3.put_object(**put_blog_item_kwargs)
+        try:
+            s3 = boto3.client("s3")
+            s3.put_object(**put_blog_item_kwargs)
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            response = Response("Error", None)
+            response.errorMessage = "Unable to save new blog: %s" % e.response["Error"]["Code"]
 
 
     def create_new_index(self):
         print "no index found ... creating Index"
+        put_index_item_kwargs = {
+            "Bucket": self.constants["BUCKET"], "ACL": "public-read",
+            "Body":"<h1>Index</h1> <br>", "Key": self.index_file
+        }
+        put_index_item_kwargs["ContentType"] = "text/html"
         try:
-            put_index_item_kwargs = {
-                "Bucket": self.constants["BUCKET"], "ACL": "public-read",
-                "Body":"<h1>Index</h1> <br>", "Key": self.index_file
-            }
-            put_index_item_kwargs["ContentType"] = "text/html"
-            self.s3.put_object(**put_index_item_kwargs)
+            s3 = boto3.client("s3")
+            s3.put_object(**put_index_item_kwargs)
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             response = Response("Error", None)
