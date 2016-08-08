@@ -194,29 +194,35 @@ class Page(object):
                 TableName=self.constants["PAGE_TABLE"],
                 KeyConditionExpression="PageID = :v1",
                 ExpressionAttributeValues={
-                    "v1": {
+                    ":v1": {
                         "S": page_id
                     }
                 }
             )
-            saved_date = page["Items"][0]["SavedDate"]
+
+            saved_date = page["Items"][0]["SavedDate"]["S"]
             
             dynamodb.update_item(
                 TableName=self.constants["PAGE_TABLE"],
-                Key={"PageID": page_id, "Author": author},
+                Key={
+                    "PageID": {"S": page_id},
+                    "Author": {"S": author}
+                },
                 UpdateExpression=(
-                    "set Title=:t Content=:c SavedDate=:s "
-                    "MetaDescription=:d MetaKeywords=:k"
+                    "set Title=:t, Content=:c, SavedDate=:s, "
+                    "MetaDescription=:d, MetaKeywords=:k"
                 ),
                 ExpressionAttributeValues={
-                    ":t": title, ":c": content, ":s": saved_date,
-                    ":d": meta_description, ":k": meta_keywords
+                    ":t": {"S": title}, ":c": {"S": content}, 
+                    ":s": {"S": saved_date}, ":d": {"S": meta_description},
+                    ":k": {"S": meta_keywords}
                 }
             )
         except botocore.exceptions.ClientError as e:
-            print e.response['Error']['Code']
+            print e
             response = Response("Error", None)
-            response.errorMessage = "Unable to save new page: %s" % e.response['Error']['Code']
+            response.errorMessage = "Unable to edit page: %s" % (
+                e.response['Error']['Code'])
 
             if e.response['Error']['Code'] == "NoSuchKey":
                 self.update_index(blogID, title)
@@ -237,13 +243,17 @@ class Page(object):
             dynamodb = boto3.client('dynamodb')
             dynamodb.delete_item(
                 TableName=self.constants["PAGE_TABLE"],
-                Key={'PageID': page_id, 'Author': author}
+                Key={
+                    'PageID': {"S": page_id},
+                    'Author': {"S": author}
+                }
             )
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
-        response.errorMessage = "Unable to delete page: %s" % e.response['Error']['Code']
-        return response.to_JSON()
+            response.errorMessage = "Unable to delete page: %s" % 
+                (e.response['Error']['Code'])
+            return response.to_JSON()
 
         self.update_index()
         return Response("Success", None).to_JSON()
@@ -254,22 +264,30 @@ class Page(object):
         blogData = {'items': [None]}
         blogTitle = ''
         
-        dynamodb = boto3.client('dynamodb')
-        data = dynamodb.scan(TableName=self.constants["PAGE_TABLE"],
-                             ConsistentRead=True)
-        for item in data['Items']:
-            indexContent = indexContent + '<br>' + '<a href="https://s3.amazonaws.com/' + self.constants["BUCKET"] + '/page' + item['PageID']['S'] + '">'+ item['Title']['S'] +'</a>'
-        indexContent = indexContent + '<body></html>'
-        print indexContent
-        put_index_item_kwargs = {
-            'Bucket': self.constants["BUCKET"],
-            'ACL': 'public-read',
-            'Body': indexContent,
-            'Key': self.Index_file
-        }
-        print indexContent
-        put_index_item_kwargs['ContentType'] = 'text/html'
-        self.s3.put_object(**put_index_item_kwargs)
+        try:
+            dynamodb = boto3.client('dynamodb')
+            data = dynamodb.scan(TableName=self.constants["PAGE_TABLE"],
+                                 ConsistentRead=True)
+            for item in data['Items']:
+                indexContent = indexContent + '<br>' + '<a href="https://s3.amazonaws.com/' + self.constants["BUCKET"] + '/page' + item['PageID']['S'] + '">'+ item['Title']['S'] +'</a>'
+            indexContent = indexContent + '<body></html>'
+            print indexContent
+            put_index_item_kwargs = {
+                'Bucket': self.constants["BUCKET"],
+                'ACL': 'public-read',
+                'Body': indexContent,
+                'Key': self.Index_file
+            }
+            print indexContent
+            put_index_item_kwargs['ContentType'] = 'text/html'
+            s3 = boto3.client("s3")
+            s3.put_object(**put_index_item_kwargs)
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
+            response.errorMessage = "Unable to save site settings: %s" % (
+                e.response['Error']['Code'])
+
 
     def put_page_object(self, page_id, author, title, content, saved_date,
                         mDescription, mKeywords):
@@ -280,7 +298,7 @@ class Page(object):
         page_json ='{ "title": "'+title+'","content": "'+content+'","uuid": "'+page_id+'","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+'"},"script-src" : "something"}'
 
         # put into s3 init
-        put_blog_item_kwargs = {
+        put_page_item_kwargs = {
             'Bucket': self.constants["BUCKET"],
             'ACL': 'public-read',
             'Body': page_json,
@@ -288,11 +306,18 @@ class Page(object):
         }
 
         put_page_item_kwargs['ContentType'] = 'application/json'
-        self.s3.put_object(**put_page_item_kwargs)
+        try:
+            s3 = boto3.client("s3")
+            s3.put_object(**put_page_item_kwargs)
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
+            response.errorMessage = "Unable to save site settings: %s" % (
+                e.response['Error']['Code'])
 
 
     def put_site_settings_object(self, siteName, siteUrl, navItems, metaData,
-     header, footer):
+                                 header, footer):
         # file name
         site_settings_key = 'site-settings'
 
@@ -308,13 +333,20 @@ class Page(object):
         }
 
         put_ss_item_kwargs['ContentType'] = 'application/json'
-        self.s3.put_object(**put_ss_item_kwargs)
-
+        try:
+            s3 = boto3.client("s3")
+            s3.put_object(**put_ss_item_kwargs)
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
+            response.errorMessage = "Unable to save site settings: %s" % (
+                e.response['Error']['Code'])
 
 
     def create_new_index(self):
         print "no index found ... creating Index"
         try:
+            s3 = boto3.client("s3")
             put_index_item_kwargs = {
                 'Bucket': self.constants["BUCKET"],
                 'ACL': 'public-read',
@@ -322,8 +354,9 @@ class Page(object):
                 'Key': self.Index_file
             }
             put_index_item_kwargs['ContentType'] = 'text/html'
-            self.s3.put_object(**put_index_item_kwargs)
+            s3.put_object(**put_index_item_kwargs)
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
-            response.errorMessage = "Unable to save new blog: %s" % e.response['Error']['Code']
+            response.errorMessage = "Unable to save new blog: %s" % (
+                e.response['Error']['Code'])

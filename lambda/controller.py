@@ -72,7 +72,10 @@ def handler(event, context):
         "deleteRole": user.delete_role,
         "getPages": page.get_all_pages,
         "createPage": page.create_page,
-        "deletePage": page.delete_page
+        "deletePage": page.delete_page,
+        "editPage": page.edit_page,
+        "getSiteSettings": page.get_site_settings,
+        "setSiteSettings": page.set_site_settings
     }
 
     if is_authorised:
