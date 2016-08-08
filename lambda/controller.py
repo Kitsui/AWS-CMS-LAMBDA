@@ -24,7 +24,7 @@ def handler(event, context):
     with open("constants.json", "r") as constants_file:
         constants = json.loads(constants_file.read())
             
-    isAuth = False
+    is_authorised = False
     request = event["params"]["request"]
     # Check authentication token
     if(request != "loginUser"):
@@ -44,9 +44,9 @@ def handler(event, context):
             response = Response("Error", None)
             return response.to_JSON()
         if(len(auth['Items']) > 0):
-            isAuth = True
+            is_authorised = True
     elif request == "loginUser":
-        isAuth = True
+        is_authorised = True
 
     # Custom object instances
     user = User(event["params"], context)
@@ -75,7 +75,7 @@ def handler(event, context):
         "deletePage": page.delete_page
     }
 
-    if isAuth:
+    if is_authorised:
         return functionMapping[request]()
     else:
         response = Response("Authentication_Error", None)

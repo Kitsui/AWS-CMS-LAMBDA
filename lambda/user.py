@@ -83,8 +83,13 @@ class User(object):
         email = self.event["user"]["email"]
         try:
             dynamodb = boto3.client('dynamodb')
-            dynamodb.delete_item(TableName=self.constants["USER_TABLE"],
-                              Key={'ID': userID, 'Email': email})
+            dynamodb.delete_item(
+                TableName=self.constants["USER_TABLE"],
+                Key={
+                    'ID': {"S": userID},
+                    'Email': {"S": email}
+                }
+            )
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
@@ -105,9 +110,16 @@ class User(object):
             dynamodb = boto3.client('dynamodb')
             dynamodb.update_item(
                 TableName=self.constants["USER_TABLE"],
-                Key={'ID': userID, 'Email': email}, 
+                Key={
+                    'ID': {"S": userID}, 
+                    'Email': {"S": email}
+                }, 
                 UpdateExpression='SET Username = :u, UserRoles = :r, Password = :p', 
-                ExpressionAttributeValues={':u': newUsername,':r': newRoles, ':p': newPassword }
+                ExpressionAttributeValues={
+                    ':u': {"S": newUsername},
+                    ':r': {"S": newRoles},
+                    ':p': {"S": newPassword}
+                }
             )
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
@@ -175,7 +187,10 @@ class User(object):
             dynamodb = boto3.client('dynamodb')
             response = table.delete_item(
                 TableName=self.constants["TOKEN_TABLE"],
-                Key={'TokenString': token, 'UserID': user}
+                Key={
+                    'TokenString': {"S": token},
+                    'UserID': {"S": user}
+                }
             )
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
@@ -264,9 +279,15 @@ class User(object):
             dynamodb = boto3.client('dynamodb')
             dynamodb.update_item(
                 TableName=self.constants["USER_TABLE"],
-                Key={'RoleID': roleID, 'RoleType': roleType}, 
+                Key={
+                    'RoleID': {"S": roleID},
+                    'RoleType': {"S": roleType}
+                }, 
                 UpdateExpression='SET RoleName = :r, UserPermissions = :p', 
-                ExpressionAttributeValues={ ':r': roleName,  ':p': permissions}
+                ExpressionAttributeValues={
+                    ':r': {"S": roleName}, 
+                    ':p': {"S": permissions}
+                }
             )
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
@@ -284,7 +305,10 @@ class User(object):
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.delete_item(TableName=self.constants["USER_TABLE"],
-                                 Key={'RoleID': roleID, 'RoleType': roleType})
+                                 Key={
+                                    'RoleID': {"S": roleID},
+                                    'RoleType': {"S": roleType}
+                                })
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
