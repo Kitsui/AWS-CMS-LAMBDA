@@ -59,3 +59,9 @@ cms.create_token_db_entry()
 cms.create_user_table()
 # Add an admin to the user table
 cms.create_admin_user_db_entry()
+
+# Create the dynamodb site settings table
+cms.create_site_settings_table()
+
+# Saves the cms installation information
+cms.save_constants()

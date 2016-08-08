@@ -168,10 +168,10 @@ class Blog(object):
                     e.response["Error"]["Code"])
                 return response.to_JSON()
 
-    self.put_blog_object(blogID, author, title, content, saved_date,
-                         meta_description, meta_keywords)
-                         
-    return Response("Success", None).to_JSON()
+        self.put_blog_object(blogID, author, title, content, saved_date,
+            meta_description, meta_keywords)
+
+        return Response("Success", None).to_JSON()
 
 
     def delete_blog(self):
@@ -263,9 +263,9 @@ class Blog(object):
             "Bucket": self.constants["BUCKET"],
             "ACL": "public-read",
             "Body": "<head> <title>" + title + "</title>" +
-            " <meta name="description" content="" + mDescription+ "">"
-            + "<meta name="keywords" content="" + mKeywords + "">" +
-            "<meta http-equiv="content-type" content="text/html;charset=UTF-8">" +
+            ' <meta name="description" content="' + mDescription+ '"">'
+            + '<meta name="keywords" content="' + mKeywords + '"">' +
+            '<meta http-equiv="content-type" content="text/html;charset=UTF-8">' +
             "</head><p>" + author + "<br>" + title + "<br>" +
             content + "<br>" + saveDate + "</p>",
             "Key": blog_key

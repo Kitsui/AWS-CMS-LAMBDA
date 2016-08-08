@@ -6,6 +6,7 @@
     "BLOG_TABLE": "-aws-cms-Blog",
     "PAGE_TABLE": "-aws-cms-Page",
     "ROLE_TABLE": "-aws-cms-Role",
+    "SETTINGS_TABLE": "-aws-cms-Site-Settings",
     "TOKEN_TABLE": "-aws-cms-Token",
     "USER_TABLE": "-aws-cms-User"
 }

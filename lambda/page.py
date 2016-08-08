@@ -26,6 +26,98 @@ class Page(object):
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
 
+    def get_site_settings(self):
+        # Attempt to get all data from table
+        try:
+            dynamodb = boto3.client('dynamodb')
+            data = dynamodb.scan(
+                TableName="SiteSettings",
+                ConsistentRead=True)
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
+            response.errorMessage = "Unable to get site setting data: %s" % e.response['Error']['Code']
+            return response.to_JSON()
+        
+        response = Response("Success", data)
+        # response.setData = data
+        return response.format("Site Settings")
+
+    def set_site_settings(self):
+        # Get new blog params
+        site_name = self.event["site"]["siteName"]
+        site_url = self.event["site"]["siteURL"]
+        nav_items = self.event["site"]["navItems"]
+        meta_data = self.event["site"]["metaData"]
+        header = self.event["site"]["header"]
+        footer = self.event["site"]["footer"]
+        saved_date = str(datetime.datetime.now())
+
+        # init strings
+        nav_items_string = ''
+        meta_data_string = ''
+        header_string = ''
+        footer_string = ''
+
+        # put dict var into string format
+        for key, value in nav_items.iteritems():
+            nav_items_string+= '"'+str(key)+'": "' +str(value)+ '",'
+
+        items_list = list(nav_items_string)
+        items_list[-1] = ''
+        nav_items_string = ''.join(items_list)
+
+
+        for key, value in meta_data.iteritems():
+            meta_data_string+= '"'+str(key)+'": "' +str(value)+ '",'
+
+        items_list = list(meta_data_string)
+        items_list[-1] = ''
+        meta_data_string = ''.join(items_list)
+        
+        for key, value in header.iteritems():
+            header_string+= '"'+str(key)+'": "' +str(value)+ '",'
+
+        items_list = list(header_string)
+        items_list[-1] = ''
+        header_string = ''.join(items_list)
+
+
+        for key, value in footer.iteritems():
+            footer_string+= '"'+str(key)+'": "' +str(value)+ '",'
+
+        items_list = list(footer_string)
+        items_list[-1] = ''
+        footer_string = ''.join(items_list)
+
+        # site settings item parameters
+        site_params = {
+            "SiteName": {"S": site_name},
+            "SiteUrl": {"S": site_url},
+            "NavItems": {"S": nav_items_string},
+            "MetaData": {"S": meta_data_string},
+            "Header": {"S": header_string},
+            "Footer": {"S": footer_string},
+            "LastSaved" : {"S": saved_date}
+        }
+        # put into dynamo
+        try:
+            dynamodb = boto3.client('dynamodb')
+            dynamodb.put_item(
+                TableName='SiteSettings',
+                Item=site_params,
+                ReturnConsumedCapacity='TOTAL'
+            )
+
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
+            response.errorMessage = "Unable to set new site settings: %s" % e.response['Error']['Code']
+
+        # put site settings object into s3
+        self.put_site_settings_object(site_name, site_url, nav_items_string, 
+            meta_data_string, header_string, footer_string)
+        return Response("Success", None).to_JSON()
 
     def get_all_pages(self):
         # Attempt to get all data from table
@@ -179,27 +271,45 @@ class Page(object):
         put_index_item_kwargs['ContentType'] = 'text/html'
         self.s3.put_object(**put_index_item_kwargs)
 
-
     def put_page_object(self, page_id, author, title, content, saved_date,
                         mDescription, mKeywords):
-        page_key = 'page' + page_id
+        page_key = 'page-json-' + title
         
         self.update_index()
+        # page body
+        page_json ='{ "title": "'+title+'","content": "'+content+'","uuid": "'+page_id+'","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+'"},"script-src" : "something"}'
 
+        # put into s3 init
         put_blog_item_kwargs = {
             'Bucket': self.constants["BUCKET"],
             'ACL': 'public-read',
-            'Body': '<head> <title>' + title + '</title>' +
-            ' <meta name="description" content="' + mDescription+ '">'
-            + '<meta name="keywords" content="' + mKeywords + '">' +
-            '<meta http-equiv="content-type" content="text/html;charset=UTF-8">' +
-            '</head><p>' + author + '<br>' + title + '<br>' +
-            content + '<br>' + saved_date + '</p>',
+            'Body': page_json,
             'Key': page_key
         }
 
-        put_blog_item_kwargs['ContentType'] = 'text/html'
-        self.s3.put_object(**put_blog_item_kwargs)
+        put_page_item_kwargs['ContentType'] = 'application/json'
+        self.s3.put_object(**put_page_item_kwargs)
+
+
+    def put_site_settings_object(self, siteName, siteUrl, navItems, metaData,
+     header, footer):
+        # file name
+        site_settings_key = 'site-settings'
+
+        # site settings body
+        ss_json ='{ "site-name" : "'+siteName+'", "site-url:" : "'+siteUrl+'", "nav-items" : { '+navItems+'},"meta-data" : {'+metaData+'},"header" : {'+header+'}, "footer" : {'+footer+'}}'
+
+        # put into s3 init
+        put_ss_item_kwargs = {
+            'Bucket': self.bucket_name,
+            'ACL': 'public-read',
+            'Body': ss_json,
+            'Key': site_settings_key
+        }
+
+        put_ss_item_kwargs['ContentType'] = 'application/json'
+        self.s3.put_object(**put_ss_item_kwargs)
+
 
 
     def create_new_index(self):

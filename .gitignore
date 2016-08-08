@@ -1,3 +1,4 @@
 *.pyc
 test.py
-constants.json
+*-constants.json
+installed.json

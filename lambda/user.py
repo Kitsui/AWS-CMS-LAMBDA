@@ -4,7 +4,7 @@
 # Date: 23/06/2016
 # Edited: N/D        | Miguel Saavedra
 #         02/08/2016 | Christopher Treadgold
-#		  05/08/2016 | Adam Campbell
+#         05/08/2016 | Adam Campbell
 #         07/08/2016 | Christopher Treadgold
 """
 
@@ -38,12 +38,13 @@ class User(object):
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
-            response.errorMessage = "Unable to get user data: %s" % e.response['Error']['Code']
+            response.errorMessage = "Unable to get user data: %s" % (
+                e.response['Error']['Code'])
             return response.to_JSON()
         
         response = Response("Success", data)
         # response.setData = data
-        return response.format()
+        return response.format("All Users")
 
 
     def register(self):

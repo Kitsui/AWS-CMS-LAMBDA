@@ -21,10 +21,27 @@ iam = boto3.client('iam')
 dynamodb = boto3.client('dynamodb')
 s3 = boto3.client('s3')
 
-# Resources to be deleted
-with open("lambda/constants.json", "r") as constants_file:
-    constants = json.loads(constants_file.read())
-os.remove("lambda/constants.json")
+# Get installed cms'
+if os.path.isfile("./installed.json"):
+    with open("installed.json", "r") as installed_file:
+        installed = json.loads(installed_file.read())
+else:
+    print "No cms' are installed, exiting"
+    sys.exit()
+
+# Ask the user which cms to remove
+print "Installed cms':"
+for key in installed.keys():
+    print "%s: %s" %(key, installed[key])
+user_selection = str(input("Enter the number of the cms you would like to uninstall: "))
+if user_selection not in installed.keys():
+    print "Invalid selection, exiting."
+    sys.exit()
+else:
+    constants_file_name = "%s-constants.json" % (installed[user_selection])
+    with open(constants_file_name, "r") as const:
+        constants = json.loads(const.read())
+    del installed[user_selection]
 
 rest_api_names = [
     constants["REST_API"]
@@ -40,7 +57,8 @@ dynamodb_table_names = [
     constants["PAGE_TABLE"],
     constants["ROLE_TABLE"],
     constants["TOKEN_TABLE"],
-    constants["USER_TABLE"]
+    constants["USER_TABLE"],
+    constants["SETTINGS_TABLE"]
 ]
 s3_bucket_names = [
     constants["BUCKET"]
@@ -146,3 +164,13 @@ if buckets_deleted > 0:
     print objects_deleted, 'objects deleted'
 else:
     print 'No S3 buckets to remove'
+
+
+# Clean up files
+if not installed:
+    os.remove("installed.json")
+else:
+    with open("installed.json", "w") as inst:
+        inst.write(json.dumps(installed, indent=4, sort_keys=True))
+
+os.remove(constants_file_name)

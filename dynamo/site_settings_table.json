@@ -1,0 +1,26 @@
+{	
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "SiteName",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "SiteUrl",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "SiteName",
+			"KeyType": "HASH"
+		},
+		{
+			"AttributeName": "SiteUrl",
+			"KeyType": "RANGE"
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits":5
+	}
+}

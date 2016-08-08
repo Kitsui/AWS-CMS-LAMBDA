@@ -31,6 +31,7 @@ class AwsFunc:
         """
         self.region = region
         self.constants = {}
+        self.cms_prefix = cms_prefix
         with open ("postfixes.json", "r") as postfixes_file:
             postfixes = json.loads(postfixes_file.read())
         for key in postfixes.keys():
@@ -193,6 +194,24 @@ class AwsFunc:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
             sys.exit()
+            
+            
+    def create_site_settings_table(self):
+        """ Creates a site settings table. """
+        with open("dynamo/site_settings_table.json", "r") as thefile:
+            site_settings_table_json = json.loads(thefile.read())
+        site_settings_table_json["TableName"] = self.constants["SETTINGS_TABLE"]
+        
+        try:
+            print "Creating table: %s" % (self.constants["SETTINGS_TABLE"])
+            dynamodb = boto3.client("dynamodb")
+            site_settings_table = dynamodb.create_table(**site_settings_table_json)
+            self.wait_for_table(site_settings_table)
+            print "Settings table created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
 
 
     def wait_for_table(self, table):
@@ -326,7 +345,7 @@ class AwsFunc:
         time.sleep(10)
         
         # Store constants file in lambda directory
-        self.store_constants()
+        self.store_lambda_constants()
         
         # Create the lambda function
         try:
@@ -351,6 +370,7 @@ class AwsFunc:
             sys.exit()
         
         self.create_api_invocation_uri()
+        self.remove_lambda_constants()
     
     
     def create_rest_api(self):
@@ -564,11 +584,37 @@ class AwsFunc:
             sys.exit()
             
             
-    def store_constants(self):
-        """ Stores aws service constants in a file """
+    def store_lambda_constants(self):
+        """ Stores aws service constants in the lambda directory """
         with open ("lambda/constants.json", "w") as constants_file:
             constants_file.write(json.dumps(self.constants, indent=4,
                                  sort_keys=True))
+    
+    
+    def save_constants(self):
+        """ Stores aws service constants in a file """
+        constants_file_name = "%s-constants.json" % (self.cms_prefix)
+        with open (constants_file_name, "w") as constants_file:
+            constants_file.write(json.dumps(self.constants, indent=4,
+                                 sort_keys=True))
+        
+        if not os.path.isfile("./installed.json"):
+            with open("installed.json", "w") as installed:
+                installed.write(json.dumps({"1": self.cms_prefix}, indent=4,
+                                           sort_keys=True))
+        else:
+            with open("installed.json", "r") as installed:
+                installed_json = json.loads(installed.read())
+            next_key = len(installed_json.keys()) + 1
+            installed_json[next_key] = self.cms_prefix
+            with open("installed.json", "w") as installed:
+                installed.write(json.dumps(installed_json, indent=4,
+                                           sort_keys=True))
+    
+    
+    def remove_lambda_constants(self):
+        """ Removes aws service constants from the lambda directory """
+        os.remove("lambda/constants.json")
 
 
     def create_api_invocation_uri(self):
