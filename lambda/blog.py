@@ -72,13 +72,13 @@ class Blog(object):
 
     def save_new_blog(self):
         # Get new blog params
-        blogID = str(uuid.uuid4())
+        blog_id = str(uuid.uuid4())
         author = self.event["blog"]["author"]
         title = self.event["blog"]["title"]
         content = self.event["blog"]["content"]
-        metaDescription = self.event["blog"]["metaDescription"]
-        metaKeywords = self.event["blog"]["metaKeywords"]
-        saveDate = str(datetime.datetime.now())
+        meta_description = self.event["blog"]["metaDescription"]
+        meta_keywords = self.event["blog"]["metaKeywords"]
+        saved_date = str(datetime.datetime.now())
 
         if not Validator.validateBlog(content):
             response = Response("Error", None)
@@ -87,13 +87,13 @@ class Blog(object):
             return response.to_JSON()
 
         blog_params = {
-            "BlogID": {"S": blogID},
+            "BlogID": {"S": blog_id},
             "Author": {"S": author},
             "Title": {"S": title},
             "Content": {"S": content},
-            "SavedDate": {"S": saveDate},
-            "MetaDescription": {"S": metaDescription},
-            "MetaKeywords": {"S": metaKeywords},
+            "SavedDate": {"S": saved_date},
+            "MetaDescription": {"S": meta_description},
+            "MetaKeywords": {"S": meta_keywords},
         }
 
         try:
@@ -109,18 +109,18 @@ class Blog(object):
             response.errorMessage = "Unable to save new blog: %s" % e.response["Error"]["Code"]
 
             if e.response["Error"]["Code"] == "NoSuchKey":
-                self.update_index(blogID, title)
+                self.update_index(blog_id, title)
                 self.save_new_blog()
             else:
                 return response.to_JSON()
 
-        self.put_blog_object(blogID, author, title, content, saveDate,
-                metaDescription, metaKeywords)
+        self.put_blog_object(blog_id, author, title, content, saved_date,
+                meta_description, meta_keywords)
         return Response("Success", None).to_JSON()
 
 
     def edit_blog(self):
-        blogID = self.event["blog"]["blogID"]
+        blog_id = self.event["blog"]["blogID"]
         author = self.event["blog"]["author"]
         content = self.event["blog"]["content"]
         title = self.event["blog"]["title"]
@@ -168,14 +168,14 @@ class Blog(object):
                     e.response["Error"]["Code"])
                 return response.to_JSON()
 
-        self.put_blog_object(blogID, author, title, content, saved_date,
+        self.put_blog_object(blog_id, author, title, content, saved_date,
             meta_description, meta_keywords)
 
         return Response("Success", None).to_JSON()
 
 
     def delete_blog(self):
-        blogID = self.event["blog"]["blogID"]
+        blog_id = self.event["blog"]["blogID"]
         author = self.event["blog"]["author"]
         
         try:
@@ -238,9 +238,9 @@ class Blog(object):
         return Response("Success", None).to_JSON()
 
 
-    def put_blog_object(self, blogID, author, title, content, saveDate,
-                        mDescription, mKeywords):
-        blog_key = "blog" + blogID
+    def put_blog_object(self, blog_id, author, title, content, saved_date,
+                        meta_description, meta_keywords):
+        blog_key = "blog" + blog_id
         blog_body = (
             "<head>"
                 "<title>%s</title>"
@@ -257,17 +257,17 @@ class Blog(object):
         ) % (title, meta_description, meta_keywords, author, title, content,
              saved_date)
         blog_key = "blog%s" % (blog_id)
-        self.update_index(blogID, title)
+        self.update_index(blog_id, title)
         
         put_blog_item_kwargs = {
             "Bucket": self.constants["BUCKET"],
             "ACL": "public-read",
             "Body": "<head> <title>" + title + "</title>" +
-            ' <meta name="description" content="' + mDescription+ '"">'
-            + '<meta name="keywords" content="' + mKeywords + '"">' +
+            ' <meta name="description" content="' + meta_description+ '"">'
+            + '<meta name="keywords" content="' + meta_keywords + '"">' +
             '<meta http-equiv="content-type" content="text/html;charset=UTF-8">' +
             "</head><p>" + author + "<br>" + title + "<br>" +
-            content + "<br>" + saveDate + "</p>",
+            content + "<br>" + saved_date + "</p>",
             "Key": blog_key
         }
 
