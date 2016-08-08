@@ -261,38 +261,42 @@ class User(object):
         roleID = self.event["role"]["roleID"]
         roleType = self.event["role"]["type"]
         permissions = { 
-        "Blog_CanCreate": {"N" : self.event["role"]["permissions"]["blog_canCreate"]},
-        "Blog_CanDelete": {"N" : self.event["role"]["permissions"]["blog_canDelete"]},
-        "Blog_CanRead": {"N" : self.event["role"]["permissions"]["blog_canRead"]},
-        "Blog_CanUpdate": {"N" : self.event["role"]["permissions"]["blog_canUpdate"]},
-        "User_CanCreate": {"N" : self.event["role"]["permissions"]["user_canCreate"]}, 
-        "User_CanDelete": {"N" : self.event["role"]["permissions"]["user_canDelete"]},
-        "User_CanRead": {"N" : self.event["role"]["permissions"]["user_canRead"]},
-        "User_CanUpdate": {"N" : self.event["role"]["permissions"]["user_canUpdate"]},
-        "Page_CanDelete": {"N" : self.event["role"]["permissions"]["page_canDelete"]},
-        "Page_CanCreate": {"N" : self.event["role"]["permissions"]["page_canCreate"]},
-        "Page_CanRead": {"N" : self.event["role"]["permissions"]["page_canRead"]},
-        "Page_CanUpdate": {"N" : self.event["role"]["permissions"]["page_canUpdate"]}
+            "Blog_CanCreate": {"N" : self.event["role"]["permissions"]["blog_canCreate"]},
+            "Blog_CanDelete": {"N" : self.event["role"]["permissions"]["blog_canDelete"]},
+            "Blog_CanRead": {"N" : self.event["role"]["permissions"]["blog_canRead"]},
+            "Blog_CanUpdate": {"N" : self.event["role"]["permissions"]["blog_canUpdate"]},
+            "User_CanCreate": {"N" : self.event["role"]["permissions"]["user_canCreate"]}, 
+            "User_CanDelete": {"N" : self.event["role"]["permissions"]["user_canDelete"]},
+            "User_CanRead": {"N" : self.event["role"]["permissions"]["user_canRead"]},
+            "User_CanUpdate": {"N" : self.event["role"]["permissions"]["user_canUpdate"]},
+            "Page_CanDelete": {"N" : self.event["role"]["permissions"]["page_canDelete"]},
+            "Page_CanCreate": {"N" : self.event["role"]["permissions"]["page_canCreate"]},
+            "Page_CanRead": {"N" : self.event["role"]["permissions"]["page_canRead"]},
+            "Page_CanUpdate": {"N" : self.event["role"]["permissions"]["page_canUpdate"]}
         }
         
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.update_item(
-                TableName=self.constants["USER_TABLE"],
+                TableName=self.constants["ROLE_TABLE"],
                 Key={
                     'RoleID': {"S": roleID},
                     'RoleType': {"S": roleType}
                 }, 
-                UpdateExpression='SET RoleName = :r, UserPermissions = :p', 
+                UpdateExpression='SET RoleName = :r, #pm = :p', 
+                ExpressionAttributeNames={
+                    "#pm": "Permissions"
+                },
                 ExpressionAttributeValues={
                     ':r': {"S": roleName}, 
-                    ':p': {"S": permissions}
+                    ':p': {"M": permissions}
                 }
             )
         except botocore.exceptions.ClientError as e:
-            print e.response['Error']['Code']
+            print e
             response = Response("Error", None)
-            response.errorMessage = "Unable to edit role: %s" % e.response['Error']['Code']
+            response.errorMessage = "Unable to edit role: %s" % (
+                e.response['Error']['Code'])
             return response.to_JSON()
    
         return Response("Success", None).to_JSON()
@@ -304,7 +308,7 @@ class User(object):
         
         try:
             dynamodb = boto3.client('dynamodb')
-            dynamodb.delete_item(TableName=self.constants["USER_TABLE"],
+            dynamodb.delete_item(TableName=self.constants["ROLE_TABLE"],
                                  Key={
                                     'RoleID': {"S": roleID},
                                     'RoleType': {"S": roleType}

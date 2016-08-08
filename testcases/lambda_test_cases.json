@@ -46,7 +46,7 @@ Edit User
       "userID": "1", 
       "newUsername": "johnny",
       "newPassword": "newPassword",
-      "newRoles": ["role1", "role2"]
+      "newRoles": "role1"
     }
   }
 }
@@ -58,7 +58,7 @@ Delete user
     "request": "deleteUser",
     "token": "testToken1234567",
     "user": {
-      "userID": "17ec0fc9-178f-4ae3-91d6-9c1426f82627",
+      "userID": "",
       "email": "admin"
     }
   }
@@ -153,6 +153,7 @@ create role
 
 {
     "params": {
+      "token": "testToken1234567",
       "request": "createRole",
       "role" : {
           "name": "Johnononno",
@@ -183,7 +184,7 @@ Edit role
     "request": "editRole",
     "token": "testToken1234567",
         "role": {
-            "roleID": "17ec0fc9-178f-4ae3-91d6-9c1426f82627",
+            "roleID": "",
             "type": "admin",
             "name": "Johnononno",
             "permissions": {
