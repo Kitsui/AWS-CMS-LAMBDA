@@ -30,9 +30,8 @@ class Page(object):
         # Attempt to get all data from table
         try:
             dynamodb = boto3.client('dynamodb')
-            data = dynamodb.scan(
-                TableName="SiteSettings",
-                ConsistentRead=True)
+            data = dynamodb.scan(TableName=self.constants["SETTINGS_TABLE"],
+                                 ConsistentRead=True)
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
@@ -104,7 +103,7 @@ class Page(object):
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.put_item(
-                TableName='SiteSettings',
+                TableName=self.constants["SETTINGS_TABLE"],
                 Item=site_params,
                 ReturnConsumedCapacity='TOTAL'
             )
@@ -251,8 +250,8 @@ class Page(object):
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
-            response.errorMessage = "Unable to delete page: %s" % 
-                (e.response['Error']['Code'])
+            response.errorMessage = "Unable to delete page: %s" % (
+                e.response['Error']['Code'])
             return response.to_JSON()
 
         self.update_index()
@@ -326,7 +325,7 @@ class Page(object):
 
         # put into s3 init
         put_ss_item_kwargs = {
-            'Bucket': self.bucket_name,
+            'Bucket': self.constants["BUCKET"],
             'ACL': 'public-read',
             'Body': ss_json,
             'Key': site_settings_key

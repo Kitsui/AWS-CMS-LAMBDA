@@ -317,7 +317,7 @@ Get Site Settings
 {
   "params": {
     "request": "getSiteSettings",
-    "token": "1"
+    "token": "testToken1234567"
   }
 }
 
