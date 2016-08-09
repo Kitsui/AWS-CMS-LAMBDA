@@ -27,7 +27,7 @@ class Blog(object):
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
     
-    
+    """ function gets a blog record from dynamo """
     def get_blog_data(self):
         """ Gets blog data from dynamoDB """
         blog_id = self.event["blog"]["blogID"]
@@ -55,6 +55,7 @@ class Blog(object):
         return response.to_JSON()
 
 
+    """ function gets all blog records from dynamo """
     def get_all_blogs(self):
         # Attempt to get all data from table
         try:
@@ -69,10 +70,11 @@ class Blog(object):
             return response.to_JSON()
         
         response = Response("Success", data)
-        # response.setData = data
+        # format for table response to admin dash
         return response.format("All Blogs")
 
 
+    """ function saves a new blog record in dynamo """
     def save_new_blog(self):
         # Get new blog params
         blog_id = str(uuid.uuid4())
@@ -122,6 +124,7 @@ class Blog(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function edits a blog record in dynamo """
     def edit_blog(self):
         blog_id = self.event["blog"]["blogID"]
         author = self.event["blog"]["author"]
@@ -148,6 +151,7 @@ class Blog(object):
             )
             saved_date = blog_post["Items"][0]["SavedDate"]["S"]
             
+            # Update item from dynamo
             dynamodb.update_item(
                 TableName=self.constants["BLOG_TABLE"],
                 Key={
@@ -181,10 +185,11 @@ class Blog(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function deletes a blog record from dynamo """
     def delete_blog(self):
         blog_id = self.event["blog"]["blogID"]
         author = self.event["blog"]["author"]
-        
+        # delete item from dynamo
         try:
             dynamodb = boto3.client("dynamodb")
             dynamodb.delete_item(
@@ -203,8 +208,8 @@ class Blog(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function updates the index of blogs in the s3 bucket"""
     def update_index(self, blog_id, title):
-        """ Updates the index of blogs in the s3 bucket """
         try:
             dynamodb = boto3.client("dynamodb")
             s3 = boto3.client("s3")
@@ -248,6 +253,7 @@ class Blog(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function puts a blog json object on s3 """
     def put_blog_object(self, blog_id, author, title, content, saved_date,
                         meta_description, meta_keywords):
         blog_key = "blog" + blog_id
@@ -291,6 +297,7 @@ class Blog(object):
             response.errorMessage = "Unable to save new blog: %s" % e.response["Error"]["Code"]
 
 
+    """ function which creates a new index if not found in s3 """
     def create_new_index(self):
         print "no index found ... creating Index"
         put_index_item_kwargs = {

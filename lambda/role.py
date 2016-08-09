@@ -1,6 +1,6 @@
 """
 # role.py
-# Author: Adam Campbell
+# Author: Adam Campbell & Miguel Saavedra
 # Date: 05/08/2016
 """
 

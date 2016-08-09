@@ -17,7 +17,7 @@ class Response(object):
             if(data["Items"][0] is not None):
                 self.columns = data["Items"][0].keys()
 
-    # used to format replies querying dynamo
+    """ function formats replies querying dynamo"""
     def format(self, pTitle):
         replyData = {}
         colm = []

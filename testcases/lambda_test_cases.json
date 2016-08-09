@@ -58,8 +58,8 @@ Delete user
     "request": "deleteUser",
     "token": "testToken1234567",
     "user": {
-      "userID": "",
-      "email": "admin"
+      "userID": "1",
+      "email": "1"
     }
   }
 }
@@ -112,15 +112,15 @@ Edit Blog
         "request": "editBlog",
         "token": "testToken1234567",
         "blog": {
-            "blogID": "",
+            "blogID": "dbfab1c4-b447-485a-a41d-e320904e7805",
             "author": "Jeremy",
-            "title": "I like Hondas",
+            "title": "I like Hondassss",
             "content": "Content, Content Content HONNNNNDAAAAA",
             "metaDescription": "new description",
             "metaKeywords" : "newKeyword1, newKeyword2, newKeyword3"
       }
     }
-}
+} // weird key error with title
 
 Delete Blog
 
@@ -147,7 +147,7 @@ Get all Roles - work in progress
     "request": "getRoles",
     "token": "testToken1234567"
   }
-}
+} // broken
 
 create role
 

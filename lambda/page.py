@@ -26,6 +26,7 @@ class Page(object):
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
 
+    """ function returns site settings from dynamo db """
     def get_site_settings(self):
         # Attempt to get all data from table
         try:
@@ -39,9 +40,10 @@ class Page(object):
             return response.to_JSON()
         
         response = Response("Success", data)
-        # response.setData = data
+        # format for table response to admin dash
         return response.format("Site Settings")
 
+    """ function sets up the site settings in dynamo and s3 """
     def set_site_settings(self):
         # Get new blog params
         site_name = self.event["site"]["siteName"]
@@ -118,6 +120,7 @@ class Page(object):
             meta_data_string, header_string, footer_string)
         return Response("Success", None).to_JSON()
 
+    """ function returns all pages in dynamo """
     def get_all_pages(self):
         # Attempt to get all data from table
         try:
@@ -131,10 +134,11 @@ class Page(object):
             return response.to_JSON()
         
         response = Response("Success", data)
-        # response.setData = data
+        # format for table response to admin dash
         return response.format("All Pages")
 
 
+    """ functions creates a page in s3 and dynamo """
     def create_page(self):
         # Get new blog params
         page_id = str(uuid.uuid4())
@@ -145,6 +149,7 @@ class Page(object):
         meta_keywords = self.event["page"]["metaKeywords"]
         saved_date = str(datetime.datetime.now())
 
+        # Item parameters
         page_params = {
             "PageID": {"S": page_id},
             "Author": {"S": author},
@@ -155,6 +160,7 @@ class Page(object):
             "MetaKeywords": {"S": meta_keywords},
         }
 
+        # Put into dynamo
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.put_item(
@@ -176,9 +182,11 @@ class Page(object):
 
         self.put_page_object(page_id, author, title, content, saved_date,
                 meta_description, meta_keywords)
+        # Return back success
         return Response("Success", None).to_JSON()
 
 
+    """ function edits a page record in dynamo and s3 """
     def edit_page(self):
         page_id = self.event["page"]["pageID"]
         author = self.event["page"]["pageAuthor"]
@@ -189,6 +197,7 @@ class Page(object):
         
         try:
             dynamodb = boto3.client('dynamodb')
+            # Get item instance from dynamo
             page = dynamodb.query(
                 TableName=self.constants["PAGE_TABLE"],
                 KeyConditionExpression="PageID = :v1",
@@ -201,6 +210,7 @@ class Page(object):
 
             saved_date = page["Items"][0]["SavedDate"]["S"]
             
+            # Update item from dynamo
             dynamodb.update_item(
                 TableName=self.constants["PAGE_TABLE"],
                 Key={
@@ -234,10 +244,12 @@ class Page(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function which deletes a page record from dynamo and s3 """
     def delete_page(self):
         page_id =self.event['page']['pageID']
         author = self.event['page']['pageAuthor']
         
+        # delete item from dynamo
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.delete_item(
@@ -258,11 +270,13 @@ class Page(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function which updates a page index html object on s3 """
     def update_index(self):
         indexContent = '<html><head><title>Page Index</title></head><body><h1>Index</h1>'
         blogData = {'items': [None]}
         blogTitle = ''
         
+        # put into dynamo
         try:
             dynamodb = boto3.client('dynamodb')
             data = dynamodb.scan(TableName=self.constants["PAGE_TABLE"],
@@ -271,6 +285,7 @@ class Page(object):
                 indexContent = indexContent + '<br>' + '<a href="https://s3.amazonaws.com/' + self.constants["BUCKET"] + '/page' + item['PageID']['S'] + '">'+ item['Title']['S'] +'</a>'
             indexContent = indexContent + '<body></html>'
             print indexContent
+            # Item parameters
             put_index_item_kwargs = {
                 'Bucket': self.constants["BUCKET"],
                 'ACL': 'public-read',
@@ -280,6 +295,7 @@ class Page(object):
             print indexContent
             put_index_item_kwargs['ContentType'] = 'text/html'
             s3 = boto3.client("s3")
+            # put into s3
             s3.put_object(**put_index_item_kwargs)
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
@@ -288,6 +304,7 @@ class Page(object):
                 e.response['Error']['Code'])
 
 
+    """ function which puts a page json object in s3 """
     def put_page_object(self, page_id, author, title, content, saved_date,
                         mDescription, mKeywords):
         page_key = 'page-json-' + title
@@ -296,7 +313,7 @@ class Page(object):
         # page body
         page_json ='{ "title": "'+title+'","content": "'+content+'","uuid": "'+page_id+'","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+'"},"script-src" : "something"}'
 
-        # put into s3 init
+        # Item parameters
         put_page_item_kwargs = {
             'Bucket': self.constants["BUCKET"],
             'ACL': 'public-read',
@@ -307,6 +324,7 @@ class Page(object):
         put_page_item_kwargs['ContentType'] = 'application/json'
         try:
             s3 = boto3.client("s3")
+            # put into s3
             s3.put_object(**put_page_item_kwargs)
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
@@ -315,6 +333,7 @@ class Page(object):
                 e.response['Error']['Code'])
 
 
+    """ function which puts a site settings json object in s3 """
     def put_site_settings_object(self, siteName, siteUrl, navItems, metaData,
                                  header, footer):
         # file name
@@ -323,7 +342,7 @@ class Page(object):
         # site settings body
         ss_json ='{ "site-name" : "'+siteName+'", "site-url:" : "'+siteUrl+'", "nav-items" : { '+navItems+'},"meta-data" : {'+metaData+'},"header" : {'+header+'}, "footer" : {'+footer+'}}'
 
-        # put into s3 init
+        # Item parameters
         put_ss_item_kwargs = {
             'Bucket': self.constants["BUCKET"],
             'ACL': 'public-read',
@@ -332,6 +351,7 @@ class Page(object):
         }
 
         put_ss_item_kwargs['ContentType'] = 'application/json'
+        # put into s3
         try:
             s3 = boto3.client("s3")
             s3.put_object(**put_ss_item_kwargs)
@@ -342,10 +362,12 @@ class Page(object):
                 e.response['Error']['Code'])
 
 
+    """ function which creates a new index if not found in s3 """
     def create_new_index(self):
         print "no index found ... creating Index"
         try:
             s3 = boto3.client("s3")
+            # Item parameters
             put_index_item_kwargs = {
                 'Bucket': self.constants["BUCKET"],
                 'ACL': 'public-read',
@@ -353,6 +375,7 @@ class Page(object):
                 'Key': self.Index_file
             }
             put_index_item_kwargs['ContentType'] = 'text/html'
+            # put into s3
             s3.put_object(**put_index_item_kwargs)
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
