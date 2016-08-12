@@ -1,6 +1,6 @@
 """
 # role.py
-# Author: Adam Campbell
+# Author: Adam Campbell & Miguel Saavedra
 # Date: 05/08/2016
 """
 
@@ -13,6 +13,7 @@ class Role(object):
         self.event = event
         self.context = context
 
+    """ function gets all role records from dynamo """
     # def get_all_roles(self):
     #     # Attempt to get all data from table
     #     try:
@@ -30,6 +31,7 @@ class Role(object):
     #     # response.setData = data
     #     return response.format()
 
+    """ function adds a role to dynamo """
     def create_role(self):
         role_params = {
         "RoleName": {"S" : self.event["role"]["name"]},
@@ -65,6 +67,7 @@ class Role(object):
 
         return Response("Success", None).to_JSON()
 
+    """ function edits a role record in dynamo """
     def edit_role(self):
         roleName = self.event["role"]["name"]
         roleID = self.event["role"]["roleID"]
@@ -102,6 +105,7 @@ class Role(object):
 
         return Response("Success", None).to_JSON()
 
+    """ function deletes a role in dynamo """
     def delete_role(self):
         roleID = self.event["role"]["roleID"]
         try:

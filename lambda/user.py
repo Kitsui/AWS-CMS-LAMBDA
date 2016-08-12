@@ -29,6 +29,7 @@ class User(object):
             self.constants = json.loads(constants_file.read())
 
 
+    """ function returns all user records frmo dynamo """
     def get_all_users(self):
         # Attempt to get all data from table
         try:
@@ -43,10 +44,11 @@ class User(object):
             return response.to_JSON()
         
         response = Response("Success", data)
-        # response.setData = data
+        # format for table response to admin dash
         return response.format("All Users")
 
 
+    """ function adds a user record to dynamo """
     def register(self):
         # Get password for hashing
         password = self.event["user"]["password"]
@@ -78,6 +80,7 @@ class User(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function deletes a user record from dynamo """
     def delete_user(self):
         userID = self.event["user"]["userID"]
         email = self.event["user"]["email"]
@@ -99,6 +102,7 @@ class User(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function edits a user record form dynamo """
     def edit_user(self):
         email = self.event["user"]["email"]
         userID = self.event["user"]["userID"]
@@ -130,6 +134,9 @@ class User(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function returns if a record exists with username 
+    and password matching the event input, then adds a token
+    in dynamo which is returned back to the user """
     def login(self):
         try:
             dynamodb = boto3.client('dynamodb')
@@ -177,6 +184,7 @@ class User(object):
         return response.to_JSON()
 
 
+    """ function deletes a token record from dynamo"""
     def logout(self):
         # get user credentials
         token = self.event['tokenString']
@@ -219,6 +227,7 @@ class User(object):
     #     return response.format()
 
 
+    """ function adds a role to dynamo """
     def create_role(self):
         role_params = {
         "RoleName": {"S" : self.event["role"]["name"]},
@@ -256,6 +265,7 @@ class User(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function edits a role record in dynamo """
     def edit_role(self):
         roleName = self.event["role"]["name"]
         roleID = self.event["role"]["roleID"]
@@ -277,6 +287,7 @@ class User(object):
         
         try:
             dynamodb = boto3.client('dynamodb')
+            # Update item from dynamo
             dynamodb.update_item(
                 TableName=self.constants["ROLE_TABLE"],
                 Key={
@@ -302,10 +313,11 @@ class User(object):
         return Response("Success", None).to_JSON()
 
 
+    """ function deletes a role in dynamo """
     def delete_role(self):
         roleID = self.event["role"]["roleID"]
         roleType = self.event["role"]["type"]
-        
+        # delete item from dynamo
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.delete_item(TableName=self.constants["ROLE_TABLE"],
