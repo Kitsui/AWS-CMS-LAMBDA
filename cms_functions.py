@@ -189,7 +189,41 @@ class AwsFunc:
             dynamodb = boto3.client("dynamodb")
             page_table = dynamodb.create_table(**page_table_json)
             self.wait_for_table(page_table)
-            print "Blog table created"
+            print "Page table created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
+
+    def create_table_table(self):
+        """ Creates a display table table. """
+        with open("dynamo/table_table.json", "r") as thefile:
+            page_table_json = json.loads(thefile.read())
+        page_table_json["TableName"] = self.constants["TABLE_TABLE"]
+        
+        try:
+            print "Creating table: %s" % (self.constants["TABLE_TABLE"])
+            dynamodb = boto3.client("dynamodb")
+            page_table = dynamodb.create_table(**page_table_json)
+            self.wait_for_table(page_table)
+            print "Table table created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
+
+    def create_form_table(self):
+        """ Creates a form table. """
+        with open("dynamo/form_table.json", "r") as thefile:
+            page_table_json = json.loads(thefile.read())
+        page_table_json["TableName"] = self.constants["FORM_TABLE"]
+        
+        try:
+            print "Creating table: %s" % (self.constants["FORM_TABLE"])
+            dynamodb = boto3.client("dynamodb")
+            page_table = dynamodb.create_table(**page_table_json)
+            self.wait_for_table(page_table)
+            print "Form table created"
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]

@@ -1,0 +1,26 @@
+{	
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "TableID",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "TableName",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "TableID",
+			"KeyType": "HASH"
+		},
+		{
+			"AttributeName": "TableName",
+			"KeyType": "RANGE"
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits":5
+	}
+}

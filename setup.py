@@ -63,5 +63,10 @@ cms.create_admin_user_db_entry()
 # Create the dynamodb site settings table
 cms.create_site_settings_table()
 
+# Create the dynamo table table
+cms.create_table_table()
+# Create the dynamo form table
+cms.create_form_table()
+
 # Saves the cms installation information
 cms.save_constants()
