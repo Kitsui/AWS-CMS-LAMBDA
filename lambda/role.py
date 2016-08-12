@@ -11,6 +11,7 @@ import json
 from boto3.dynamodb.conditions import Attr, Key
 
 from response import Response
+from ui import UI
 
 class Role(object):
 
@@ -20,12 +21,15 @@ class Role(object):
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
 
+    """ function returns all the role records from dynamo """
+    # Dictionary entry will not work with format code
     # def get_all_roles(self):
+    #     print "hello"
     #     # Attempt to get all data from table
     #     try:
     #         dynamodb = boto3.client('dynamodb')
     #         data = dynamodb.scan(
-    #             TableName="Role",
+    #             TableName=self.constants["ROLE_TABLE"],
     #             ConsistentRead=True)
     #     except botocore.exceptions.ClientError as e:
     #         print e.response['Error']['Code']
@@ -35,7 +39,7 @@ class Role(object):
         
     #     response = Response("Success", data)
     #     # response.setData = data
-    #     return response.format()
+    #     return response.format("All Roles")
 
 
     """ function adds a role to dynamo """

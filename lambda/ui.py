@@ -12,7 +12,7 @@ class UI(object):
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
 
-    def getTable(self):
+    def getTable(self, page_name):
     	pass
 
     def getForm(self):
