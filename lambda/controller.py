@@ -24,8 +24,9 @@ def handler(event, context):
     with open("constants.json", "r") as constants_file:
         constants = json.loads(constants_file.read())
             
-    is_authorised = False
+    is_authenticated = False
     request = event["params"]["request"]
+    
     # Check authentication token
     if(request != "loginUser"):
         try:
@@ -44,9 +45,9 @@ def handler(event, context):
             response = Response("Error", None)
             return response.to_JSON()
         if(len(auth['Items']) > 0):
-            is_authorised = True
+            is_authenticated = True
     elif request == "loginUser":
-        is_authorised = True
+        is_authenticated = True
 
     # Custom object instances
     user = User(event["params"], context)
@@ -78,8 +79,29 @@ def handler(event, context):
         "setSiteSettings": page.set_site_settings
     }
 
-    if is_authorised:
+    if is_authenticated:
         return functionMapping[request]()
     else:
         response = Response("Authentication_Error", None)
         return response.to_JSON()
+
+"""
+    # Adams concept for request & requestUI handlers
+    # Note: if request or requestUI relates to login, then simply allow
+    
+    # if request == "loginUser" or requestUI == "login":
+        # do login work
+    # elif is_authenticated:
+        # if is_authorized:
+            # if request != "undefined":
+                # data =  functionMapping[request]()
+            # if requestUI != "undefined":
+                # data = ui.getForm(requestUI, data)
+
+            # return data
+        # response = Response("Authorization_Error", None)
+        # return response.to_JSON()
+    # else:
+    #    response = Response("Authentication_Error", None)
+    #    return response.to_JSON()
+""
