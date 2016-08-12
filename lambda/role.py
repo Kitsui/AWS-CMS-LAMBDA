@@ -6,14 +6,20 @@
 
 import boto3
 import botocore
+import uuid
+import json
+from boto3.dynamodb.conditions import Attr, Key
+
+from response import Response
 
 class Role(object):
 
     def __init__(self, event, context):
         self.event = event
         self.context = context
+        with open("constants.json", "r") as constants_file:
+            self.constants = json.loads(constants_file.read())
 
-    """ function gets all role records from dynamo """
     # def get_all_roles(self):
     #     # Attempt to get all data from table
     #     try:
@@ -30,6 +36,7 @@ class Role(object):
     #     response = Response("Success", data)
     #     # response.setData = data
     #     return response.format()
+
 
     """ function adds a role to dynamo """
     def create_role(self):
@@ -52,10 +59,11 @@ class Role(object):
             "Page_CanUpdate": {"N" : self.event["role"]["permissions"]["page_canUpdate"]}
             }}
         }
+        
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.put_item(
-                TableName='Role',
+                TableName=self.constants["ROLE_TABLE"],
                 Item=role_params,
                 ReturnConsumedCapacity='TOTAL'
             )
@@ -64,8 +72,9 @@ class Role(object):
             response = Response("Error", None)
             response.errorMessage = "Unable to create role: %s" % e.response['Error']['Code']
             return response.to_JSON()
-
+   
         return Response("Success", None).to_JSON()
+
 
     """ function edits a role record in dynamo """
     def edit_role(self):
@@ -86,40 +95,51 @@ class Role(object):
             "Page_CanRead": {"N" : self.event["role"]["permissions"]["page_canRead"]},
             "Page_CanUpdate": {"N" : self.event["role"]["permissions"]["page_canUpdate"]}
         }
+        
         try:
-            dynamodb = boto3.resource('dynamodb')
-            table = dynamodb.Table('Role')
-            table.update_item(
+            dynamodb = boto3.client('dynamodb')
+            # Update item from dynamo
+            dynamodb.update_item(
+                TableName=self.constants["ROLE_TABLE"],
                 Key={
-                    'RoleID': roleID, 
-                    'RoleType': roleType
+                    'RoleID': {"S": roleID},
+                    'RoleType': {"S": roleType}
                 }, 
-                UpdateExpression='SET RoleName = :r, UserPermissions = :p', 
-                ExpressionAttributeValues={ ':r': roleName,  ':p': permissions}
-                )
+                UpdateExpression='SET RoleName = :r, #pm = :p', 
+                ExpressionAttributeNames={
+                    "#pm": "Permissions"
+                },
+                ExpressionAttributeValues={
+                    ':r': {"S": roleName}, 
+                    ':p': {"M": permissions}
+                }
+            )
         except botocore.exceptions.ClientError as e:
-            print e.response['Error']['Code']
+            print e
             response = Response("Error", None)
-            response.errorMessage = "Unable to edit role: %s" % e.response['Error']['Code']
+            response.errorMessage = "Unable to edit role: %s" % (
+                e.response['Error']['Code'])
             return response.to_JSON()
-
+   
         return Response("Success", None).to_JSON()
+
 
     """ function deletes a role in dynamo """
     def delete_role(self):
         roleID = self.event["role"]["roleID"]
+        roleType = self.event["role"]["type"]
+        # delete item from dynamo
         try:
-            dynamodb = boto3.resource('dynamodb')
-            table = dynamodb.Table('Role')
-            table.delete_item(
-                Key={
-                    'RoleID': roleID
-                    }
-                )
+            dynamodb = boto3.client('dynamodb')
+            dynamodb.delete_item(TableName=self.constants["ROLE_TABLE"],
+                                 Key={
+                                    'RoleID': {"S": roleID},
+                                    'RoleType': {"S": roleType}
+                                })
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
             response.errorMessage = "Unable to delete role: %s" % e.response['Error']['Code']
             return response.to_JSON()
-
+   
         return Response("Success", None).to_JSON()

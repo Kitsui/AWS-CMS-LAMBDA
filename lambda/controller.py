@@ -19,40 +19,15 @@ from page import Page
 from response import Response
 from user import User
 from role import Role
+from security import Security
 
 def handler(event, context):
-    with open("constants.json", "r") as constants_file:
-        constants = json.loads(constants_file.read())
-            
-    is_authenticated = False
-    request = event["params"]["request"]
-    
-    # Check authentication token
-    if(request != "loginUser"):
-        try:
-            dynamodb = boto3.client('dynamodb')
-            auth = dynamodb.query(
-                TableName=constants["TOKEN_TABLE"],
-                KeyConditionExpression="TokenString = :v1",
-                ExpressionAttributeValues={
-                    ":v1": {
-                        "S": event["params"]["token"]
-                    }
-                }
-            )
-        except botocore.exceptions.ClientError as e:
-            print e.response['Error']['Code']
-            response = Response("Error", None)
-            return response.to_JSON()
-        if(len(auth['Items']) > 0):
-            is_authenticated = True
-    elif request == "loginUser":
-        is_authenticated = True
-
     # Custom object instances
     user = User(event["params"], context)
     blog = Blog(event["params"], context)
     page = Page(event["params"], context)
+    role = Role(event["params"], context)
+    security = Security(event["params"], context)
 
     # Map request type to function calls
     functionMapping = {
@@ -68,9 +43,9 @@ def handler(event, context):
         "editUser": user.edit_user,
         "deleteUser": user.delete_user,
 #        "getRoles": user.get_all_roles,
-        "createRole": user.create_role,
-        "editRole": user.edit_role,
-        "deleteRole": user.delete_role,
+        "createRole": role.create_role,
+        "editRole": role.edit_role,
+        "deleteRole": role.delete_role,
         "getPages": page.get_all_pages,
         "createPage": page.create_page,
         "deletePage": page.delete_page,
@@ -78,6 +53,23 @@ def handler(event, context):
         "getSiteSettings": page.get_site_settings,
         "setSiteSettings": page.set_site_settings
     }
+
+    # Get constants created by setup.py
+    with open("constants.json", "r") as constants_file:
+        constants = json.loads(constants_file.read())
+
+    is_authenticated = False
+    request = event["params"]["request"]
+    
+    # Check authentication token
+    if request == "loginUser":
+        is_authenticated = True
+    else:
+        is_authenticated = security.authenticate()
+
+
+
+
 
     if is_authenticated:
         return functionMapping[request]()
