@@ -53,6 +53,7 @@ def handler(event, context):
     user = User(event["params"], context)
     blog = Blog(event["params"], context)
     page = Page(event["params"], context)
+    role = Role(event["params"], context)
 
     # Map request type to function calls
     functionMapping = {
@@ -68,9 +69,9 @@ def handler(event, context):
         "editUser": user.edit_user,
         "deleteUser": user.delete_user,
 #        "getRoles": user.get_all_roles,
-        "createRole": user.create_role,
-        "editRole": user.edit_role,
-        "deleteRole": user.delete_role,
+        "createRole": role.create_role,
+        "editRole": role.edit_role,
+        "deleteRole": role.delete_role,
         "getPages": page.get_all_pages,
         "createPage": page.create_page,
         "deletePage": page.delete_page,
