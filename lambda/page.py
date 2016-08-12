@@ -318,7 +318,7 @@ class Page(object):
             'Bucket': self.constants["BUCKET"],
             'ACL': 'public-read',
             'Body': page_json,
-            'Key': page_key
+            'Key': 'Content/Page/'+page_key
         }
 
         put_page_item_kwargs['ContentType'] = 'application/json'
