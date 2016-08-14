@@ -5,15 +5,19 @@
 	    "FormFields": {"L": 
 	    	[
 		    	{
+		    		"M":{
 		    		"Name" : {"S": "default"},
 		    		"Type" : {"S": "default"},
 		    		"Placeholder" : {"S": "default"}
+		    		}
 				},
-		    	{
+			    {
+		    		"M":{
 		    		"Name" : {"S": "default"},
 		    		"Type" : {"S": "default"},
 		    		"Placeholder" : {"S": "default"}
-				}
+		    		}
+				}			
 			]
 
 	    },
@@ -21,3 +25,4 @@
     },
     "ReturnConsumedCapacity": "TOTAL"
 }
+
