@@ -1,0 +1,12 @@
+{
+	"Item": {
+	    "SiteName": {"S": "default"},
+	    "SiteUrl": {"S": "default"},
+	    "NavItems": {"S": "default"},
+	    "MetaData": {"S": "default"},
+	    "Header": {"S": "default"},
+		"Footer": {"S": "default"},
+		"LastSaved" : {"S": "default"}
+	},
+	"ReturnConsumedCapacity": "TOTAL"
+}

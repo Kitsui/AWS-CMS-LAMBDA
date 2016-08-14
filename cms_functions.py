@@ -275,6 +275,74 @@ class AwsFunc:
                 TableName=table["TableDescription"]["TableName"])
 
 
+    def create_site_settings_db_entry(self):
+        """ Creates a default site settings in the site settings table """
+        with open("dynamo/site_settings.json", "r") as thefile:
+            ss_json = json.loads(thefile.read())
+        ss_json["TableName"] = self.constants["SETTINGS_TABLE"]
+        
+        try:
+            print "Creating Site settings db entry"
+            dynamodb = boto3.client("dynamodb")
+            dynamodb.put_item(**ss_json)
+            print "Site settings db entry created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
+
+
+    def create_blog_db_entry(self):
+        """ Creates a defaul site settings in the Blog table """
+        with open("dynamo/blog.json", "r") as thefile:
+            blog_json = json.loads(thefile.read())
+        blog_json["TableName"] = self.constants["BLOG_TABLE"]
+        
+        try:
+            print "Creating Blog entry"
+            dynamodb = boto3.client("dynamodb")
+            dynamodb.put_item(**blog_json)
+            print "Blog created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
+
+
+    def create_page_db_entry(self):
+        """ Creates a Page in the Page table """
+        with open("dynamo/page.json", "r") as thefile:
+            page_json = json.loads(thefile.read())
+        page_json["TableName"] = self.constants["PAGE_TABLE"]
+        
+        try:
+            print "Creating Page db entry"
+            dynamodb = boto3.client("dynamodb")
+            dynamodb.put_item(**page_json)
+            print "Page db entry created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
+
+
+    def create_form_db_entry(self):
+        """ Creates a Form in the Form table """
+        with open("dynamo/form.json", "r") as thefile:
+            form_json = json.loads(thefile.read())
+        form_json["TableName"] = self.constants["FORM_TABLE"]
+        
+        try:
+            print "Creating Form db entry"
+            dynamodb = boto3.client("dynamodb")
+            dynamodb.put_item(**form_json)
+            print "Form db entry created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
+
+
     def create_admin_role_db_entry(self):
         """ Creates an entry in the role database that represents an
         admin role
