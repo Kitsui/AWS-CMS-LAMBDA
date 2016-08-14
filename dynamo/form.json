@@ -5,9 +5,16 @@
 	    "FormFields": {"L": 
 	    	[
 		    	{
-		    		"Name" : {"S": "default"}
-		    	}
-		    ]
+		    		"Name" : {"S": "default"},
+		    		"Type" : {"S": "default"},
+		    		"Placeholder" : {"S": "default"}
+				},
+		    	{
+		    		"Name" : {"S": "default"},
+		    		"Type" : {"S": "default"},
+		    		"Placeholder" : {"S": "default"}
+				}
+			]
 
 	    },
 	    "SubmitToMethod": {"S": "default"}
