@@ -23,23 +23,22 @@ class Role(object):
 
     """ function returns all the role records from dynamo """
     # Dictionary entry will not work with format code
-    # def get_all_roles(self):
-    #     print "hello"
-    #     # Attempt to get all data from table
-    #     try:
-    #         dynamodb = boto3.client('dynamodb')
-    #         data = dynamodb.scan(
-    #             TableName=self.constants["ROLE_TABLE"],
-    #             ConsistentRead=True)
-    #     except botocore.exceptions.ClientError as e:
-    #         print e.response['Error']['Code']
-    #         response = Response("Error", None)
-    #         response.errorMessage = "Unable to get user data: %s" % e.response['Error']['Code']
-    #         return response.to_JSON()
+    def get_all_roles(self):
+        # Attempt to get all data from table
+        try:
+            dynamodb = boto3.client('dynamodb')
+            data = dynamodb.scan(
+                TableName=self.constants["ROLE_TABLE"],
+                ConsistentRead=True)
+        except botocore.exceptions.ClientError as e:
+            print e.response['Error']['Code']
+            response = Response("Error", None)
+            response.errorMessage = "Unable to get user data: %s" % e.response['Error']['Code']
+            return response.to_JSON()
         
-    #     response = Response("Success", data)
-    #     # response.setData = data
-    #     return response.format("All Roles")
+        response = Response("Success", data)
+        # response.setData = data
+        return response.format("All Roles")
 
 
     """ function adds a role to dynamo """

@@ -41,9 +41,13 @@ cms.create_bucket()
 
 # Create the dynamodb blog table
 cms.create_blog_table()
+# Add a blog to the blog table
+cms.create_blog_db_entry()
 
 # Create the dynamodb page table
 cms.create_page_table()
+# Add a page to the page table
+cms.create_page_db_entry()
 
 # Create the dynamodb role table
 cms.create_role_table()
@@ -62,6 +66,20 @@ cms.create_admin_user_db_entry()
 
 # Create the dynamodb site settings table
 cms.create_site_settings_table()
+# Add default site settings to the site settings table
+cms.create_site_settings_db_entry()
+
+# Create the dynamo form table
+cms.create_form_table()
+# Add a form entries to form table
+cms.create_form_db_entry()
+
+# Create the dynamo table table
+cms.create_table_table()
+# Add a Table entries to form table
+
+
+
 
 # Saves the cms installation information
 cms.save_constants()

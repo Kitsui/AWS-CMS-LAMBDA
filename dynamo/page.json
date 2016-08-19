@@ -1,0 +1,12 @@
+{
+	"Item": {
+	    "PageID": {"S": "default"},
+	    "Author": {"S": "default"},
+	    "Title": {"S": "default"},
+	    "Content": {"S": "default"},
+	    "SavedDate": {"S": "default"},
+	    "MetaDescription": {"S": "default"},
+	    "MetaKeywords": {"S": "default"}
+    },
+    "ReturnConsumedCapacity": "TOTAL"
+}

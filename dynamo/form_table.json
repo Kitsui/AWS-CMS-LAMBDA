@@ -1,0 +1,26 @@
+{	
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "FormID",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "FormName",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "FormID",
+			"KeyType": "HASH"
+		},
+		{
+			"AttributeName": "FormName",
+			"KeyType": "RANGE"
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits":5
+	}
+}

@@ -1,7 +1,10 @@
 {
-    "BlogID": {"S": "1234"},
-    "Author": {"S": "Adam"},
-    "Title": {"S": "Adams Sample Blog Post"},
-    "Content": {"S": "Lorem ipsum blah blah blah..."},
-    "SavedDate": {"S": "22/06/16"}
+	"Item" : {
+	    "BlogID": {"S": "1234"},
+	    "Author": {"S": "Adam"},
+	    "Title": {"S": "Adams Sample Blog Post"},
+	    "Content": {"S": "Lorem ipsum blah blah blah..."},
+	    "SavedDate": {"S": "22/06/16"}
+	    },
+    "ReturnConsumedCapacity": "TOTAL"
 }

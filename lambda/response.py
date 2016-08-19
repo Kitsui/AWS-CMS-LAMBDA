@@ -19,6 +19,7 @@ class Response(object):
 
     """ function formats replies querying dynamo"""
     def format(self, pTitle):
+        print "hello"
         replyData = {}
         colm = []
         rows = []
@@ -27,7 +28,10 @@ class Response(object):
         for i in self.data["Items"]:
             item = {}
             for j in columns:
-                item[j] = (i[j]['S'])
+                if(i[j]=='M'):
+                    item[j] = (i[j]['M'])
+                else:
+                    item[j] = (i[j]['S'])
             rows.append(item)
         replyData["rows"] = rows
         replyData["cols"] = columns
