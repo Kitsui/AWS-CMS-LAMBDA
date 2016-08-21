@@ -12,11 +12,16 @@ class UI(object):
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
 
-    def getTable(self, page_name):
-    	pass
+    def getForm(self, data):
+        
+        # Get form json from nosql?
 
-    def getForm(self):
-        pass
+        if data is not None:
+            # populate json fields
+
+        # will return json
+        return None
+        
 
 
         
