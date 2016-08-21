@@ -41,9 +41,8 @@ function post_request() {
             UserID: document.getElementById("passwordInput").value
         }
     });
-    xhr.open("POST", "$(endpoint_url)", true);
+    xhr.open("POST", "$(API_URL)", true);
         xhr.setRequestHeader("Content-type", "application/json");
-        xhr.setRequestHeader("x-api-key", "$(api_key)");
     xhr.onreadystatechange = function(){
         if(xhr.readyState === 4){
             if(xhr.status === 200){
