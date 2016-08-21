@@ -15,7 +15,11 @@
 			  "Page_CanCreate": {"N" : "1"},
 			  "Page_CanDelete": {"N" : "1"},
 			  "Page_CanRead": {"N" : "1"},
-			  "Page_CanUpdate": {"N" : "1"}
+			  "Page_CanUpdate": {"N" : "1"},
+			  "Role_CanCreate": {"N" : "1"},
+			  "Role_CanDelete": {"N" : "1"},
+			  "Role_CanUpdate": {"N" : "1"},
+			  "Role_CanRead": {"N" : "1"}
     		}
     	}
 	},

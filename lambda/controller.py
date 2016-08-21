@@ -20,6 +20,7 @@ from response import Response
 from user import User
 from role import Role
 from security import Security
+from ui import UI
 
 def handler(event, context):
     # Custom object instances
@@ -28,6 +29,7 @@ def handler(event, context):
     page = Page(event["params"], context)
     role = Role(event["params"], context)
     security = Security(event["params"], context)
+    ui = UI(event["params"], context)
 
     # Map request type to function calls
     functionMapping = {
@@ -61,39 +63,19 @@ def handler(event, context):
     is_authenticated = False
     request = event["params"]["request"]
     
-    # Check authentication token
-    if request == "loginUser":
-        is_authenticated = True
+    # Check user authentication
+    if request == "loginUser" or security.authenticate():
+        # check user authorization
+        if request == "loginUser" or security.authorize():
+            response =  functionMapping[request]()
+        # Get on the fly UI as required
+        #if request == "getForm" or str.startswith("edit")
+        #    response = ui.getForm(response)
+
+            return response
+        else:
+            response = Response("Authorization Failed", None)
+            return response.to_JSON() 
     else:
-        is_authenticated = security.authenticate()
-
-
-
-
-
-    if is_authenticated:
-        return functionMapping[request]()
-    else:
-        response = Response("Authentication_Error", None)
+        response = Response("Authentication Failed", None)
         return response.to_JSON()
-
-"""
-    # Adams concept for request & requestUI handlers
-    # Note: if request or requestUI relates to login, then simply allow
-    
-    # if request == "loginUser" or requestUI == "login":
-        # do login work
-    # elif is_authenticated:
-        # if is_authorized:
-            # if request != "undefined":
-                # data =  functionMapping[request]()
-            # if requestUI != "undefined":
-                # data = ui.getForm(requestUI, data)
-
-            # return data
-        # response = Response("Authorization_Error", None)
-        # return response.to_JSON()
-    # else:
-    #    response = Response("Authentication_Error", None)
-    #    return response.to_JSON()
-"""
