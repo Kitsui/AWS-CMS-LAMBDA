@@ -6,6 +6,8 @@
 # Date: N/D
 """
 
+import warnings
+
 def replace_variables(document, **args):
     replacements = []
     for i in range(len(document)):
@@ -25,3 +27,6 @@ def replace_variables(document, **args):
     finished_document += document[current_index:]
     
     return finished_document
+    
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
