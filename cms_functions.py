@@ -37,6 +37,8 @@ class AwsFunc:
             postfixes = json.loads(postfixes_file.read())
         for key in postfixes.keys():
             self.constants[key] = unicode(cms_prefix, "utf-8") + postfixes[key]
+
+        self.constants["DISQUS-ID"] = "arc-cms"
     
     
     def upload_file(self, path, key):
