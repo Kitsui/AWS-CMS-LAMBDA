@@ -6,6 +6,7 @@
 #         02/08/2016 | Christopher Treadgold
 #         05/08/2016 | Adam Campbell
 #         07/08/2016 | Christopher Treadgold
+#         21/08/2016 | Christopher Treadgold
 """
 
 import Cookie
@@ -16,13 +17,14 @@ import uuid
 import boto3
 import botocore
 from boto3.dynamodb.conditions import Attr, Key
-from passlib.apps import custom_app_context as pwd_context
+from passlib.hash import pbkdf2_sha256
 
 from response import Response
 
 class User(object):
 
     def __init__(self, event, context):
+        self.hash_rounds = 20000
         self.event = event
         self.context = context
         with open("constants.json", "r") as constants_file:
@@ -52,7 +54,7 @@ class User(object):
     def register(self):
         # Get password for hashing
         password = self.event["user"]["password"]
-        hashed = pwd_context.encrypt(password)
+        hashed = pbkdf2_sha256.encrypt(password,)
         # Get user register params
         register_params = {
             "ID": {"S": str(uuid.uuid4())},
@@ -153,7 +155,7 @@ class User(object):
             
             password_guess = self.event["User"]["Password"]
             password = result["Items"][0]["Password"]["S"]
-            if(pwd_context.verify(password_guess, password)):
+            if(pbkdf2_sha256.verify(password_guess, password)):
                 expiration = datetime.datetime.now() + datetime.timedelta(days=14)
                 token = str(uuid.uuid4())
                 result = dynamodb.put_item(
