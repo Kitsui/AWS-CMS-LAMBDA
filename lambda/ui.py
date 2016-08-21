@@ -13,14 +13,7 @@ class UI(object):
             self.constants = json.loads(constants_file.read())
 
     def getForm(self, data):
-        
-        # Get form json from nosql?
-
-        if data is not None:
-            # populate json fields
-
-        # will return json
-        return None
+        pass
         
 
 

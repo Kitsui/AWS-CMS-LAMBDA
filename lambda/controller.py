@@ -29,7 +29,7 @@ def handler(event, context):
     page = Page(event["params"], context)
     role = Role(event["params"], context)
     security = Security(event["params"], context)
-    ui = UI(event["params"], context)
+    #ui = UI(event["params"], context)
 
     # Map request type to function calls
     functionMapping = {
