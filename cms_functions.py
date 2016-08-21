@@ -12,6 +12,7 @@ import mimetypes
 import os
 import sys
 import time
+import uuid
 import zipfile
 from io import BytesIO
 
@@ -105,6 +106,61 @@ class AwsFunc:
                 self.upload_file(path, key)
         print "Bucket populated"
 
+    
+    def create_cloudfront_distribution(self):
+        """ Creates a coudfront distribution linked to the s3 bucket """
+        try:
+            print "Creating cloudfront distribution"
+            origin_id = str(uuid.uuid4())
+            cloudfront = boto3.client("cloudfront")
+            cloudfront.create_distribution(
+                DistributionConfig={
+                    "CallerReference": str(uuid.uuid4()),
+                    "DefaultRootObject": "index.html",
+                    "Origins": {
+                        "Quantity": 1,
+                        "Items": [
+                            {
+                                "Id": origin_id,
+                                "DomainName": "%s.s3.amazonaws.com" % (
+                                    self.constants["BUCKET"]),
+                                "S3OriginConfig": {
+                                    "OriginAccessIdentity": ""
+                                }
+                            }
+                        ]
+                    },
+                    "DefaultCacheBehavior": {
+                        "TargetOriginId": origin_id,
+                        "ForwardedValues": {
+                            "QueryString": False,
+                            "Cookies": {
+                                "Forward": "none"
+                            }
+                        },
+                        "TrustedSigners": {
+                            "Enabled": False,
+                            "Quantity": 0
+                        },
+                        "ViewerProtocolPolicy": "redirect-to-https",
+                        "MinTTL": 0,
+                        "MaxTTL": 2628000,
+                        "DefaultTTL": 86400,
+                        "AllowedMethods": {
+                            "Quantity": 2,
+                            "Items": ["GET", "HEAD"]
+                        }
+                    },
+                    "Comment": "Distribution of %s.s3.amazonaws.com" % (
+                        self.constants["BUCKET"]),
+                    "Enabled": True
+                }
+            )
+            print "Cloudfront distribution created"
+        except botocore.exceptions.ClientError as e:
+            print e
+            sys.exit()
+    
 
     def create_role_table(self):
         """ Creates a role table. """
