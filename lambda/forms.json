@@ -1,0 +1,190 @@
+{
+	"user": {
+  ID : hidden
+		"email" : {
+      "type": "email",
+      "value": "",
+      "placeholder": "steven@stevmail.com",
+      "title": "email",
+      "required": "true",
+      "name" : "email"
+    },
+		"password" : {
+      "type": "password",
+      "value": "",
+      "placeholder": "password",
+      "title": "password",
+      "required": "true",
+      "name" : "password"
+    },
+		"role" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "role",
+      "title": "role",
+      "required": "true",
+      "name" : "role"
+    },
+		"username" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "username",
+      "title": "username",
+      "required": "true",
+      "name" : "username"
+    }
+	},
+	"role": {
+		"role_name" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "admin",
+      "title": "role name",
+      "required": "true",
+      "name" : "role name"
+    },
+		"role_type" : {
+      "type": "select",
+      "value": "",
+      "placeholder": "admin",
+      "title": "role type",
+      "required": "true",
+      "name" : "role type"
+    },
+		"permissions" : 
+    {
+      "type": "checkbox",
+      "value": "",
+      "placeholder": "can write",
+      "title": "permissions",
+      "required": "true",
+      "name" : "permissions"
+    }
+	},
+	"page": {
+		"author" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "author",
+      "title": "author",
+      "required": "true",
+      "name" : "author"
+    },
+		"content" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "content",
+      "title": "content",
+      "required": "true",
+      "name" : "content"
+    },
+		"title" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "title",
+      "title": "title",
+      "required": "true",
+      "name" : "title"
+    },
+		"meta_description" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "description...",
+      "title": "meta description",
+      "required": "true",
+      "name" : "meta_description"
+    },
+		"meta_keywords" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "keyword1, keyword2, keyword3..",
+      "title": "meta keywords",
+      "required": "true",
+      "name" : "meta_keywords"
+    }
+	},
+	"blog": {
+		"Author" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "title",
+      "title": "title",
+      "required": "true",
+      "name" : "title"
+    },
+		"Content" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "title",
+      "title": "title",
+      "required": "true",
+      "name" : "title"
+    },
+		"title" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "title",
+      "title": "title",
+      "required": "true",
+      "name" : "title"
+    }
+	},
+	"site_settings": {
+		"site_name" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "site name",
+      "title": "site name",
+      "required": "true",
+      "name" : "site_name"
+    },
+		"site_url" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "site url",
+      "title": "site url",
+      "required": "true",
+      "name" : "site_url"
+    },
+		"footer" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "footer html",
+      "title": "footer",
+      "required": "true",
+      "name" : "footer"
+    },
+		"header" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "header html",
+      "title": "header",
+      "required": "true",
+      "name" : "header"
+    },
+		"last_saved" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "11/11/11",
+      "title": "last saved",
+      "required": "true",
+      "name" : "last_saved"
+    },
+		"meta_data" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "title",
+      "title": "title",
+      "required": "true",
+      "name" : "meta_data"
+    },
+		"nav_items" : {
+      "type": "text",
+      "value": "",
+      "placeholder": "title",
+      "title": "title",
+      "required": "true",
+      "name" : "title"
+    }
+	}
+}

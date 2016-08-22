@@ -14,21 +14,17 @@ class UI(object):
         with open("forms.json", "r") as forms_file:
             self.forms = json.loads(forms_file.read())
 
-<<<<<<< HEAD
-    def getForm(self, data, type):
-        
-        # Get form json from json file
-        form_data = self.forms[type]
+
+    def getForm(self, data):
+    # Get form json from json file
+        form_data = self.forms[self.event[request]]
         print form_data
         if data is not None:
-            # populate json fields
-
+            pass
+        # populate json fields
         # will return json
         return None
-=======
-    def getForm(self, data):
-        pass
->>>>>>> Master
+
         
 
 
