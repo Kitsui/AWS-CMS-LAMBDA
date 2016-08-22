@@ -71,13 +71,6 @@ cms.create_site_settings_table()
 # Add default site settings to the site settings table
 cms.create_site_settings_db_entry()
 
-# Create the dynamo form table
-cms.create_form_table()
-# Add a form to form table
-cms.create_form_db_entry()
-
-# Create the dynamo table table
-cms.create_table_table()
 
 # Saves the cms installation information
 cms.save_constants()
