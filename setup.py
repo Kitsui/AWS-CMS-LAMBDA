@@ -38,6 +38,8 @@ cms.deploy_api()
 
 # Create the s3 bucket
 cms.create_bucket()
+# Create the cloudfront distribution
+cms.create_cloudfront_distribution()
 
 # Create the dynamodb blog table
 cms.create_blog_table()
@@ -68,17 +70,6 @@ cms.create_admin_user_db_entry()
 cms.create_site_settings_table()
 # Add default site settings to the site settings table
 cms.create_site_settings_db_entry()
-
-# Create the dynamo form table
-cms.create_form_table()
-# Add a form entries to form table
-cms.create_form_db_entry()
-
-# Create the dynamo table table
-cms.create_table_table()
-# Add a Table entries to form table
-
-
 
 
 # Saves the cms installation information

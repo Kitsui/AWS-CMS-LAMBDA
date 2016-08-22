@@ -1,6 +1,6 @@
 {
 	"Item": {
-	    "RoleID": {"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"},
+	    "RoleID": {"S": "0322f11b-2ae8-48d0-aac6-1b2dc5400816"},
         "RoleType": {"S": "Admin"},
     	"RoleName": {"S": "Admin"},
     	"Permissions": {"M": 

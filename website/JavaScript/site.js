@@ -15,5 +15,18 @@ app.controller('PageController', ['$http', '$location', function($http, $locatio
 	
 } ]);
 
+//Handles displaying post.
+app.controller('PostController', ['$http', '$location', function($http, $location){
+	
+	var controller = this;
+	
+	//var page.title = "Steven";
+	$http.get("Content/Post/"+ $location.search()['post'] +".json").then(function(response) {
+        controller.post = response.data;
+		console.log(controller.post);
+    });
+	
+} ]);
+
 
 })();

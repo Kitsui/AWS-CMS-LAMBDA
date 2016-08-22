@@ -12,6 +12,7 @@ import mimetypes
 import os
 import sys
 import time
+import uuid
 import zipfile
 from io import BytesIO
 
@@ -36,6 +37,8 @@ class AwsFunc:
             postfixes = json.loads(postfixes_file.read())
         for key in postfixes.keys():
             self.constants[key] = unicode(cms_prefix, "utf-8") + postfixes[key]
+
+        self.constants["DISQUS-ID"] = "arc-cms"
     
     
     def upload_file(self, path, key):
@@ -105,6 +108,61 @@ class AwsFunc:
                 self.upload_file(path, key)
         print "Bucket populated"
 
+    
+    def create_cloudfront_distribution(self):
+        """ Creates a coudfront distribution linked to the s3 bucket """
+        try:
+            print "Creating cloudfront distribution"
+            origin_id = str(uuid.uuid4())
+            cloudfront = boto3.client("cloudfront")
+            cloudfront.create_distribution(
+                DistributionConfig={
+                    "CallerReference": str(uuid.uuid4()),
+                    "DefaultRootObject": "index.html",
+                    "Origins": {
+                        "Quantity": 1,
+                        "Items": [
+                            {
+                                "Id": origin_id,
+                                "DomainName": "%s.s3.amazonaws.com" % (
+                                    self.constants["BUCKET"]),
+                                "S3OriginConfig": {
+                                    "OriginAccessIdentity": ""
+                                }
+                            }
+                        ]
+                    },
+                    "DefaultCacheBehavior": {
+                        "TargetOriginId": origin_id,
+                        "ForwardedValues": {
+                            "QueryString": False,
+                            "Cookies": {
+                                "Forward": "none"
+                            }
+                        },
+                        "TrustedSigners": {
+                            "Enabled": False,
+                            "Quantity": 0
+                        },
+                        "ViewerProtocolPolicy": "redirect-to-https",
+                        "MinTTL": 0,
+                        "MaxTTL": 2628000,
+                        "DefaultTTL": 86400,
+                        "AllowedMethods": {
+                            "Quantity": 2,
+                            "Items": ["GET", "HEAD"]
+                        }
+                    },
+                    "Comment": "Distribution of %s.s3.amazonaws.com" % (
+                        self.constants["BUCKET"]),
+                    "Enabled": True
+                }
+            )
+            print "Cloudfront distribution created"
+        except botocore.exceptions.ClientError as e:
+            print e
+            sys.exit()
+    
 
     def create_role_table(self):
         """ Creates a role table. """
@@ -193,42 +251,7 @@ class AwsFunc:
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
-            sys.exit()
-
-    def create_table_table(self):
-        """ Creates a display table table. """
-        with open("dynamo/table_table.json", "r") as thefile:
-            page_table_json = json.loads(thefile.read())
-        page_table_json["TableName"] = self.constants["TABLE_TABLE"]
-        
-        try:
-            print "Creating table: %s" % (self.constants["TABLE_TABLE"])
-            dynamodb = boto3.client("dynamodb")
-            page_table = dynamodb.create_table(**page_table_json)
-            self.wait_for_table(page_table)
-            print "Table table created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
-
-    def create_form_table(self):
-        """ Creates a form table. """
-        with open("dynamo/form_table.json", "r") as thefile:
-            page_table_json = json.loads(thefile.read())
-        page_table_json["TableName"] = self.constants["FORM_TABLE"]
-        
-        try:
-            print "Creating table: %s" % (self.constants["FORM_TABLE"])
-            dynamodb = boto3.client("dynamodb")
-            page_table = dynamodb.create_table(**page_table_json)
-            self.wait_for_table(page_table)
-            print "Form table created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
-            
+            sys.exit()            
             
     def create_site_settings_table(self):
         """ Creates a site settings table. """
