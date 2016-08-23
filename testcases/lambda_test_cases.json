@@ -321,7 +321,7 @@ Get Site Settings
   }
 }
 
-/* Form Test Methods */
+/* Form Tests */
 
 {
     "params": {
@@ -330,6 +330,9 @@ Get Site Settings
     "token": "testToken1234567"
   }
 }
+
+
+/* Uploading objects to s3 Tests */
 
 Get Presigned Upload
 

@@ -18,7 +18,8 @@ class UI(object):
             self.forms = json.loads(forms_file.read())
 
 
-    def getForm(self):
+    
+    def getForm(self, data):
         form_data = {}
         form_type = ""
         # Find type of form requested

@@ -131,15 +131,15 @@ class Security(object):
 
         # Eval POST request for access
         request = self.event["request"]
-        form_type = self.event["type"]
+        form_type = ""
         if "getForm" in request:
-            if "blog" in form_type:
+            if "blog" in self.event["type"]:
                 request = "saveNewBlog"
-            elif "user" in form_type:
+            elif "user" in self.event["type"]:
                 request = "registerUser"
             else:
-                f_letter = form_type[:1]
-                form_type = form_type.replace(f_letter, "")
+                f_letter = self.event["type"][:1]
+                form_type = self.event["type"].replace(f_letter, "")
                 f_letter = f_letter.upper()
                 request = "create"+f_letter+form_type
 
