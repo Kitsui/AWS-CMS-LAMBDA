@@ -57,7 +57,7 @@ def handler(event, context):
         "editPage": page.edit_page,
         "getSiteSettings": page.get_site_settings,
         "setSiteSettings": page.set_site_settings,
-        "getForm": ui.getForm
+        "getForm": ui.getForm,
         "uploadImage": upload_image.get_url
     }
 
