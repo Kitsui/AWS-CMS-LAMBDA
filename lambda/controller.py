@@ -72,11 +72,10 @@ def handler(event, context):
     if request == "loginUser" or security.authenticate():
         # check user authorization
         if request == "loginUser" or security.authorize():
-            response =  functionMapping[request]()
-        # Get on the fly UI as required
-        #if request == "getForm" or str.startswith("edit")
-        #    response = ui.getForm(response)
-
+            if "getForm" in request:
+                response = ui.getForm(None)
+            else:
+                response =  functionMapping[request]()
             return response
         else:
             response = Response("Authorization Failed", None)
