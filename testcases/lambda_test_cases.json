@@ -248,6 +248,7 @@ Create page
 
 Edit page
 
+// old
 {
   "params": {
     "request": "editPage",
@@ -262,6 +263,18 @@ Edit page
     }
   }
 }
+
+// new edit function requests for record and passes back for client input
+{
+  "params": {
+    "request": "editPage",
+    "token": "testToken1234567",
+    "page": {
+      "pageID": ""
+    }
+  }
+}
+
 
 Delete page
 

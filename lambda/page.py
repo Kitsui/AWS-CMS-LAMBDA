@@ -26,6 +26,30 @@ class Page(object):
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
 
+    """ function gets a page record from dynamo """
+    def get_page_data(self):
+        """ Gets page data from dynamoDB """
+        page_id = self.event["page"]["pageID"]
+        try:
+            dynamodb = boto3.client("dynamodb")
+            blog_data = dynamodb.query(
+                TableName=self.constants["PAGE_TABLE"],
+                KeyConditionExpression="PageID = :v1",
+                ExpressionAttributeValues={
+                    ":v1": {
+                        "S": page_id
+                    }
+                }
+            )
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            response = Response("Error", None)
+            response.errorMessage = "Unable to get page data: %s" % (
+                e.response["Error"]["Code"])
+            return response.to_JSON()
+
+        return blog_data
+
     """ function returns site settings from dynamo db """
     def get_site_settings(self):
         # Attempt to get all data from table
@@ -186,62 +210,64 @@ class Page(object):
         return Response("Success", None).to_JSON()
 
 
-    """ function edits a page record in dynamo and s3 """
-    def edit_page(self):
-        page_id = self.event["page"]["pageID"]
-        author = self.event["page"]["pageAuthor"]
-        title = self.event["page"]["pageTitle"]
-        content = self.event["page"]["pageContent"]
-        meta_description = self.event["page"]["metaDescription"]
-        meta_keywords = self.event["page"]["metaKeywords"]
+    ''' DEPRICATED - edit create page to take ID to replace existing records'''
+    # """ function edits a page record in dynamo and s3 """
+    # def edit_page(self):
+    #     page_id = self.event["page"]["pageID"]
+    #     author = self.event["page"]["pageAuthor"]
+    #     title = self.event["page"]["pageTitle"]
+    #     content = self.event["page"]["pageContent"]
+    #     meta_description = self.event["page"]["metaDescription"]
+    #     meta_keywords = self.event["page"]["metaKeywords"]
         
-        try:
-            dynamodb = boto3.client('dynamodb')
-            # Get item instance from dynamo
-            page = dynamodb.query(
-                TableName=self.constants["PAGE_TABLE"],
-                KeyConditionExpression="PageID = :v1",
-                ExpressionAttributeValues={
-                    ":v1": {
-                        "S": page_id
-                    }
-                }
-            )
+    #     try:
+    #         dynamodb = boto3.client('dynamodb')
+    #         # Get item instance from dynamo
+    #         page = dynamodb.query(
+    #             TableName=self.constants["PAGE_TABLE"],
+    #             KeyConditionExpression="PageID = :v1",
+    #             ExpressionAttributeValues={
+    #                 ":v1": {
+    #                     "S": page_id
+    #                 }
+    #             }
+    #         )
 
-            saved_date = page["Items"][0]["SavedDate"]["S"]
+    #         saved_date = page["Items"][0]["SavedDate"]["S"]
             
-            # Update item from dynamo
-            dynamodb.update_item(
-                TableName=self.constants["PAGE_TABLE"],
-                Key={
-                    "PageID": {"S": page_id},
-                    "Author": {"S": author}
-                },
-                UpdateExpression=(
-                    "set Title=:t, Content=:c, SavedDate=:s, "
-                    "MetaDescription=:d, MetaKeywords=:k"
-                ),
-                ExpressionAttributeValues={
-                    ":t": {"S": title}, ":c": {"S": content}, 
-                    ":s": {"S": saved_date}, ":d": {"S": meta_description},
-                    ":k": {"S": meta_keywords}
-                }
-            )
-        except botocore.exceptions.ClientError as e:
-            print e
-            response = Response("Error", None)
-            response.errorMessage = "Unable to edit page: %s" % (
-                e.response['Error']['Code'])
+    #         # Update item from dynamo
+    #         dynamodb.update_item(
+    #             TableName=self.constants["PAGE_TABLE"],
+    #             Key={
+    #                 "PageID": {"S": page_id},
+    #                 "Author": {"S": author}
+    #             },
+    #             UpdateExpression=(
+    #                 "set Title=:t, Content=:c, SavedDate=:s, "
+    #                 "MetaDescription=:d, MetaKeywords=:k"
+    #             ),
+    #             ExpressionAttributeValues={
+    #                 ":t": {"S": title}, ":c": {"S": content}, 
+    #                 ":s": {"S": saved_date}, ":d": {"S": meta_description},
+    #                 ":k": {"S": meta_keywords}
+    #             }
+    #         )
+    #     except botocore.exceptions.ClientError as e:
+    #         print e
+    #         response = Response("Error", None)
+    #         response.errorMessage = "Unable to edit page: %s" % (
+    #             e.response['Error']['Code'])
 
-            if e.response['Error']['Code'] == "NoSuchKey":
-                self.update_index(blogID, title)
-                self.save_new_blog()
-            else:
-                return response.to_JSON()
+    #         if e.response['Error']['Code'] == "NoSuchKey":
+    #             self.update_index(blogID, title)
+    #             self.save_new_blog()
+    #         else:
+    #             return response.to_JSON()
 
-        self.put_page_object(page_id, author, title, content, saved_date,
-                meta_description, meta_keywords)
-        return Response("Success", None).to_JSON()
+    #     self.put_page_object(page_id, author, title, content, saved_date,
+    #             meta_description, meta_keywords)
+    #     return Response("Success", None).to_JSON()
+
 
 
     """ function which deletes a page record from dynamo and s3 """

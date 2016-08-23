@@ -54,7 +54,7 @@ def handler(event, context):
         "getPages": page.get_all_pages,
         "createPage": page.create_page,
         "deletePage": page.delete_page,
-        "editPage": page.edit_page,
+        "editPage": page.get_page_data,
         "getSiteSettings": page.get_site_settings,
         "setSiteSettings": page.set_site_settings,
         "getForm": ui.getForm,
@@ -76,6 +76,9 @@ def handler(event, context):
                 response = ui.getForm(None)
             else:
                 response =  functionMapping[request]()
+
+            if "edit" in request:
+                response = ui.getForm(response)
             return response
         else:
             response = Response("Authorization Failed", None)

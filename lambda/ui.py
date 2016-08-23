@@ -22,24 +22,33 @@ class UI(object):
     def getForm(self, data):
         form_data = {}
         form_type = ""
-        # Find type of form requested
-        if "user" in self.event["type"]:
-            form_type = "User"
-        elif "blog" in self.event["type"]:
-            form_type = "Blog"
-        elif "page" in self.event["type"]:
-            form_type = "Page"
-        elif "role" in self.event["type"]:
-            form_type = "Role"
-        elif "siteSetting" in self.event["type"]:
-            form_type = "SiteSetting"
 
-        # Populate json fields
+        # set form type according type of request
+        if data is not None:
+            form_type = self.event["request"][4:]
+        else:
+            # Find type of form requested
+            if "user" in self.event["type"]:
+                form_type = "User"
+            elif "blog" in self.event["type"]:
+                form_type = "Blog"
+            elif "page" in self.event["type"]:
+                form_type = "Page"
+            elif "role" in self.event["type"]:
+                form_type = "Role"
+            elif "siteSetting" in self.event["type"]:
+                form_type = "SiteSetting"
+
+        
         # Get form json from json file
         form_data["input"] = self.forms[form_type]
         form_data["type"] = "form"
         form_data["status"] = "success"
         form_data["page_title"] = "New Blog"
+
+        # Populate json fields if data exists
+        if data is not None:
+            print data
         
         # Will return json
         return form_data
