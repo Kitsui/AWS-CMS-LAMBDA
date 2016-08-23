@@ -81,13 +81,37 @@
 			<form>
 				<div ng-repeat="input in dashboard.response.inputs">
 					<div ng-switch on="input.type">
+					
 						<div ng-switch-when="textarea">
 							<div class="form-group">
 								<label for="{{ input.title }}">{{ input.title }}</label>
 								<textarea type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}">{{ input.value }}</textarea>
 							  </div>
 						</div>
-						<div ng-switch-default>
+						
+						<div ng-switch-when="mce">
+							<div class="form-group">
+								<label for="{{ input.title }}">{{ input.title }}</label>
+								<textarea type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}">{{ input.value }}</textarea>
+							  </div>
+						</div>
+						
+						<div ng-switch-when="select"><!-- Selecting from a dropdown list of options. -->
+							<div class="form-group">
+								<label for="{{ input.title }}">{{ input.title }}</label>
+								<select name="{{ input.name }}" class="form-control">
+									<option ng-repeat="option in input.options" value="{{ option.name }}">{{ option.title }}</option>
+								</select>
+							  </div>
+						</div>
+						
+						<div ng-switch-when="checkbox">
+							<div class="checkbox">
+								<label><input type="checkbox" ng-attr-checked="{{ input.checked == 'true' ? true: false }}" value="on" name="{{ input.name }}">{{ input.checked }}</label>
+							</div>
+						</div>
+						
+						<div ng-switch-default> <!-- By default assume the input is a standard box type. -->
 							 <div class="form-group">
 								<label for="{{ input.title }}">{{ input.title }}</label>
 								<input type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}" value="{{ input.value }}">
