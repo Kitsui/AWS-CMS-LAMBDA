@@ -21,6 +21,7 @@ from user import User
 from role import Role
 from security import Security
 from ui import UI
+from upload_image import UploadImage
 
 def handler(event, context):
     # Custom object instances
@@ -30,6 +31,7 @@ def handler(event, context):
     role = Role(event["params"], context)
     ui = UI(event["params"], context)
     security = Security(event["params"], context)
+    upload_image = UploadImage(event["params"], context)
     #ui = UI(event["params"], context)
 
     # Map request type to function calls
@@ -56,6 +58,7 @@ def handler(event, context):
         "getSiteSettings": page.get_site_settings,
         "setSiteSettings": page.set_site_settings,
         "getForm": ui.getForm
+        "uploadImage": upload_image.get_url
     }
 
     # Get constants created by setup.py

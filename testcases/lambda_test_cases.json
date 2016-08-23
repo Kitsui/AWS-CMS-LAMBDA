@@ -321,7 +321,6 @@ Get Site Settings
   }
 }
 
-
 /* Form Test Methods */
 
 {
@@ -332,5 +331,13 @@ Get Site Settings
   }
 }
 
+Get Presigned Upload
 
-
+{
+  "params": {
+    "request": "uploadImage",
+    "token": "testToken1234567",
+    "fileName": "fun.jpg",
+    "acl": "public-read"
+  }
+}
