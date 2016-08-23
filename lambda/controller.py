@@ -29,6 +29,7 @@ def handler(event, context):
     blog = Blog(event["params"], context)
     page = Page(event["params"], context)
     role = Role(event["params"], context)
+    ui = UI(event["params"], context)
     security = Security(event["params"], context)
     upload_image = UploadImage(event["params"], context)
     #ui = UI(event["params"], context)
@@ -56,6 +57,7 @@ def handler(event, context):
         "editPage": page.edit_page,
         "getSiteSettings": page.get_site_settings,
         "setSiteSettings": page.set_site_settings,
+        "getForm": ui.getForm,
         "uploadImage": upload_image.get_url
     }
 

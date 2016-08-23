@@ -123,11 +123,27 @@ class Security(object):
             "getPages": "Page_CanRead",
             "createPage": "Page_CanCreate",
             "deletePage": "Page_CanDelete",
-            "editPage": "Page_CanUpdate"
+            "editPage": "Page_CanUpdate",
         }
+
+        '''add site settings pls'''
+
 
         # Eval POST request for access
         request = self.event["request"]
+        form_type = self.event["type"]
+        if "getForm" in request:
+            if "blog" in form_type:
+                request = "saveNewBlog"
+            elif "user" in form_type:
+                request = "registerUser"
+            else:
+                f_letter = form_type[:1]
+                form_type = form_type.replace(f_letter, "")
+                f_letter = f_letter.upper()
+                request = "create"+f_letter+form_type
+
+
         has_access = permissions[request_access[request]]
 
         # return success/fail bitflag

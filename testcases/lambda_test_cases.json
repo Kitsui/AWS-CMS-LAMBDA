@@ -321,6 +321,15 @@ Get Site Settings
   }
 }
 
+/* Form Test Methods */
+
+{
+    "params": {
+    "request": "getForm",
+    "type": "user",
+    "token": "testToken1234567"
+  }
+}
 
 Get Presigned Upload
 
