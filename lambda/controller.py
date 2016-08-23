@@ -28,6 +28,7 @@ def handler(event, context):
     blog = Blog(event["params"], context)
     page = Page(event["params"], context)
     role = Role(event["params"], context)
+    ui = UI(event["params"], context)
     security = Security(event["params"], context)
     #ui = UI(event["params"], context)
 
@@ -53,7 +54,8 @@ def handler(event, context):
         "deletePage": page.delete_page,
         "editPage": page.edit_page,
         "getSiteSettings": page.get_site_settings,
-        "setSiteSettings": page.set_site_settings
+        "setSiteSettings": page.set_site_settings,
+        "getForm": ui.getForm
     }
 
     # Get constants created by setup.py
@@ -68,7 +70,6 @@ def handler(event, context):
         # check user authorization
         if request == "loginUser" or security.authorize():
             response =  functionMapping[request]()
-            #ui.getForm(None, "user")
         # Get on the fly UI as required
         #if request == "getForm" or str.startswith("edit")
         #    response = ui.getForm(response)
