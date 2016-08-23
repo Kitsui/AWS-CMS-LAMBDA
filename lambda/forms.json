@@ -1,190 +1,204 @@
 {
-	"user": {
-  ID : hidden
-		"email" : {
+  "User": {
+    "ID" : {
+      "type": "hidden",
+      "value": "",
+      "name" : "id"
+    },
+    "Email" : {
       "type": "email",
       "value": "",
       "placeholder": "steven@stevmail.com",
-      "title": "email",
+      "title": "Email",
       "required": "true",
       "name" : "email"
     },
-		"password" : {
+    "Password" : {
       "type": "password",
-      "value": "",
       "placeholder": "password",
-      "title": "password",
+      "title": "Password",
       "required": "true",
       "name" : "password"
     },
-		"role" : {
+    "Role" : {
       "type": "text",
       "value": "",
       "placeholder": "role",
-      "title": "role",
+      "title": "Role",
       "required": "true",
       "name" : "role"
     },
-		"username" : {
+    "Username" : {
       "type": "text",
       "value": "",
       "placeholder": "username",
-      "title": "username",
+      "title": "Username",
       "required": "true",
       "name" : "username"
     }
-	},
-	"role": {
-		"role_name" : {
+  },
+  "Role": {
+    "RoleID" : {
+      "type": "hidden",
+      "value": "",
+      "name" : "roleID"
+    },
+    "RoleName" : {
       "type": "text",
       "value": "",
       "placeholder": "admin",
-      "title": "role name",
+      "title": "Role Name",
       "required": "true",
-      "name" : "role name"
+      "name" : "roleName"
     },
-		"role_type" : {
+    "RoleType" : {
       "type": "select",
       "value": "",
       "placeholder": "admin",
-      "title": "role type",
+      "title": "Role Type",
       "required": "true",
-      "name" : "role type"
+      "name" : "roleType"
     },
-		"permissions" : 
-    {
+    "Permissions" : {
       "type": "checkbox",
       "value": "",
-      "placeholder": "can write",
-      "title": "permissions",
-      "required": "true",
+      "title": "Can Write",
       "name" : "permissions"
     }
-	},
-	"page": {
-		"author" : {
+  },
+  "Page": {
+    "PageID" : {
+      "type": "hidden",
+      "value": "",
+      "name" : "pageID"
+    },
+    "Author" : {
       "type": "text",
       "value": "",
       "placeholder": "author",
-      "title": "author",
+      "title": "Author",
       "required": "true",
       "name" : "author"
     },
-		"content" : {
-      "type": "text",
+    "Content" : {
+      "type": "mce",
       "value": "",
       "placeholder": "content",
-      "title": "content",
+      "title": "Content",
       "required": "true",
       "name" : "content"
     },
-		"title" : {
+    "Title" : {
       "type": "text",
       "value": "",
       "placeholder": "title",
-      "title": "title",
+      "title": "Title",
       "required": "true",
       "name" : "title"
     },
-		"meta_description" : {
+    "MetaDescription" : {
       "type": "text",
       "value": "",
       "placeholder": "description...",
-      "title": "meta description",
+      "title": "Description",
       "required": "true",
-      "name" : "meta_description"
+      "name" : "metaDescription"
     },
-		"meta_keywords" : {
+    "MetaKeywords" : { 
       "type": "text",
       "value": "",
       "placeholder": "keyword1, keyword2, keyword3..",
-      "title": "meta keywords",
-      "required": "true",
-      "name" : "meta_keywords"
+      "title": "Meta Keywords",
+      "required": "false",
+      "name" : "metaKeywords"
     }
-	},
-	"blog": {
-		"Author" : {
-      "type": "text",
-      "value": "",
-      "placeholder": "title",
-      "title": "title",
+  },
+  "Blog": {
+    "BlogID" : {
+      "type": "hidden",
       "required": "true",
-      "name" : "title"
+      "name" : "blogID"
     },
-		"Content" : {
+    "Author" : {
       "type": "text",
       "value": "",
-      "placeholder": "title",
-      "title": "title",
+      "placeholder": "author",
+      "title": "Author",
       "required": "true",
-      "name" : "title"
+      "name" : "author"
     },
-		"title" : {
+    "Content" : {
+      "type": "mce",
+      "value": "",
+      "placeholder": "content",
+      "title": "Content",
+      "required": "true",
+      "name" : "content"
+    },
+    "Title" : {
       "type": "text",
       "value": "",
       "placeholder": "title",
-      "title": "title",
+      "title": "Title",
       "required": "true",
       "name" : "title"
     }
-	},
-	"site_settings": {
-		"site_name" : {
+  },
+  "SiteSettings": {
+    "SiteName" : {
       "type": "text",
       "value": "",
-      "placeholder": "site name",
-      "title": "site name",
+      "placeholder": "johnsCats",
+      "title": "Site Name",
       "required": "true",
-      "name" : "site_name"
+      "name" : "siteName"
     },
-		"site_url" : {
+    "SiteUrl" : {
       "type": "text",
       "value": "",
-      "placeholder": "site url",
+      "placeholder": "JohnsCats.com",
       "title": "site url",
       "required": "true",
-      "name" : "site_url"
+      "name" : "siteUrl"
     },
-		"footer" : {
-      "type": "text",
+    "Footer" : {
+      "type": "mce",
       "value": "",
       "placeholder": "footer html",
-      "title": "footer",
+      "title": "Footer",
       "required": "true",
       "name" : "footer"
     },
-		"header" : {
+    "Header" : {
       "type": "text",
       "value": "",
       "placeholder": "header html",
-      "title": "header",
+      "title": "Header",
       "required": "true",
       "name" : "header"
     },
-		"last_saved" : {
+    "LastSaved" : {
       "type": "text",
       "value": "",
       "placeholder": "11/11/11",
-      "title": "last saved",
+      "title": "Last Saved",
       "required": "true",
-      "name" : "last_saved"
+      "name" : "lastSaved"
     },
-		"meta_data" : {
+    "MetaData" : {
       "type": "text",
       "value": "",
-      "placeholder": "title",
-      "title": "title",
+      "placeholder": "meta data",
+      "title": "Meta Data",
       "required": "true",
-      "name" : "meta_data"
+      "name" : "metaData"
     },
-		"nav_items" : {
-      "type": "text",
+    "NavItems" : {
+      "type": "checkbox",
       "value": "",
-      "placeholder": "title",
-      "title": "title",
+      "title": "Navigation Items",
       "required": "true",
-      "name" : "title"
+      "name" : "navItems"
     }
-	}
+  }
 }
