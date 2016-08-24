@@ -210,7 +210,7 @@ class Page(object):
         return Response("Success", None).to_JSON()
 
 
-    ''' DEPRICATED - edit create page to take ID to replace existing records'''
+    ''' DEPRECATED - edit create page to take ID to replace existing records'''
     # """ function edits a page record in dynamo and s3 """
     # def edit_page(self):
     #     page_id = self.event["page"]["pageID"]

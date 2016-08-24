@@ -40,6 +40,7 @@ class UI(object):
                 form_type = "SiteSetting"
 
         
+        #for key, value in d.iteritems():
         # Get form json from json file
         form_data["input"] = self.forms[form_type]
         form_data["type"] = "form"
@@ -47,9 +48,21 @@ class UI(object):
         form_data["page_title"] = "New Blog"
 
         # Populate json fields if data exists
+        form_input = ""
         if data is not None:
-            print data
-        
+            for item_f in form_data["input"]:
+                for key in data["Items"]:
+                    # Edit name values in form json to match table columns
+                    f_letter = item_f["name"][:1]
+                    form_char_list = list(item_f["name"])
+                    form_char_list[0] = f_letter.upper()
+                    form_input = "".join(form_char_list)
+                    # Check if form input exists in form
+                    if key[form_input] is not None:
+                        # Replace value in form json
+                        item_f["value"] = key[form_input]["S"]
+
+                        
         # Will return json
         return form_data
 
