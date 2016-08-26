@@ -19,7 +19,8 @@ class Response(object):
 
     """ function formats replies querying dynamo"""
     def format(self, pTitle):
-        print "hello"
+        record_type = pTitle[4:len(pTitle)-1]
+        id_var = ""
         replyData = {}
         colm = []
         rows = []
@@ -27,15 +28,21 @@ class Response(object):
         columns = self.data["Items"][0].keys()
         for i in self.data["Items"]:
             item = {}
+            for it in i:
+                if "ID" in it:
+                    id_var = i[it]['S']
             for j in columns:
-                if(i[j]=='M'):
-                    item[j] = (i[j]['M'])
+                if j == "Title":
+                    item[j] =  '<a href="#" method="'+'edit'+pTitle[4:len(pTitle)-1]+'" '+record_type+':id="'+id_var+'">'+i[j]['S']+'</a>';
                 else:
                     item[j] = (i[j]['S'])
+
+            
             rows.append(item)
         replyData["rows"] = rows
         replyData["cols"] = columns
-        replyData["page_title"] = pTitle;
+        replyData["page_title"] = pTitle
+        #<a href="#" method="editBlog" id="69">Doop</a>
         return replyData
 
     def to_JSON(self):
