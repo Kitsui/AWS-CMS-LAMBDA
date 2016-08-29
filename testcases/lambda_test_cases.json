@@ -248,20 +248,28 @@ Create page
 
 Edit page
 
+// old
 {
   "params": {
     "request": "editPage",
     "token": "testToken1234567",
     "page": {
-      "pageID": "",
-      "pageAuthor": "chris",
-      "pageTitle": "Doop",
-      "pageContent": "content",
-      "metaDescription": "test Description",
-      "metaKeywords": "keyword1, keyword2, keyword3, keyword4"
+      "pageID": ""
     }
   }
 }
+
+// new edit function requests for record and passes back for client input
+{
+  "params": {
+    "request": "editPage",
+    "token": "testToken1234567",
+    "page": {
+      "pageID": ""
+    }
+  }
+}
+
 
 Delete page
 

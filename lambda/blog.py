@@ -252,49 +252,36 @@ class Blog(object):
         
         return Response("Success", None).to_JSON()
 
-
-    """ function puts a blog json object on s3 """
+    """ function which puts a blog json object in s3 """
     def put_blog_object(self, blog_id, author, title, content, saved_date,
-                        meta_description, meta_keywords):
-        blog_key = "blog" + blog_id
-        blog_body = (
-            "<head>"
-                "<title>%s</title>"
-                "<meta name=description content=%s>"
-                "<meta name=keywords content=%s>"
-                "<meta http-equiv=content-type content=text/html;charset=UTF-8>"
-            "</head>"
-            "<p>"
-                "%s<br>"
-                "%s<br>"
-                "%s<br>"
-                "%s"
-            "</p>"
-        ) % (title, meta_description, meta_keywords, author, title, content,
-             saved_date)
-        blog_key = "blog%s" % (blog_id)
-        self.update_index(blog_id, title)
+                        mDescription, mKeywords):
+        blog_key = 'blog-json-' + blog_id
         
+        ''' Call update index '''
+        # self.update_index() 
+        # page body
+        page_json =('{ "title": "'+title+'","content": "'+content+'","uuid": "'+blog_id+
+            '","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+
+            '"},"script-src" : "something"}')
+
+        # Item parameters
         put_blog_item_kwargs = {
-            "Bucket": self.constants["BUCKET"],
-            "ACL": "public-read",
-            "Body": "<head> <title>" + title + "</title>" +
-            ' <meta name="description" content="' + meta_description+ '"">'
-            + '<meta name="keywords" content="' + meta_keywords + '"">' +
-            '<meta http-equiv="content-type" content="text/html;charset=UTF-8">' +
-            "</head><p>" + author + "<br>" + title + "<br>" +
-            content + "<br>" + saved_date + "</p>",
-            "Key": blog_key
+            'Bucket': self.constants["BUCKET"],
+            'ACL': 'public-read',
+            'Body': page_json,
+            'Key': 'Content/Post/'+blog_key
         }
 
-        put_blog_item_kwargs["ContentType"] = "text/html"
+        put_blog_item_kwargs['ContentType'] = 'application/json'
         try:
             s3 = boto3.client("s3")
+            # put into s3
             s3.put_object(**put_blog_item_kwargs)
         except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
+            print e.response['Error']['Code']
             response = Response("Error", None)
-            response.errorMessage = "Unable to save new blog: %s" % e.response["Error"]["Code"]
+            response.errorMessage = "Unable to save Blog to s3: %s" % (
+                e.response['Error']['Code'])
 
 
     """ function which creates a new index if not found in s3 """
