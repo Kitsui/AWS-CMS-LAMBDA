@@ -333,11 +333,13 @@ class Page(object):
     """ function which puts a page json object in s3 """
     def put_page_object(self, page_id, author, title, content, saved_date,
                         mDescription, mKeywords):
-        page_key = 'page-json-' + title
+        page_key = 'page-json-' + page_id
         
         self.update_index()
         # page body
-        page_json ='{ "title": "'+title+'","content": "'+content+'","uuid": "'+page_id+'","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+'"},"script-src" : "something"}'
+        page_json =('{ "title": "'+title+'","content": "'+content+'","uuid": "'+page_id+
+        '","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+
+        '"},"script-src" : "something"}')
 
         # Item parameters
         put_page_item_kwargs = {
@@ -355,7 +357,7 @@ class Page(object):
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
-            response.errorMessage = "Unable to save site settings: %s" % (
+            response.errorMessage = "Unable to save Page to s3: %s" % (
                 e.response['Error']['Code'])
 
 
