@@ -49,6 +49,30 @@ class User(object):
         # format for table response to admin dash
         return response.format("All Users")
 
+    """ function gets a user record from dynamo """
+    def get_user_data(self):
+        """ Gets user data from dynamoDB """
+        user_id = self.event["user"]["userID"]
+        try:
+            dynamodb = boto3.client("dynamodb")
+            user_data = dynamodb.query(
+                TableName=self.constants["USER_TABLE"],
+                KeyConditionExpression="ID = :v1",
+                ExpressionAttributeValues={
+                    ":v1": {
+                        "S": user_id
+                    }
+                }
+            )
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            response = Response("Error", None)
+            response.errorMessage = "Unable to get user data: %s" % (
+                e.response["Error"]["Code"])
+            return response.to_JSON()
+
+        return user_data
+
 
     """ function adds a user record to dynamo """
     def register(self):

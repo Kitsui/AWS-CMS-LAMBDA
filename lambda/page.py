@@ -32,7 +32,7 @@ class Page(object):
         page_id = self.event["page"]["pageID"]
         try:
             dynamodb = boto3.client("dynamodb")
-            blog_data = dynamodb.query(
+            page_data = dynamodb.query(
                 TableName=self.constants["PAGE_TABLE"],
                 KeyConditionExpression="PageID = :v1",
                 ExpressionAttributeValues={
@@ -48,7 +48,7 @@ class Page(object):
                 e.response["Error"]["Code"])
             return response.to_JSON()
 
-        return blog_data
+        return page_data
 
     """ function returns site settings from dynamo db """
     def get_site_settings(self):
@@ -63,9 +63,7 @@ class Page(object):
             response.errorMessage = "Unable to get site setting data: %s" % e.response['Error']['Code']
             return response.to_JSON()
         
-        response = Response("Success", data)
-        # format for table response to admin dash
-        return response.format("Site Settings")
+        return data
 
     """ function sets up the site settings in dynamo and s3 """
     def set_site_settings(self):
@@ -210,7 +208,7 @@ class Page(object):
         return Response("Success", None).to_JSON()
 
 
-    ''' DEPRECATED - edit create page to take ID to replace existing records'''
+    ''' DEPRECATED - edit, create page to take ID to replace existing records'''
     # """ function edits a page record in dynamo and s3 """
     # def edit_page(self):
     #     page_id = self.event["page"]["pageID"]

@@ -42,11 +42,7 @@ Edit User
     "request": "editUser",
     "token": "testToken1234567",
     "user": {
-      "email": "1",
-      "userID": "1", 
-      "newUsername": "johnny",
-      "newPassword": "newPassword",
-      "newRoles": "role1"
+      "userID": "0322f11b-2ae8-48d0-aac6-1b2dc5400816"    
     }
   }
 }
@@ -112,15 +108,10 @@ Edit Blog
         "request": "editBlog",
         "token": "testToken1234567",
         "blog": {
-            "blogID": "dbfab1c4-b447-485a-a41d-e320904e7805",
-            "author": "Jeremy",
-            "title": "I like Hondassss",
-            "content": "Content, Content Content HONNNNNDAAAAA",
-            "metaDescription": "new description",
-            "metaKeywords" : "newKeyword1, newKeyword2, newKeyword3"
-      }
+            "blogID": "dbfab1c4-b447-485a-a41d-e320904e7805"      
+        }
     }
-} // weird key error with title
+}
 
 Delete Blog
 
@@ -184,27 +175,12 @@ Edit role
     "request": "editRole",
     "token": "testToken1234567",
         "role": {
-            "roleID": "",
-            "type": "admin",
-            "name": "Johnononno",
-            "permissions": {
-                "user_canCreate": "1",
-                "user_canRead": "1",
-                "user_canUpdate": "1",
-                "user_canDelete": "1",
-                "blog_canCreate": "1",
-                "blog_canRead": "1",
-                "blog_canUpdate": "1",
-                "blog_canDelete": "1",
-                "page_canCreate": "1",
-                "page_canRead": "1",
-                "page_canUpdate": "1",
-                "page_canDelete": "1"
-            }
+            "roleID": ""            
+          }
        }
 
-    }        
-}
+}        
+
 
 Delete role
 
