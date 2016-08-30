@@ -211,7 +211,7 @@ class Blog(object):
         
         ''' Call update index '''
         self.update_index(blog_id) 
-        # page body
+        # blog body
         page_json =('{ "title": "'+title+'","content": "'+content+'","uuid": "'+blog_id+
             '","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+
             '"},"script-src" : "something"}')
