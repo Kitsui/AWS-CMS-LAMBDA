@@ -234,6 +234,23 @@ class AwsFunc:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
             sys.exit()
+
+    def create_menu_table(self):
+        """ Creates a menu table. """
+        with open("dynamo/menu_table_structure.json", "r") as thefile:
+            menu_table_json = json.loads(thefile.read())
+        menu_table_json["TableName"] = self.constants["MENU_TABLE"]
+            
+        try:
+            print "Creating table: %s" % (self.constants["MENU_TABLE"])
+            dynamodb = boto3.client("dynamodb")
+            menu_table = dynamodb.create_table(**menu_table_json)
+            self.wait_for_table(menu_table)
+            print "Menu table created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
         
 
     def create_page_table(self):
@@ -331,6 +348,22 @@ class AwsFunc:
             print e.response["Error"]["Message"]
             sys.exit()
 
+    def create_menu_db_entries(self):
+        """ Creates a default menu entries in the Menu table """
+        with open("dynamo/menu_table_data.json", "r") as thefile:
+            menu_json_temp = thefile.read()
+            menu_json_temp = menu_json_temp.replace("MenuTable", self.constants["MENU_TABLE"])
+            menu_json = json.loads(menu_json_temp)
+        
+        try:
+            print "Creating Menu entries"
+            dynamodb = boto3.client("dynamodb")
+            dynamodb.batch_write_item(**menu_json)
+            print "Menu entries created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
 
     def create_page_db_entry(self):
         """ Creates a Page in the Page table """

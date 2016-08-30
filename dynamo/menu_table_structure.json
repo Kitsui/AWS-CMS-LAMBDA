@@ -1,0 +1,18 @@
+{	
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "MenuID",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "MenuID",
+			"KeyType": "HASH"
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits":5
+	}
+}
