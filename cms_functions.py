@@ -302,21 +302,21 @@ class AwsFunc:
         """ Creates a default site settings in the site settings table """
         with open("dynamo/site_settings.json", "r") as thefile:
             ss_json = json.loads(thefile.read())
-        ss_json["TableName"] = self.constants["SETTINGS_TABLE"]
-        
-        try:
-            print "Creating Site settings db entry"
-            dynamodb = boto3.client("dynamodb")
-            dynamodb.put_item(**ss_json)
-            print "Site settings db entry created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
+        for json_item in ss_json["Items"]:
+            json_item["TableName"] = self.constants["SETTINGS_TABLE"]
+            try:
+                print "Creating Site settings db entry"
+                dynamodb = boto3.client("dynamodb")
+                dynamodb.put_item(**json_item)
+                print "Site settings db entry created"
+            except botocore.exceptions.ClientError as e:
+                print e.response["Error"]["Code"]
+                print e.response["Error"]["Message"]
+                sys.exit()
 
 
     def create_blog_db_entry(self):
-        """ Creates a defaul site settings in the Blog table """
+        """ Creates a default blog in the Blog table """
         with open("dynamo/blog.json", "r") as thefile:
             blog_json = json.loads(thefile.read())
         blog_json["TableName"] = self.constants["BLOG_TABLE"]
