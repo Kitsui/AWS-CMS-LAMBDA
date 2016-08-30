@@ -1,21 +1,21 @@
 {	
 	"AttributeDefinitions": [
 		{
-			"AttributeName": "SiteName",
+			"AttributeName": "Name",
 			"AttributeType": "S"
 		},
 		{
-			"AttributeName": "SiteUrl",
+			"AttributeName": "Value",
 			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
-			"AttributeName": "SiteName",
+			"AttributeName": "Name",
 			"KeyType": "HASH"
 		},
 		{
-			"AttributeName": "SiteUrl",
+			"AttributeName": "Value",
 			"KeyType": "RANGE"
 		}
 	],
