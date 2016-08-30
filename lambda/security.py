@@ -135,6 +135,8 @@ class Security(object):
                 request = "saveNewBlog"
             elif "user" in self.event["type"]:
                 request = "registerUser"
+            elif "siteSettings" in self.event["type"]:
+                request = "getSiteSettings"
             else:
                 f_letter = self.event["type"][:1]
                 form_type = self.event["type"].replace(f_letter, "")
