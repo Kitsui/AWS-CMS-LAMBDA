@@ -40,6 +40,30 @@ class Role(object):
         # response.setData = data
         return response.format("All Roles")
 
+    """ function gets a role record from dynamo """
+    def get_role_data(self):
+        """ Gets role data from dynamoDB """
+        role_id = self.event["role"]["roleID"]
+        try:
+            dynamodb = boto3.client("dynamodb")
+            role_data = dynamodb.query(
+                TableName=self.constants["ROLE_TABLE"],
+                KeyConditionExpression="RoleID = :v1",
+                ExpressionAttributeValues={
+                    ":v1": {
+                        "S": role_id
+                    }
+                }
+            )
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            response = Response("Error", None)
+            response.errorMessage = "Unable to get page data: %s" % (
+                e.response["Error"]["Code"])
+            return response.to_JSON()
+
+        return role_data
+
 
     """ function adds a role to dynamo """
     def create_role(self):

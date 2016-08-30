@@ -45,11 +45,12 @@ class UI(object):
         form_data["input"] = self.forms[form_type]
         form_data["type"] = "form"
         form_data["status"] = "success"
-        form_data["page_title"] = "New Blog"
+        form_data["page_title"] = "New " + form_type
 
         # Populate json fields if data exists
         form_input = ""
         if data is not None:
+            form_data["page_title"] = "Edit "+form_type
             for item_f in form_data["input"]:
                 for key in data["Items"]:
                     # Edit name values in form json to match table columns

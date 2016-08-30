@@ -41,7 +41,6 @@ class Blog(object):
                     }
                 }
             )
-            response = Response("Success", blog_data)
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             response = Response("Error", None)
@@ -49,9 +48,7 @@ class Blog(object):
                 e.response["Error"]["Code"])
             return response.to_JSON()
 
-        response = Response("Success", blog_data)
-        # response.setData = blog_data
-        return response.to_JSON()
+        return blog_data
 
 
     """ function gets all blog records from dynamo """

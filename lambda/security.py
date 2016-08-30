@@ -124,7 +124,8 @@ class Security(object):
             "createPage": "Page_CanCreate",
             "deletePage": "Page_CanDelete",
             "editPage": "Page_CanUpdate",
-            "getSiteSettings": "Site_Settings_CanUpdate"
+            "getSiteSettings": "Site_Settings_CanUpdate",
+            "editSiteSettings": "Site_Settings_CanUpdate"
         }
 
         # Eval POST request for access
