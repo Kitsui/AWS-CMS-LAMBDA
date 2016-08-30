@@ -20,6 +20,10 @@ class Security(object):
 
     """ function authenticates user """
     def authenticate(self):
+
+        # Get user token
+        token = self.event["token"]
+
         try:
             dynamodb = boto3.client('dynamodb')
             auth = dynamodb.query(
@@ -27,7 +31,7 @@ class Security(object):
                 KeyConditionExpression="TokenString = :v1",
                 ExpressionAttributeValues={
                     ":v1": {
-                        "S": self.event["token"]
+                        "S": token
                     }
                 }
             )
@@ -54,7 +58,7 @@ class Security(object):
                 KeyConditionExpression="TokenString = :v1",
                 ExpressionAttributeValues={
                     ":v1": {
-                        "S": self.event["token"]
+                        "S": token
                     }
                 }
             )
