@@ -124,10 +124,8 @@ class Security(object):
             "createPage": "Page_CanCreate",
             "deletePage": "Page_CanDelete",
             "editPage": "Page_CanUpdate",
+            "getSiteSettings": "Site_Settings_CanUpdate"
         }
-
-        '''add site settings pls'''
-
 
         # Eval POST request for access
         request = self.event["request"]
