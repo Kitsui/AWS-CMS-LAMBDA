@@ -23,7 +23,6 @@ class Blog(object):
     def __init__(self, event, context):
         self.event = event
         self.context = context
-        self.index_file= "BlogIndex.html"
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
     
@@ -114,13 +113,10 @@ class Blog(object):
             response.errorMessage = "Unable to save new blog: %s" % e.response["Error"]["Code"]
 
             if e.response["Error"]["Code"] == "NoSuchKey":
-                self.update_index(blog_id, title)
                 self.save_new_blog()
             else:
                 return response.to_JSON()
 
-        self.put_blog_object(blog_id, author, title, content, saved_date,
-                meta_description, meta_keywords)
         return Response("Success", None).to_JSON()
 
 
@@ -208,57 +204,13 @@ class Blog(object):
         return Response("Success", None).to_JSON()
 
 
-    """ function updates the index of blogs in the s3 bucket"""
-    def update_index(self, blog_id, title):
-        try:
-            dynamodb = boto3.client("dynamodb")
-            s3 = boto3.client("s3")
-            
-            data = dynamodb.scan(TableName=self.constants["BLOG_TABLE"],
-                                 ConsistentRead=True)
-            blog_prefix = "https://s3.amazonaws.com/%s/blog" % (
-                self.constants["BUCKET"])
-            index_links = (
-                "<html>"
-                    "<head><title>Blog Index</title></head>"
-                        "<body>"
-                            "<h1>Index</h1>"
-            )
-            for item in data["Items"]:
-                blog_id = item["BlogID"]["S"]
-                blog_title = item["Title"]["S"]
-                index_links += (
-                    "<br><a href=\"%s%s\">%s</a>" % (
-                        blog_prefix, blog_id, blog_title)
-                )
-            index_links = "%s</body></html>" % (index_links)
-            
-            put_index_item_kwargs = {
-                "Bucket": self.constants["BUCKET"], "ACL": "public-read",
-                "Body": index_links, "Key": self.index_file,
-                "ContentType": "text/html"
-            }
-            print index_links
-            
-            s3.put_object(**put_index_item_kwargs)
-        except botocore.exceptions.ClientError as e:
-            error_code = e.response["Error"]["Code"]
-            print error_code
-            
-            response = Response("Error", None)
-            response.errorMessage = "Unable to update index: %s" % (
-                error_code)
-            return response.to_JSON()
-        
-        return Response("Success", None).to_JSON()
-
     """ function which puts a blog json object in s3 """
     def put_blog_object(self, blog_id, author, title, content, saved_date,
                         mDescription, mKeywords):
         blog_key = 'blog-json-' + blog_id
         
         ''' Call update index '''
-        # self.update_index() 
+        self.update_index(blog_id) 
         # page body
         page_json =('{ "title": "'+title+'","content": "'+content+'","uuid": "'+blog_id+
             '","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+
@@ -284,18 +236,46 @@ class Blog(object):
                 e.response['Error']['Code'])
 
 
-    """ function which creates a new index if not found in s3 """
-    def create_new_index(self):
-        print "no index found ... creating Index"
-        put_index_item_kwargs = {
-            "Bucket": self.constants["BUCKET"], "ACL": "public-read",
-            "Body":"<h1>Index</h1> <br>", "Key": self.index_file
+    """ function which updates a blog index in s3 """
+    def update_index(self, uid):
+        print "Index Updating..."
+
+        # variables to be used
+        s3 = boto3.client("s3")
+        index_key = "blog_0.json"
+
+        # create json item
+        index_json_new_item = uid
+
+        # Get old index and read in the file body
+        fileName= index_key        
+        get_kwargs = {
+            'Bucket': self.constants["BUCKET"],
+            'Key': fileName
         }
-        put_index_item_kwargs["ContentType"] = "text/html"
+        result =  s3.get_object(**get_kwargs)
+        old_index_body = result['Body'].read()
+        print old_index_body
+
+        old_index_body_json = json.loads(old_index_body)
+        new_json_body_string = ""
+
+        # Add new item to index items
+        old_index_body_json["items"].append(index_json_new_item)
+        new_json_body_string = json.dumps(old_index_body_json)
+
+        # update index
+        put_index_item_kwargs = {
+            "Bucket": self.constants["BUCKET"], 
+            "ACL": "public-read",
+            "Body" : new_json_body_string, 
+            "Key": index_key
+        }
+        put_index_item_kwargs["ContentType"] = 'application/json'
         try:
-            s3 = boto3.client("s3")
             s3.put_object(**put_index_item_kwargs)
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             response = Response("Error", None)
-            response.errorMessage = "Unable to save new blog: %s" % e.response["Error"]["Code"]
+            response.errorMessage = ("Unable to save new blog to index: %s" % 
+                e.response["Error"]["Code"])
