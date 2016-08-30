@@ -19,7 +19,8 @@
 			  "Role_CanCreate": {"N" : "1"},
 			  "Role_CanDelete": {"N" : "1"},
 			  "Role_CanUpdate": {"N" : "1"},
-			  "Role_CanRead": {"N" : "1"}
+			  "Role_CanRead": {"N" : "1"},
+			  "Site_Settings_CanUpdate": {"N": "1"}
     		}
     	}
 	},
