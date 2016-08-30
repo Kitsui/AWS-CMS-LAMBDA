@@ -37,7 +37,7 @@ class UI(object):
             elif "role" in self.event["type"]:
                 form_type = "Role"
             elif "siteSetting" in self.event["type"]:
-                form_type = "SiteSetting"
+                form_type = "SiteSettings"
 
         
         #for key, value in d.iteritems():
