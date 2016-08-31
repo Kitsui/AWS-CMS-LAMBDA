@@ -8,7 +8,7 @@
 						"Text": {"S": "Home"},
 						"Tooltip": {"S": "Home page"},
 						"Url": {"S": "www.google.com"},
-						"ParentID": {"S": "-1"}
+						"Children": {"S": "{}"}
 					}
 				}
 			},
@@ -19,7 +19,7 @@
 						"Text": {"S": "About Us"},
 						"Tooltip": {"S": "Home page"},
 						"Url": {"S": "www.google.com"},
-						"ParentID": {"S": "-1"}
+						"Children": {"S": "{}"}
 					}
 				}
 			},
@@ -30,7 +30,7 @@
 						"Text": {"S": "Example Page"},
 						"Tooltip": {"S": "Example page"},
 						"Url": {"S": "www.google.com"},
-						"ParentID": {"S": "-1"}
+						"Children": {"S": "{}"}
 					}
 				}
 			},
@@ -41,7 +41,7 @@
 						"Text": {"S": "Example Post"},
 						"Tooltip": {"S": "Example Post"},
 						"Url": {"S": "www.google.com"},
-						"ParentID": {"S": "-1"}
+						"Children": {"S": "{}"}
 					}
 				}
 			},
@@ -50,20 +50,9 @@
 					"Item": {
 						"MenuID": {"S": "0c6a23a0-19bb-49c3-831c-b46f2de3045e"},
 						"Text": {"S": "Dummy Parent"},
-						"Tooltip": {"S": "Dummy Child"},
+						"Tooltip": {"S": "Dummy Parent"},
 						"Url": {"S": "www.google.com"},
-						"ParentID": {"S": "-1"}
-					}
-				}
-			},
-			{
-				"PutRequest" : {
-					"Item": {
-						"MenuID": {"S": "62e75126-699c-410b-b79a-7d347b184738"},
-						"Text": {"S": "Dummy Child"},
-						"Tooltip": {"S": "Dummy Child"},
-						"Url": {"S": "www.google.com"},
-						"ParentID": {"S": "0c6a23a0-19bb-49c3-831c-b46f2de3045e"}
+						"Children": {"S": "[{\"MenuID\": \"123\",\"Text\": \"Click Me!\",\"Tooltip\": \"Click me for some goodies!\",\"Url\": \"www.yuriplease.com\"}]"}
 					}
 				}
 			}

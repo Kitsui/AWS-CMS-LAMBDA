@@ -22,6 +22,7 @@ from role import Role
 from security import Security
 from ui import UI
 from upload_image import UploadImage
+from menu import Menu
 
 def handler(event, context):
     # Custom object instances
@@ -32,6 +33,7 @@ def handler(event, context):
     ui = UI(event["params"], context)
     security = Security(event["params"], context)
     upload_image = UploadImage(event["params"], context)
+    menu = Menu(event["params"], context)
 
     #event["params"]["token"] = event["token"]
 
@@ -60,7 +62,9 @@ def handler(event, context):
         "editSiteSettings": page.get_site_settings,
         "setSiteSettings": page.set_site_settings,
         "getForm": ui.getForm,
-        "uploadImage": upload_image.get_url
+        "uploadImage": upload_image.get_url,
+        "getMenuItems": menu.get_menu_items,
+        "setMenuItems": menu.set_menu_items
     }
 
     # Get constants created by setup.py
