@@ -1,0 +1,13 @@
+<div ng-controller="PageController as data">
+	<div class="row">
+		<div class="col-sm-8 col-sm-offset-2">
+			<p><h1 class="centered">{{ data.page.title }}</h1></p>
+			<hr />
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-8 col-sm-offset-2" ng-bind-html="data.page.content | unsafe">
+		</div>
+	</div>
+</div>
