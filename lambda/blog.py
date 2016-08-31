@@ -239,7 +239,7 @@ class Blog(object):
 
         # variables to be used
         s3 = boto3.client("s3")
-        index_key = "Content/blog_0.json"
+        index_key = "Content/post_list.json"
 
         # create json item
         index_json_new_item = uid
