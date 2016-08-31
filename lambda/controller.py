@@ -35,7 +35,7 @@ def handler(event, context):
     upload_image = UploadImage(event["params"], context)
     menu = Menu(event["params"], context)
 
-    #event["params"]["token"] = event["token"]
+    event["params"]["token"] = event["token"]
 
     # Map request type to function calls
     functionMapping = {
