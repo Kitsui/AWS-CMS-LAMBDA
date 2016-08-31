@@ -269,28 +269,30 @@ Set Site Settings
     "request": "setSiteSettings",
     "token": "testToken1234567",
     "site": {
-      "siteName": "SiteName",
-      "siteURL": "url.com",
-      "navItems": {
+      "SiteName": "SiteName",
+      "SiteURL": "url.com",
+      "NavItems": {
         "title1": "url1",
         "title2": "url2",
         "title3": "url3",
         "title4": "url4"
       },
-      "metaData": {
+      "MetaData": {
         "description": "Sample Description",
-        "keyworkds": "keyword1, keyword2, keyword3, keyword4"
+        "keywords": "keyword1, keyword2, keyword3, keyword4"
       },
-      "header": {
+      "Header": {
         "alt": "site-header",
         "url": "imgs/header.png"
       },
-      "footer": {
+      "Footer": {
         "title1": "url1",
         "title2": "url2",
         "title3": "url3",
         "title4": "url4"
-      }
+      },
+      "GoogleURL": "googleURL",
+      "DisqusURL": "disqusURL"
     }
   }
 }
