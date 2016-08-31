@@ -84,7 +84,8 @@ class Role(object):
             "Page_CanDelete": {"N" : self.event["role"]["permissions"]["page_canDelete"]},
             "Page_CanRead": {"N" : self.event["role"]["permissions"]["page_canRead"]},
             "Page_CanUpdate": {"N" : self.event["role"]["permissions"]["page_canUpdate"]},
-            "Site_Settings_CanUpdate": {"N" : self.event["role"]["permissions"]["site_Settings_CanUpdate"]}
+            "Site_Settings_CanUpdate": {"N" : self.event["role"]["permissions"]["site_Settings_CanUpdate"]},
+            "Menu_CanUpdate": {"N" : self.event["role"]["permissions"]["menu_canUpdate"]}
             }}
         }
         
@@ -122,7 +123,8 @@ class Role(object):
             "Page_CanCreate": {"N" : self.event["role"]["permissions"]["page_canCreate"]},
             "Page_CanRead": {"N" : self.event["role"]["permissions"]["page_canRead"]},
             "Page_CanUpdate": {"N" : self.event["role"]["permissions"]["page_canUpdate"]},
-            "Site_Settings_CanUpdate": {"N" : self.event["role"]["permissions"]["site_Settings_CanUpdate"]}
+            "Site_Settings_CanUpdate": {"N" : self.event["role"]["permissions"]["site_Settings_CanUpdate"]},
+            "Menu_CanUpdate": {"N" : self.event["role"]["permissions"]["menu_canUpdate"]}
         }
         
         try:
