@@ -243,7 +243,7 @@ class Page(object):
     """ function which puts a page json object in s3 """
     def put_page_object(self, page_id, author, title, content, saved_date,
                         mDescription, mKeywords):
-        page_key = 'page-json-' + page_id
+        page_key = page_id + '.json'
         
         self.update_index()
         # page body

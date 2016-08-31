@@ -1,0 +1,13 @@
+<div ng-controller="PostController as data">
+	<div class="row">
+		<div class="col-sm-8 col-sm-offset-2">
+			<p><h1 class="centered">{{ data.post.title }}</h1></p>
+			<hr />
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-8 col-sm-offset-2" ng-bind-html="data.post.content | unsafe">
+		</div>
+	</div>
+</div>

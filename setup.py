@@ -46,6 +46,11 @@ cms.create_blog_table()
 # Add a blog to the blog table
 cms.create_blog_db_entry()
 
+# Create the dynamodb menu table
+cms.create_menu_table()
+# Add menu items to the menu table
+cms.create_menu_db_entries()
+
 # Create the dynamodb page table
 cms.create_page_table()
 # Add a page to the page table
