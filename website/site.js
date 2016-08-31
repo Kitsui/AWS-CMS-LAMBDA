@@ -20,20 +20,30 @@ var app = angular.module('Kitsui', ['ngRoute'])
         });
         //$routeProvider.otherwise({redirectTo: '/home', controller: HomeCtrl});
      });
+
+
+
 	 
 app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });
 
-app.controller('PageController', ['$http', '$location', function($http, $location){
+
+
+
+
+angular.module('Kitsui').controller('PageController', ['$http', '$routeParams', function($http, $routeParams){
 	
 	var controller = this;
 	
 	//var page.title = "Steven";
-	$http.get("Content/Page/"+ $location.search()['page'] +".json").then(function(response) {
+	$http.get("Content/Page/"+ $routeParams.pageid +".json").then(function(response) {
         controller.page = response.data;
-		console.log(controller.page);
+		console.log(controller);
     });
 	
 } ]);
+
+
+
 
 //Handles displaying post.
 app.controller('PostController', ['$http', '$location', function($http, $location){
@@ -43,7 +53,7 @@ app.controller('PostController', ['$http', '$location', function($http, $locatio
 	//var page.title = "Steven";
 	$http.get("Content/Post/"+ $location.search()['post'] +".json").then(function(response) {
         controller.post = response.data;
-		console.log(controller.post);
+		console.log(controller);
     });
 	
 } ]);
