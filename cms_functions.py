@@ -588,9 +588,9 @@ class AwsFunc:
                     "application/json": (
                         "{\"params\": $input.body, "
                               "#if($input.params(\"Cookie\") && $input.params(\"Cookie\") != \"\") "
-                                  "\"Cookie\": \"$input.params(\"Cookie\")\" "
+                                  "\"token\": \"$input.params(\"Cookie\")\" "
                               "#else "
-                                  "\"Cookie\": \"\" "
+                                  "\"token\": \"\" "
                               "#end"
                         "}"
                     )
