@@ -130,6 +130,7 @@ class Security(object):
             "editPage": "Page_CanUpdate",
             "getSiteSettings": "Site_Settings_CanUpdate",
             "editSiteSettings": "Site_Settings_CanUpdate",
+            "setSiteSettings": "Site_Settings_CanUpdate",
             "getMenuItems": "Menu_CanUpdate",
             "setMenuItems": "Menu_CanUpdate"
         }

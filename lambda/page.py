@@ -54,92 +54,33 @@ class Page(object):
     def get_site_settings(self):
         # Attempt to get all data from table
         try:
-            dynamodb = boto3.client('dynamodb')
-            data = dynamodb.scan(TableName=self.constants["SETTINGS_TABLE"],
-                                 ConsistentRead=True)
+            # Get site settings and read in the file body
+            fileName= "Content/site-settings.json"        
+            get_kwargs = {
+                'Bucket': self.constants["BUCKET"],
+                'Key': fileName
+            }
+            result =  s3.get_object(**get_kwargs)
+            site_settings_body = result['Body'].read()
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
             response.errorMessage = "Unable to get site setting data: %s" % e.response['Error']['Code']
             return response.to_JSON()
         
-        return data
+        return site_settings_body
 
     """ function sets up the site settings in dynamo and s3 """
     def set_site_settings(self):
-        # Get new blog params
-        site_name = self.event["site"]["siteName"]
-        site_url = self.event["site"]["siteURL"]
-        nav_items = self.event["site"]["navItems"]
-        meta_data = self.event["site"]["metaData"]
-        header = self.event["site"]["header"]
-        footer = self.event["site"]["footer"]
-        saved_date = str(datetime.datetime.now())
+        # Get new site settings params
+        keys = self.event["site"].keys()
+        site_atr_list = {}
 
-        # init strings
-        nav_items_string = ''
-        meta_data_string = ''
-        header_string = ''
-        footer_string = ''
+        for key in keys:
+            site_atr_list[key] = self.event["site"][key]
 
-        # put dict var into string format
-        for key, value in nav_items.iteritems():
-            nav_items_string+= '"'+str(key)+'": "' +str(value)+ '",'
-
-        items_list = list(nav_items_string)
-        items_list[-1] = ''
-        nav_items_string = ''.join(items_list)
-
-
-        for key, value in meta_data.iteritems():
-            meta_data_string+= '"'+str(key)+'": "' +str(value)+ '",'
-
-        items_list = list(meta_data_string)
-        items_list[-1] = ''
-        meta_data_string = ''.join(items_list)
-        
-        for key, value in header.iteritems():
-            header_string+= '"'+str(key)+'": "' +str(value)+ '",'
-
-        items_list = list(header_string)
-        items_list[-1] = ''
-        header_string = ''.join(items_list)
-
-
-        for key, value in footer.iteritems():
-            footer_string+= '"'+str(key)+'": "' +str(value)+ '",'
-
-        items_list = list(footer_string)
-        items_list[-1] = ''
-        footer_string = ''.join(items_list)
-
-        # site settings item parameters
-        site_params = {
-            "SiteName": {"S": site_name},
-            "SiteUrl": {"S": site_url},
-            "NavItems": {"S": nav_items_string},
-            "MetaData": {"S": meta_data_string},
-            "Header": {"S": header_string},
-            "Footer": {"S": footer_string},
-            "LastSaved" : {"S": saved_date}
-        }
-        # put into dynamo
-        try:
-            dynamodb = boto3.client('dynamodb')
-            dynamodb.put_item(
-                TableName=self.constants["SETTINGS_TABLE"],
-                Item=site_params,
-                ReturnConsumedCapacity='TOTAL'
-            )
-
-        except botocore.exceptions.ClientError as e:
-            print e.response['Error']['Code']
-            response = Response("Error", None)
-            response.errorMessage = "Unable to set new site settings: %s" % e.response['Error']['Code']
-
-        # put site settings object into s3
-        self.put_site_settings_object(site_name, site_url, nav_items_string, 
-            meta_data_string, header_string, footer_string)
+        site_atr_list["SavedDate"] = str(datetime.datetime.now())
+        self.put_site_settings_object(self.event["site"])
         return Response("Success", None).to_JSON()
 
     """ function returns all pages in dynamo """
@@ -206,67 +147,7 @@ class Page(object):
                 meta_description, meta_keywords)
         # Return back success
         return Response("Success", None).to_JSON()
-
-
-    ''' DEPRECATED - edit, create page to take ID to replace existing records'''
-    # """ function edits a page record in dynamo and s3 """
-    # def edit_page(self):
-    #     page_id = self.event["page"]["pageID"]
-    #     author = self.event["page"]["pageAuthor"]
-    #     title = self.event["page"]["pageTitle"]
-    #     content = self.event["page"]["pageContent"]
-    #     meta_description = self.event["page"]["metaDescription"]
-    #     meta_keywords = self.event["page"]["metaKeywords"]
         
-    #     try:
-    #         dynamodb = boto3.client('dynamodb')
-    #         # Get item instance from dynamo
-    #         page = dynamodb.query(
-    #             TableName=self.constants["PAGE_TABLE"],
-    #             KeyConditionExpression="PageID = :v1",
-    #             ExpressionAttributeValues={
-    #                 ":v1": {
-    #                     "S": page_id
-    #                 }
-    #             }
-    #         )
-
-    #         saved_date = page["Items"][0]["SavedDate"]["S"]
-            
-    #         # Update item from dynamo
-    #         dynamodb.update_item(
-    #             TableName=self.constants["PAGE_TABLE"],
-    #             Key={
-    #                 "PageID": {"S": page_id},
-    #                 "Author": {"S": author}
-    #             },
-    #             UpdateExpression=(
-    #                 "set Title=:t, Content=:c, SavedDate=:s, "
-    #                 "MetaDescription=:d, MetaKeywords=:k"
-    #             ),
-    #             ExpressionAttributeValues={
-    #                 ":t": {"S": title}, ":c": {"S": content}, 
-    #                 ":s": {"S": saved_date}, ":d": {"S": meta_description},
-    #                 ":k": {"S": meta_keywords}
-    #             }
-    #         )
-    #     except botocore.exceptions.ClientError as e:
-    #         print e
-    #         response = Response("Error", None)
-    #         response.errorMessage = "Unable to edit page: %s" % (
-    #             e.response['Error']['Code'])
-
-    #         if e.response['Error']['Code'] == "NoSuchKey":
-    #             self.update_index(blogID, title)
-    #             self.save_new_blog()
-    #         else:
-    #             return response.to_JSON()
-
-    #     self.put_page_object(page_id, author, title, content, saved_date,
-    #             meta_description, meta_keywords)
-    #     return Response("Success", None).to_JSON()
-
-
 
     """ function which deletes a page record from dynamo and s3 """
     def delete_page(self):
@@ -359,15 +240,41 @@ class Page(object):
                 e.response['Error']['Code'])
 
 
+    # """ function which puts a site settings json object in s3 """
+    # def put_site_settings_object(self, siteName, siteUrl, navItems, metaData,
+    #                              header, footer):
+    #     # file name
+    #     site_settings_key = 'site-settings'
+
+    #     # site settings body
+    #     ss_json ='{ "site-name" : "'+siteName+'", "site-url:" : "'+siteUrl+'", "nav-items" : { '+navItems+'},"meta-data" : {'+metaData+'},"header" : {'+header+'}, "footer" : {'+footer+'}}'
+
+    #     # Item parameters
+    #     put_ss_item_kwargs = {
+    #         'Bucket': self.constants["BUCKET"],
+    #         'ACL': 'public-read',
+    #         'Body': ss_json,
+    #         'Key': site_settings_key
+    #     }
+
+    #     put_ss_item_kwargs['ContentType'] = 'application/json'
+    #     # put into s3
+    #     try:
+    #         s3 = boto3.client("s3")
+    #         s3.put_object(**put_ss_item_kwargs)
+    #     except botocore.exceptions.ClientError as e:
+    #         print e.response['Error']['Code']
+    #         response = Response("Error", None)
+    #         response.errorMessage = "Unable to save site settings: %s" % (
+    #             e.response['Error']['Code'])
+
     """ function which puts a site settings json object in s3 """
-    def put_site_settings_object(self, siteName, siteUrl, navItems, metaData,
-                                 header, footer):
+    def put_site_settings_object(self, site_params):
         # file name
-        site_settings_key = 'site-settings'
+        site_settings_key = 'Content/site-settings.json'
 
         # site settings body
-        ss_json ='{ "site-name" : "'+siteName+'", "site-url:" : "'+siteUrl+'", "nav-items" : { '+navItems+'},"meta-data" : {'+metaData+'},"header" : {'+header+'}, "footer" : {'+footer+'}}'
-
+        ss_json = json.dumps(site_params)
         # Item parameters
         put_ss_item_kwargs = {
             'Bucket': self.constants["BUCKET"],

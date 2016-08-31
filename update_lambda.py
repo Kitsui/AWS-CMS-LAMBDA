@@ -55,6 +55,7 @@ except botocore.exceptions.ClientError as e:
     print e.response["Error"]["Message"]
     sys.exit()
 print "Done" 
+print ("\a")
 
 # Remove the constants file from the lambda directory
 os.remove("lambda/constants.json")

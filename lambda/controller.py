@@ -35,7 +35,7 @@ def handler(event, context):
     upload_image = UploadImage(event["params"], context)
     menu = Menu(event["params"], context)
 
-    event["params"]["token"] = event["token"]
+    #event["params"]["token"] = event["token"]
 
     # Map request type to function calls
     functionMapping = {
@@ -79,13 +79,13 @@ def handler(event, context):
         # Check user authorization
         if request == "loginUser" or security.authorize():
             # Check if form request or other request
-            if "getForm" in request:
+            if "getForm" == request:
                 response = ui.getForm(None)
             else:
                 response =  functionMapping[request]()
 
             # Check if form ui is required to be returned
-            if "edit" in request:
+            if request.startswith("edit"):
                 response = ui.getForm(response)
             # Return response to client
             return response

@@ -156,18 +156,21 @@
     "title": "Last Saved",
     "required": "true",
     "name": "lastSaved"
-  }, {
+  },
+  {
     "type": "text",
     "value": "",
-    "placeholder": "meta data",
-    "title": "Meta Data",
+    "placeholder": "Disqus ID",
+    "title": "Disqus ID",
     "required": "true",
-    "name": "metaData"
-  }, {
-    "type": "checkbox",
+    "name": "disqusID"
+  },
+  {
+    "type": "text",
     "value": "",
-    "title": "Navigation Items",
+    "placeholder": "Search engine ID",
+    "title": "Google ID",
     "required": "true",
-    "name": "navItems"
+    "name": "googleID"
   }]
 }
