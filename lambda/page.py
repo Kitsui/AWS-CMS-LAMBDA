@@ -54,16 +54,21 @@ class Page(object):
     def get_site_settings(self):
         # Attempt to get all data from table
         try:
-            dynamodb = boto3.client('dynamodb')
-            data = dynamodb.scan(TableName=self.constants["SETTINGS_TABLE"],
-                                 ConsistentRead=True)
+            # Get site settings and read in the file body
+            fileName= "Content/site-settings.json"        
+            get_kwargs = {
+                'Bucket': self.constants["BUCKET"],
+                'Key': fileName
+            }
+            result =  s3.get_object(**get_kwargs)
+            site_settings_body = result['Body'].read()
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
             response.errorMessage = "Unable to get site setting data: %s" % e.response['Error']['Code']
             return response.to_JSON()
         
-        return data
+        return site_settings_body
 
     """ function sets up the site settings in dynamo and s3 """
     def set_site_settings(self):
@@ -75,43 +80,7 @@ class Page(object):
             site_atr_list[key] = self.event["site"][key]
 
         site_atr_list["SavedDate"] = str(datetime.datetime.now())
-
-        for key, item in site_atr_list.items():
-            # site settings item parameters
-            site_params = {}
-            d_item_string = ""
-            if isinstance(item, basestring):
-                site_params["Name"] = {"S": key}
-                site_params["Value"] = {"S": item}
-            elif isinstance(item, dict):
-                site_params["Name"] = {"S": key}
-                item = json.dumps(item)
-                site_params["Value"] = {"S": item}
-
-
-
-
-
-            # print item
-            # put into dynamo
-            # try:
-            #     dynamodb = boto3.client('dynamodb')
-            #     dynamodb.put_item(
-            #         TableName=self.constants["SETTINGS_TABLE"],
-            #         Item=site_params,
-            #         ReturnConsumedCapacity='TOTAL'
-            #     )
-
-            # except botocore.exceptions.ClientError as e:
-            #     print e.response['Error']['Code']
-            #     response = Response("Error", None)
-            #     response.errorMessage = "Unable to set new site settings: %s" % e.response['Error']['Code']
-
-        # print json.dumps(site_params)
-
-        # put site settings object into s3
-        # self.put_site_settings_object(site_name, site_url, nav_items_string, 
-        #     meta_data_string, header_string, footer_string)
+        self.put_site_settings_object(self.event["site"])
         return Response("Success", None).to_JSON()
 
     """ function returns all pages in dynamo """
@@ -271,15 +240,41 @@ class Page(object):
                 e.response['Error']['Code'])
 
 
+    # """ function which puts a site settings json object in s3 """
+    # def put_site_settings_object(self, siteName, siteUrl, navItems, metaData,
+    #                              header, footer):
+    #     # file name
+    #     site_settings_key = 'site-settings'
+
+    #     # site settings body
+    #     ss_json ='{ "site-name" : "'+siteName+'", "site-url:" : "'+siteUrl+'", "nav-items" : { '+navItems+'},"meta-data" : {'+metaData+'},"header" : {'+header+'}, "footer" : {'+footer+'}}'
+
+    #     # Item parameters
+    #     put_ss_item_kwargs = {
+    #         'Bucket': self.constants["BUCKET"],
+    #         'ACL': 'public-read',
+    #         'Body': ss_json,
+    #         'Key': site_settings_key
+    #     }
+
+    #     put_ss_item_kwargs['ContentType'] = 'application/json'
+    #     # put into s3
+    #     try:
+    #         s3 = boto3.client("s3")
+    #         s3.put_object(**put_ss_item_kwargs)
+    #     except botocore.exceptions.ClientError as e:
+    #         print e.response['Error']['Code']
+    #         response = Response("Error", None)
+    #         response.errorMessage = "Unable to save site settings: %s" % (
+    #             e.response['Error']['Code'])
+
     """ function which puts a site settings json object in s3 """
-    def put_site_settings_object(self, siteName, siteUrl, navItems, metaData,
-                                 header, footer):
+    def put_site_settings_object(self, site_params):
         # file name
-        site_settings_key = 'site-settings'
+        site_settings_key = 'Content/site-settings.json'
 
         # site settings body
-        ss_json ='{ "site-name" : "'+siteName+'", "site-url:" : "'+siteUrl+'", "nav-items" : { '+navItems+'},"meta-data" : {'+metaData+'},"header" : {'+header+'}, "footer" : {'+footer+'}}'
-
+        ss_json = json.dumps(site_params)
         # Item parameters
         put_ss_item_kwargs = {
             'Bucket': self.constants["BUCKET"],

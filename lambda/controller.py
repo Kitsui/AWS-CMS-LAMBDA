@@ -33,7 +33,7 @@ def handler(event, context):
     security = Security(event["params"], context)
     upload_image = UploadImage(event["params"], context)
 
-    event["params"]["token"] = event["token"]
+    #event["params"]["token"] = event["token"]
 
     # Map request type to function calls
     functionMapping = {

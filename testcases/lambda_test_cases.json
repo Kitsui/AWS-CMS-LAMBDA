@@ -271,16 +271,6 @@ Set Site Settings
     "site": {
       "SiteName": "SiteName",
       "SiteURL": "url.com",
-      "NavItems": {
-        "title1": "url1",
-        "title2": "url2",
-        "title3": "url3",
-        "title4": "url4"
-      },
-      "MetaData": {
-        "description": "Sample Description",
-        "keywords": "keyword1, keyword2, keyword3, keyword4"
-      },
       "Header": {
         "alt": "site-header",
         "url": "imgs/header.png"
@@ -291,8 +281,8 @@ Set Site Settings
         "title3": "url3",
         "title4": "url4"
       },
-      "GoogleURL": "googleURL",
-      "DisqusURL": "disqusURL"
+      "GoogleID": "googleID",
+      "DisqusID": "disqusID"
     }
   }
 }
