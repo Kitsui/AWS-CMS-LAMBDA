@@ -25,7 +25,7 @@ class Blog(object):
         self.context = context
         with open("constants.json", "r") as constants_file:
             self.constants = json.loads(constants_file.read())
-    
+
     """ function gets a blog record from dynamo """
     def get_blog_data(self):
         """ Gets blog data from dynamoDB """
@@ -64,7 +64,7 @@ class Blog(object):
             response.errorMessage = "Unable to get blog data: %s" % (
                 e.response["Error"]["Code"])
             return response.to_JSON()
-        
+
         response = Response("Success", data)
         # format for table response to admin dash
         return response.format("All Blogs")
@@ -84,7 +84,7 @@ class Blog(object):
         if not Validator.validateBlog(content):
             response = Response("Error", None)
             response.errorMessage = "Invalid blog content"
-            
+
             return response.to_JSON()
 
         blog_params = {
@@ -105,7 +105,7 @@ class Blog(object):
                          meta_description, meta_keywords)
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
-            
+
             response = Response("Error", None)
             response.errorMessage = "Unable to save new blog: %s" % e.response["Error"]["Code"]
 
@@ -143,7 +143,7 @@ class Blog(object):
                 }
             )
             saved_date = blog_post["Items"][0]["SavedDate"]["S"]
-            
+
             # Update item from dynamo
             dynamodb.update_item(
                 TableName=self.constants["BLOG_TABLE"],
@@ -204,10 +204,10 @@ class Blog(object):
     """ function which puts a blog json object in s3 """
     def put_blog_object(self, blog_id, author, title, content, saved_date,
                         mDescription, mKeywords):
-        blog_key = 'blog-json-' + blog_id
-        
+        blog_key = blog_iD + ".json"
+
         ''' Call update index '''
-        self.update_index(blog_id) 
+        self.update_index(blog_id)
         # blog body
         page_json =('{ "title": "'+title+'","content": "'+content+'","uuid": "'+blog_id+
             '","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+
@@ -245,7 +245,7 @@ class Blog(object):
         index_json_new_item = uid
 
         # Get old index and read in the file body
-        fileName= index_key        
+        fileName= index_key
         get_kwargs = {
             'Bucket': self.constants["BUCKET"],
             'Key': fileName
@@ -263,9 +263,9 @@ class Blog(object):
 
         # update index
         put_index_item_kwargs = {
-            "Bucket": self.constants["BUCKET"], 
+            "Bucket": self.constants["BUCKET"],
             "ACL": "public-read",
-            "Body" : new_json_body_string, 
+            "Body" : new_json_body_string,
             "Key": index_key
         }
         put_index_item_kwargs["ContentType"] = 'application/json'
@@ -274,5 +274,5 @@ class Blog(object):
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             response = Response("Error", None)
-            response.errorMessage = ("Unable to save new blog to index: %s" % 
+            response.errorMessage = ("Unable to save new blog to index: %s" %
                 e.response["Error"]["Code"])
