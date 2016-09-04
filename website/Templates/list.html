@@ -1,0 +1,8 @@
+<div ng-controller="HomeController as data">
+	<div class="col-md-8 col-md-offset-2" ng-repeat="post in data.posts">
+		<a href="#/post/{{ post.uuid }}"><h3>{{ post.title }}</h3></a>
+		<p>{{ post.content }}</p>
+		<small class="text-muted">07/07/2016</small><small class="pull-right text-info">Author Name</small>
+		<hr />
+	</div>
+</div>

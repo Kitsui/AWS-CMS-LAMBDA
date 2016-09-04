@@ -19,14 +19,13 @@
 	        <span class="icon-bar"></span>
 	        <span class="icon-bar"></span>
 	      </button>
-	      <a class="navbar-brand" href="#">Logo</a>
+	      <a class="navbar-brand" href="#/">Logo</a>
 	    </div>
 	    <div class="collapse navbar-collapse" id="myNavbar">
 	      <ul class="nav navbar-nav">
-	        <li class="active"><a href="#">Home</a></li>
-	        <li><a ng-href="/index.html#/page/5" target="_self">About Us</a></li>
-	        <li><a ng-href="/index.html#/page/8" target="_self">An Ode To Bacon</a></li>
-	        <li><a href="#">Contact</a></li>
+	        <li class="active"><a href="#/">Home</a></li>
+	        <li><a ng-href="index.html#/page/5" target="_self">About Us</a></li>
+	        <li><a ng-href="index.html#/page/8" target="_self">An Ode To Bacon</a></li>
 	      </ul>
 	      <ul class="nav navbar-nav navbar-right">
 	        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
@@ -35,8 +34,12 @@
 	  </div>
 	</nav>
 
-	<div class = "container" ng-view></div>
+	<div class = "container" ng-view>
+		<!-- Content goes here -->
+	</div>
 
 </body>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </html>
+
 
