@@ -2,12 +2,12 @@
 	
 var app = angular.module('Kitsui', ['ngRoute'])
 	.config(function($locationProvider, $routeProvider) {
-        /*
+        
 		$routeProvider.when('/', {
-           templateUrl: 'index.html', 
-           controller: HomeController
+           templateUrl: 'Templates/list.html', 
+           controller: 'HomeController'
         });
-		*/
+		
 		
         $routeProvider.when('/page/:pageid', {
             templateUrl: 'Templates/page.html', 
@@ -28,9 +28,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });
 
 
 
-
-
-angular.module('Kitsui').controller('PageController', ['$http', '$routeParams', function($http, $routeParams){
+app.controller('PageController', ['$http', '$routeParams', function($http, $routeParams){
 	
 	var controller = this;
 	
@@ -42,16 +40,12 @@ angular.module('Kitsui').controller('PageController', ['$http', '$routeParams', 
 	
 } ]);
 
-
-
-
-//Handles displaying post.
-app.controller('PostController', ['$http', '$location', function($http, $location){
+app.controller('PostController', ['$http', '$routeParams', function($http, $routeParams){
 	
 	var controller = this;
 	
 	//var page.title = "Steven";
-	$http.get("Content/Post/"+ $location.search()['post'] +".json").then(function(response) {
+	$http.get("Content/Post/"+ $routeParams.postid +".json").then(function(response) {
         controller.post = response.data;
 		console.log(controller);
     });
@@ -64,12 +58,39 @@ app.controller('HomeController', ['$http', '$location', function($http, $locatio
 	var controller = this;
 	
 	//var page.title = "Steven";
-	$http.get("Content/home.json").then(function(response) {
-        controller.post = response.data;
-		console.log(controller.post);
+	$http.get("Content/post_list.json").then(function(response) {
+        
+		controller.posts = [];
+		for(i = 0; i < response.data.items.length; ++i){ // Loop through the post IDs and fetch their data.
+			$http.get("Content/Post/"+response.data.items[i]+".json").then(function(response) {
+				controller.posts.push(response.data);
+			});
+			
+			
+		}
+		
+		//controller.posts = response.data;
+		console.log(controller);
     });
 	
 } ]);
+
+
+
+/*
+//Handles displaying post.
+app.controller('PostController', ['$http', '$location', function($http, $location){
+	
+	var controller = this;
+	
+	//var page.title = "Steven";
+	$http.get("Content/Post/"+ $location.search()['post'] +".json").then(function(response) {
+        controller.post = response.data;
+		console.log(controller);
+    });
+	
+} ]);
+*/
    
 
 

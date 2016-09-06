@@ -34,8 +34,9 @@ def handler(event, context):
     security = Security(event["params"], context)
     upload_image = UploadImage(event["params"], context)
     menu = Menu(event["params"], context)
-
-    event["token"] = event["token"][6:]
+    
+    equals_index = event["token"].find("=") + 1
+    event["token"] = event["token"][equals_index:]
     event["params"]["token"] = event["token"]
 
     # Map request type to function calls
