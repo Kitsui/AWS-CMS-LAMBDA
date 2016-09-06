@@ -44,10 +44,11 @@ class User(object):
             response.errorMessage = "Unable to get user data: %s" % (
                 e.response['Error']['Code'])
             return response.to_JSON()
-        
+
         response = Response("Success", data)
         # format for table response to admin dash
-        return response.format("All Users")
+        # return response.format("All Users")
+        return data
 
     """ function gets a user record from dynamo """
     def get_user_data(self):
@@ -87,7 +88,7 @@ class User(object):
             "Password": {"S": hashed},
             "Role": {"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"}
         }
-        
+
         # Attempt to add to dynamo
         try:
             dynamodb = boto3.client('dynamodb')
@@ -102,7 +103,7 @@ class User(object):
             response.errorMessage = "Unable to register new user: %s" % (
                 e.response['Error']['Code'])
             return response.to_JSON()
-        
+
         return Response("Success", None).to_JSON()
 
 
@@ -124,7 +125,7 @@ class User(object):
             response = Response("Error", None)
             response.errorMessage = "Unable to delete role: %s" % e.response['Error']['Code']
             return response.to_JSON()
-   
+
         return Response("Success", None).to_JSON()
 
 
@@ -135,16 +136,16 @@ class User(object):
         newUsername = self.event["user"]["newUsername"]
         newRoles = self.event["user"]["newRoles"]
         newPassword = self.event["user"]["newPassword"]
-        
+
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.update_item(
                 TableName=self.constants["USER_TABLE"],
                 Key={
-                    'ID': {"S": userID}, 
+                    'ID': {"S": userID},
                     'Email': {"S": email}
-                }, 
-                UpdateExpression='SET Username = :u, UserRoles = :r, Password = :p', 
+                },
+                UpdateExpression='SET Username = :u, UserRoles = :r, Password = :p',
                 ExpressionAttributeValues={
                     ':u': {"S": newUsername},
                     ':r': {"S": newRoles},
@@ -156,11 +157,11 @@ class User(object):
             response = Response("Error", None)
             response.errorMessage = "Unable to edit user: %s" % e.response['Error']['Code']
             return response.to_JSON()
-   
+
         return Response("Success", None).to_JSON()
 
 
-    """ function returns if a record exists with username 
+    """ function returns if a record exists with username
     and password matching the event input, then adds a token
     in dynamo which is returned back to the user """
     def login(self):
@@ -176,7 +177,7 @@ class User(object):
                     }
                 }
             )
-            
+
             password_guess = self.event["User"]["Password"]
             password = result["Items"][0]["Password"]["S"]
             if(pbkdf2_sha256.verify(password_guess, password)):
@@ -205,7 +206,7 @@ class User(object):
             response = Response("Error", None)
             response.errorMessage = "Unable to log in: %s" % e.response['Error']['Code']
             return response.to_JSON()
-        
+
         response = Response("Error", None)
         return response.to_JSON()
 
@@ -216,7 +217,7 @@ class User(object):
         token = self.event['tokenString']
         user = self.event['userID']
 
-        try:            
+        try:
             # remove token from user
             dynamodb = boto3.client('dynamodb')
             response = table.delete_item(
@@ -231,5 +232,5 @@ class User(object):
             response = Response("Error", None)
             response.errorMessage = "Unable to log out: %s" % e.response['Error']['Code']
             return response.to_JSON()
-   
+
         return Response("Success", None).to_JSON()
