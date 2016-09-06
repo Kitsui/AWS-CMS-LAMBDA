@@ -96,13 +96,12 @@ class Blog(object):
             "MetaDescription": {"S": meta_description},
             "MetaKeywords": {"S": meta_keywords},
         }
-
+        # put blog into dynamo and s3
         try:
             dynamodb = boto3.client("dynamodb")
             dynamodb.put_item(TableName=self.constants["BLOG_TABLE"],
                               Item=blog_params, ReturnConsumedCapacity="TOTAL")
-            self.put_blog_object(blog_id, author, title, content, saved_date,
-                         meta_description, meta_keywords)
+            self.put_blog_object(self.event["blog"])
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
 
@@ -202,16 +201,13 @@ class Blog(object):
 
 
     """ function which puts a blog json object in s3 """
-    def put_blog_object(self, blog_id, author, title, content, saved_date,
-                        mDescription, mKeywords):
-        blog_key = blog_iD + ".json"
+    def put_blog_object(self, blog_json):
+        blog_key = blog_id + ".json"
 
         ''' Call update index '''
         self.update_index(blog_id)
         # blog body
-        page_json =('{ "title": "'+title+'","content": "'+content+'","uuid": "'+blog_id+
-            '","meta-data" : { "description" : "'+mDescription+'","keywords" : "'+mKeywords+
-            '"},"script-src" : "something"}')
+        page_json = json.dumps(blog_json)
 
         # Item parameters
         put_blog_item_kwargs = {
@@ -224,7 +220,7 @@ class Blog(object):
         put_blog_item_kwargs['ContentType'] = 'application/json'
         try:
             s3 = boto3.client("s3")
-            # put into s3
+            # put into s3 with blog parameters
             s3.put_object(**put_blog_item_kwargs)
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
