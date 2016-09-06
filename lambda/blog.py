@@ -80,7 +80,10 @@ class Blog(object):
         meta_description = self.event["blog"]["metaDescription"]
         meta_keywords = self.event["blog"]["metaKeywords"]
         saved_date = str(datetime.datetime.now())
-
+        # add id to event json
+        self.event["blog"]["blogID"] = blog_id
+        # add save date to event json
+        self.event["blog"]["savedDate"] = saved_date
         if not Validator.validateBlog(content):
             response = Response("Error", None)
             response.errorMessage = "Invalid blog content"
@@ -202,10 +205,10 @@ class Blog(object):
 
     """ function which puts a blog json object in s3 """
     def put_blog_object(self, blog_json):
-        blog_key = blog_id + ".json"
+        blog_key = blog_json["blogID"] + ".json"
 
         ''' Call update index '''
-        self.update_index(blog_id)
+        self.update_index(blog_json["blogID"])
         # blog body
         page_json = json.dumps(blog_json)
 
