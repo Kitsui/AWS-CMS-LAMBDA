@@ -29,28 +29,28 @@ class UI(object):
         # Get all keys from an item record to loop over with on the front end
         columns = data["Items"][0].keys()
         # Loop over data given
-        # for i in data["Items"]:
-        #     item = {}
-        #     # Loop over key value pairs within each item to find ID
-        #     for it in i:
-        #         if "ID" in it:
-        #             id_var = i[it]['S']
-        #     # Replace titles to clickable link for front end
-        #     for j in columns:
-        #         print json.dumps(item[j])
-        #         if j == "Title":
-        #             item[j] =  ('<a href="#" method="'+'edit'+pTitle[4:len(pTitle)-1]+
-        #                 '" '+record_type+':id="'+id_var+'">'+i[j]['S']+'</a>');
-        #         else:
-        #             item[j] = (i[j]['S'])
-        #     # Add formatted item into rows list
-        #     rows.append(item)
-        # replyData["rows"] = rows
-        # replyData["cols"] = columns
-        # replyData["page_title"] = pTitle
-        
+        for i in data["Items"]:
+            item = {}
+            # Loop over key value pairs within each item to find ID
+            for it in i:
+                if "ID" in it:
+                    id_var = i[it]['S']
+            # Replace titles to clickable link for front end
+            for j in columns:
+                # print json.dumps(item[j])
+                if j == "Title":
+                    item[j] =  ('<a href="#" method="'+'edit'+pTitle[4:len(pTitle)-1]+
+                        '" '+record_type+':id="'+id_var+'">'+i[j]['S']+'</a>');
+                else:
+                    item[j] = (i[j]['S'])
+            # Add formatted item into rows list
+            rows.append(item)
+        replyData["rows"] = rows
+        replyData["cols"] = columns
+        replyData["page_title"] = pTitle
+
         # Return formatted table json
-        return data
+        return replyData
 
 
     def getForm(self, data):

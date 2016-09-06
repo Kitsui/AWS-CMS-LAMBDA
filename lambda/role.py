@@ -36,9 +36,21 @@ class Role(object):
             response.errorMessage = "Unable to get user data: %s" % e.response['Error']['Code']
             return response.to_JSON()
 
+        # Loop through items and replace permissions with stringified permissions
+        for item in data["Items"]:
+            # get permissions dictionary
+            permissions = item.get("Permissions")["M"]
+            p_item = {}
+            # loop though to remove N from dictionary values
+            for p_key, p_value in permissions.iteritems():
+                p_item[p_key] = p_value["N"]
+
+            new_permissions = {}
+            # Format as a json string type key pair
+            new_permissions["S"] = p_item
+            # Add new permissions to data
+            item["Permissions"] = new_permissions
         response = Response("Success", data)
-        # response.setData = data
-        # return response.format("All Roles")
         return data
 
     """ function gets a role record from dynamo """
