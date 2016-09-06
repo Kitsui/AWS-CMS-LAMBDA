@@ -23,7 +23,7 @@ class Security(object):
 
         # Get user token
         token = self.event["token"]
-
+        
         try:
             dynamodb = boto3.client('dynamodb')
             auth = dynamodb.query(
@@ -132,7 +132,8 @@ class Security(object):
             "editSiteSettings": "Site_Settings_CanUpdate",
             "setSiteSettings": "Site_Settings_CanUpdate",
             "getMenuItems": "Menu_CanUpdate",
-            "setMenuItems": "Menu_CanUpdate"
+            "setMenuItems": "Menu_CanUpdate",
+			"uploadImage": "Image_CanUpload"
         }
 
         # Eval POST request for access

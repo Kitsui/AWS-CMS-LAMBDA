@@ -313,9 +313,9 @@ Get Site Settings
 Get Presigned Upload
 
 {
+  "token": "testToken1234567",
   "params": {
     "request": "uploadImage",
-    "token": "testToken1234567",
     "fileName": "fun.jpg",
     "acl": "public-read"
   }

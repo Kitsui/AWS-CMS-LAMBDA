@@ -21,7 +21,8 @@
 			  "Role_CanUpdate": {"N" : "1"},
 			  "Role_CanRead": {"N" : "1"},
 			  "Site_Settings_CanUpdate": {"N": "1"},
-			  "Menu_CanUpdate": {"N": "1"}
+			  "Menu_CanUpdate": {"N": "1"},
+			  "Image_CanUpload": {"N": "1"}
     		}
     	}
 	},

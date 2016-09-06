@@ -105,6 +105,8 @@ class AwsFunc:
             for fl in files:
                 path = os.path.join(root, fl)
                 key = path[8:]
+                # If the file has backslashes in it, replace them with forwardslashes
+                key = key.replace("\\", "/")
                 self.upload_file(path, key)
         print "Bucket populated"
 

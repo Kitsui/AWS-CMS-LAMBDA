@@ -35,6 +35,7 @@ def handler(event, context):
     upload_image = UploadImage(event["params"], context)
     menu = Menu(event["params"], context)
 
+    event["token"] = event["token"][6:]
     event["params"]["token"] = event["token"]
 
     # Map request type to function calls
@@ -70,7 +71,7 @@ def handler(event, context):
     # Get constants created by setup.py
     with open("constants.json", "r") as constants_file:
         constants = json.loads(constants_file.read())
-
+	
     is_authenticated = False
     request = event["params"]["request"]
     
