@@ -18,7 +18,7 @@ class UI(object):
             self.forms = json.loads(forms_file.read())
 
     """ function formats replies querying dynamo"""
-    def getTable(self, pTitle):
+    def getTable(self, pTitle, data):
         # Get the type of table request and store it in a variable "User"
         record_type = pTitle[4:len(pTitle)-1]
         id_var = ""
@@ -27,29 +27,30 @@ class UI(object):
         rows = []
         item = {}
         # Get all keys from an item record to loop over with on the front end
-        columns = self.data["Items"][0].keys()
+        columns = data["Items"][0].keys()
         # Loop over data given
-        for i in self.data["Items"]:
-            item = {}
-            # Loop over key value pairs within each item
-            for it in i:
-                if "ID" in it:
-                    id_var = i[it]['S']
-            # Replace titles to clickable link for front end
-            for j in columns:
-                if j == "Title":
-                    item[j] =  ('<a href="#" method="'+'edit'+pTitle[4:len(pTitle)-1]+
-                        '" '+record_type+':id="'+id_var+'">'+i[j]['S']+'</a>');
-                else:
-                    item[j] = (i[j]['S'])
-            # Add formatted item into rows list
-            rows.append(item)
-        replyData["rows"] = rows
-        replyData["cols"] = columns
-        replyData["page_title"] = pTitle
-        #<a href="#" method="editBlog" id="69">Doop</a>
+        # for i in data["Items"]:
+        #     item = {}
+        #     # Loop over key value pairs within each item to find ID
+        #     for it in i:
+        #         if "ID" in it:
+        #             id_var = i[it]['S']
+        #     # Replace titles to clickable link for front end
+        #     for j in columns:
+        #         print json.dumps(item[j])
+        #         if j == "Title":
+        #             item[j] =  ('<a href="#" method="'+'edit'+pTitle[4:len(pTitle)-1]+
+        #                 '" '+record_type+':id="'+id_var+'">'+i[j]['S']+'</a>');
+        #         else:
+        #             item[j] = (i[j]['S'])
+        #     # Add formatted item into rows list
+        #     rows.append(item)
+        # replyData["rows"] = rows
+        # replyData["cols"] = columns
+        # replyData["page_title"] = pTitle
+        
         # Return formatted table json
-        return replyData
+        return data
 
 
     def getForm(self, data):
