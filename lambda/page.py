@@ -55,20 +55,20 @@ class Page(object):
         # Attempt to get all data from table
         try:
             # Get site settings and read in the file body
-            fileName= "Content/site-settings.json"        
+            fileName= "Content/site-settings.json"
             get_kwargs = {
                 'Bucket': self.constants["BUCKET"],
                 'Key': fileName
             }
-            result =  s3.get_object(**get_kwargs)
+            result =  self.s3.get_object(**get_kwargs)
             site_settings_body = result['Body'].read()
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
             response.errorMessage = "Unable to get site setting data: %s" % e.response['Error']['Code']
             return response.to_JSON()
-        
-        return site_settings_body
+        # Return site settings json to be used
+        return json.loads(site_settings_body)
 
     """ function sets up the site settings in dynamo and s3 """
     def set_site_settings(self):
@@ -95,10 +95,11 @@ class Page(object):
             response = Response("Error", None)
             response.errorMessage = "Unable to get page data: %s" % e.response['Error']['Code']
             return response.to_JSON()
-        
+
         response = Response("Success", data)
         # format for table response to admin dash
-        return response.format("All Pages")
+        # return response.format("All Pages")
+        return data
 
 
     """ functions creates a page in s3 and dynamo """
@@ -147,13 +148,13 @@ class Page(object):
                 meta_description, meta_keywords)
         # Return back success
         return Response("Success", None).to_JSON()
-        
+
 
     """ function which deletes a page record from dynamo and s3 """
     def delete_page(self):
         page_id =self.event['page']['pageID']
         author = self.event['page']['pageAuthor']
-        
+
         # delete item from dynamo
         try:
             dynamodb = boto3.client('dynamodb')
@@ -180,7 +181,7 @@ class Page(object):
         indexContent = '<html><head><title>Page Index</title></head><body><h1>Index</h1>'
         blogData = {'items': [None]}
         blogTitle = ''
-        
+
         # put into dynamo
         try:
             dynamodb = boto3.client('dynamodb')
@@ -213,7 +214,7 @@ class Page(object):
     def put_page_object(self, page_id, author, title, content, saved_date,
                         mDescription, mKeywords):
         page_key = page_id + '.json'
-        
+
         self.update_index()
         # page body
         page_json =('{ "title": "'+title+'","content": "'+content+'","uuid": "'+page_id+

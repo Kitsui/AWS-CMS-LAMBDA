@@ -67,7 +67,8 @@ class Blog(object):
 
         response = Response("Success", data)
         # format for table response to admin dash
-        return response.format("All Blogs")
+        # return response.format("All Blogs")
+        return data
 
 
     """ function saves a new blog record in dynamo """

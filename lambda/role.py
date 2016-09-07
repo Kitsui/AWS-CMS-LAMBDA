@@ -35,10 +35,23 @@ class Role(object):
             response = Response("Error", None)
             response.errorMessage = "Unable to get user data: %s" % e.response['Error']['Code']
             return response.to_JSON()
-        
+
+        # Loop through items and replace permissions with stringified permissions
+        for item in data["Items"]:
+            # get permissions dictionary
+            permissions = item.get("Permissions")["M"]
+            p_item = {}
+            # loop though to remove N from dictionary values
+            for p_key, p_value in permissions.iteritems():
+                p_item[p_key] = p_value["N"]
+
+            new_permissions = {}
+            # Format as a json string type key pair
+            new_permissions["S"] = p_item
+            # Add new permissions to data
+            item["Permissions"] = new_permissions
         response = Response("Success", data)
-        # response.setData = data
-        return response.format("All Roles")
+        return data
 
     """ function gets a role record from dynamo """
     def get_role_data(self):
@@ -76,7 +89,7 @@ class Role(object):
             "Blog_CanDelete": {"N" : self.event["role"]["permissions"]["blog_canDelete"]},
             "Blog_CanRead": {"N" : self.event["role"]["permissions"]["blog_canRead"]},
             "Blog_CanUpdate": {"N" : self.event["role"]["permissions"]["blog_canUpdate"]},
-            "User_CanCreate": {"N" : self.event["role"]["permissions"]["user_canCreate"]}, 
+            "User_CanCreate": {"N" : self.event["role"]["permissions"]["user_canCreate"]},
             "User_CanDelete": {"N" : self.event["role"]["permissions"]["user_canDelete"]},
             "User_CanRead": {"N" : self.event["role"]["permissions"]["user_canRead"]},
             "User_CanUpdate": {"N" : self.event["role"]["permissions"]["user_canUpdate"]},
@@ -88,7 +101,7 @@ class Role(object):
             "Menu_CanUpdate": {"N" : self.event["role"]["permissions"]["menu_canUpdate"]}
             }}
         }
-        
+
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.put_item(
@@ -101,7 +114,7 @@ class Role(object):
             response = Response("Error", None)
             response.errorMessage = "Unable to create role: %s" % e.response['Error']['Code']
             return response.to_JSON()
-   
+
         return Response("Success", None).to_JSON()
 
 
@@ -110,12 +123,12 @@ class Role(object):
         roleName = self.event["role"]["name"]
         roleID = self.event["role"]["roleID"]
         roleType = self.event["role"]["type"]
-        permissions = { 
+        permissions = {
             "Blog_CanCreate": {"N" : self.event["role"]["permissions"]["blog_canCreate"]},
             "Blog_CanDelete": {"N" : self.event["role"]["permissions"]["blog_canDelete"]},
             "Blog_CanRead": {"N" : self.event["role"]["permissions"]["blog_canRead"]},
             "Blog_CanUpdate": {"N" : self.event["role"]["permissions"]["blog_canUpdate"]},
-            "User_CanCreate": {"N" : self.event["role"]["permissions"]["user_canCreate"]}, 
+            "User_CanCreate": {"N" : self.event["role"]["permissions"]["user_canCreate"]},
             "User_CanDelete": {"N" : self.event["role"]["permissions"]["user_canDelete"]},
             "User_CanRead": {"N" : self.event["role"]["permissions"]["user_canRead"]},
             "User_CanUpdate": {"N" : self.event["role"]["permissions"]["user_canUpdate"]},
@@ -126,7 +139,7 @@ class Role(object):
             "Site_Settings_CanUpdate": {"N" : self.event["role"]["permissions"]["site_Settings_CanUpdate"]},
             "Menu_CanUpdate": {"N" : self.event["role"]["permissions"]["menu_canUpdate"]}
         }
-        
+
         try:
             dynamodb = boto3.client('dynamodb')
             # Update item from dynamo
@@ -135,13 +148,13 @@ class Role(object):
                 Key={
                     'RoleID': {"S": roleID},
                     'RoleType': {"S": roleType}
-                }, 
-                UpdateExpression='SET RoleName = :r, #pm = :p', 
+                },
+                UpdateExpression='SET RoleName = :r, #pm = :p',
                 ExpressionAttributeNames={
                     "#pm": "Permissions"
                 },
                 ExpressionAttributeValues={
-                    ':r': {"S": roleName}, 
+                    ':r': {"S": roleName},
                     ':p': {"M": permissions}
                 }
             )
@@ -151,7 +164,7 @@ class Role(object):
             response.errorMessage = "Unable to edit role: %s" % (
                 e.response['Error']['Code'])
             return response.to_JSON()
-   
+
         return Response("Success", None).to_JSON()
 
 
@@ -172,5 +185,5 @@ class Role(object):
             response = Response("Error", None)
             response.errorMessage = "Unable to delete role: %s" % e.response['Error']['Code']
             return response.to_JSON()
-   
+
         return Response("Success", None).to_JSON()

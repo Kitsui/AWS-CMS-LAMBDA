@@ -75,7 +75,7 @@ def handler(event, context):
 	
     is_authenticated = False
     request = event["params"]["request"]
-    
+
     # Check user authentication
     if request == "loginUser" or security.authenticate():
         # Check user authorization
@@ -89,11 +89,15 @@ def handler(event, context):
             # Check if form ui is required to be returned
             if request.startswith("edit"):
                 response = ui.getForm(response)
+            # If returning a table
+            elif functionMapping[request].__name__.startswith("get_all"):
+                # Send back data for table
+                response = ui.getTable("All " + request[3:],response)
             # Return response to client
             return response
         else:
             response = Response("Authorization Failed", None)
-            return response.to_JSON() 
+            return response.to_JSON()
     else:
         response = Response("Authentication Failed", None)
         return response.to_JSON()

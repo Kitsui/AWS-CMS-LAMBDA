@@ -17,8 +17,42 @@ class UI(object):
         with open("forms.json", "r") as forms_file:
             self.forms = json.loads(forms_file.read())
 
+    """ function formats replies querying dynamo"""
+    def getTable(self, pTitle, data):
+        # Get the type of table request and store it in a variable "User"
+        record_type = pTitle[4:len(pTitle)-1]
+        id_var = ""
+        replyData = {}
+        colm = []
+        rows = []
+        item = {}
+        # Get all keys from an item record to loop over with on the front end
+        columns = data["Items"][0].keys()
+        # Loop over data given
+        for i in data["Items"]:
+            item = {}
+            # Loop over key value pairs within each item to find ID
+            for it in i:
+                if "ID" in it:
+                    id_var = i[it]['S']
+            # Replace titles to clickable link for front end
+            for j in columns:
+                # print json.dumps(item[j])
+                if j == "Title":
+                    item[j] =  ('<a href="#" method="'+'edit'+pTitle[4:len(pTitle)-1]+
+                        '" '+record_type+':id="'+id_var+'">'+i[j]['S']+'</a>');
+                else:
+                    item[j] = (i[j]['S'])
+            # Add formatted item into rows list
+            rows.append(item)
+        replyData["rows"] = rows
+        replyData["cols"] = columns
+        replyData["page_title"] = pTitle
 
-    
+        # Return formatted table json
+        return replyData
+
+
     def getForm(self, data):
         form_data = {}
         form_type = ""
@@ -39,7 +73,7 @@ class UI(object):
             elif "siteSetting" in self.event["type"]:
                 form_type = "SiteSettings"
 
-        
+
         #for key, value in d.iteritems():
         # Get form json from json file
         form_data["input"] = self.forms[form_type]
@@ -63,11 +97,6 @@ class UI(object):
                         # Replace value in form json
                         item_f["value"] = key[form_input]["S"]
 
-                        
+
         # Will return json
         return form_data
-
-        
-
-
-        
