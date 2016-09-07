@@ -60,15 +60,15 @@ class Page(object):
                 'Bucket': self.constants["BUCKET"],
                 'Key': fileName
             }
-            result =  s3.get_object(**get_kwargs)
+            result =  self.s3.get_object(**get_kwargs)
             site_settings_body = result['Body'].read()
         except botocore.exceptions.ClientError as e:
             print e.response['Error']['Code']
             response = Response("Error", None)
             response.errorMessage = "Unable to get site setting data: %s" % e.response['Error']['Code']
             return response.to_JSON()
-
-        return site_settings_body
+        # Return site settings json to be used
+        return json.loads(site_settings_body)
 
     """ function sets up the site settings in dynamo and s3 """
     def set_site_settings(self):
