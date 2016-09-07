@@ -55,8 +55,7 @@ class AwsFunc:
         # Store file data and make replacements to files with certain mimetypes
         with open(path, "rb") as file_body:
             body = file_body.read()
-        mime_replacements = ["text/html", "application/javascript"]
-        if mime[0] in mime_replacements:
+        if type(mime[0]) is str and not mime[0].startswith("image/"):
             body = replace_variables(body, **self.constants)
         put_kwargs.update({
             "Bucket": bucket_name,
