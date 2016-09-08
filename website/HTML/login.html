@@ -5,15 +5,14 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
   <script type="text/javascript" src="../JavaScript/login.js"></script>
-  <body>
-    <div class="container" ng-app="login">
+  <body ng-app="login">
+    <div class="container">
       <div class="wrapper">
         <form name="Login_Form" class="form-signin" ng-controller="loginForm" ng-submit="login()">
           <h3 class="form-signin-heading">Admin Login</h3>
           <input type="email" class="form-control" placeholder="Email" ng-model="email" ng-required="true" ng-disabled="uploading" autofocus required/>
           <input type="password" class="form-control" placeholder="Password" ng-model="password" ng-required="true" ng-disabled="uploading" required/>
           <div class="alert alert-danger login-fail" ng-hide="!failedLogin">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             <strong>{{error}}</strong>
           </div>
           <button class="btn btn-lg btn-primary btn-block" value="Login" type="submit" ng-disabled="uploading">

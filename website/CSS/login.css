@@ -21,13 +21,14 @@ body {
   padding: 20px 38px 55px;
   margin: 0 auto;
   background: rgba(200, 200, 200, 0.7);
-  border: 1px solid rgba(0,0,0,0.4);  
+  border: 1px solid rgba(0,0,0,0.4);
+  border-radius: 40px;
   }
 
 .form-signin-heading {
   color: #575757;
   font-size: 300%;
-  text-align:center;
+  text-align:center;;
   margin-bottom: 30px;
 }
 
