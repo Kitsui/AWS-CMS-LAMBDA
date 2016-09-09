@@ -21,7 +21,7 @@ angular.module("root", [])
         };
         
         $http.post(
-          "https://i5q0xhg2lg.execute-api.us-east-1.amazonaws.com/prod",
+          "$(API_URL)",
           presignedRequest,
           {
             withCredentials: true
