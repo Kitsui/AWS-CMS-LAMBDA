@@ -5,31 +5,42 @@ angular.module("login", [])
     "use strict";
     $httpProvider.defaults.withCredentials = true;
   })
-  .controller("loginForm", ["$scope", "$http", "$window",
-    function ($scope, $http, $window) {
+  .directive("cmsLoginForm", ["$http", "$window", function ($http, $window) {
+    "use strict";
+    return {
+      http: $http,
+      window: $window,
+      templateUrl: 'cms_login_form.html',
+      replace: true,
+      controller: 'cmsLoginFormCtrl',
+      controllerAs: 'loginCtrl'
+    };
+  }])
+  .controller("cmsLoginFormCtrl",
+    function ($http, $window) {
       "use strict";
-      $scope.buttonText = "Login";
-      $scope.failedLogin = false;
-      $scope.login = function () {
-        $scope.uploading = true;
-        $scope.failedLogin = false;
-        $scope.buttonText = "Logging in...";
+      this.buttonText = "Login";
+      this.failedLogin = false;
+      this.login = function () {
+        this.uploading = true;
+        this.failedLogin = false;
+        this.buttonText = "Logging in...";
         $http.post(
           "$(API_URL)",
           {
             "request": "loginUser",
             "User": {
-              "Email": $scope.email,
-              "Password": $scope.password
+              "Email": this.email,
+              "Password": this.password
             }
           }
         ).then(function successCallback(response) {
           $window.location.href = "admin.html";
         }, function errorCallback(response) {
-          $scope.failedLogin = true;
-          $scope.error = "Unable to log in";
-          $scope.uploading = false;
-          $scope.buttonText = "Login";
+          this.failedLogin = true;
+          this.error = "Unable to log in";
+          this.uploading = false;
+          this.buttonText = "Login";
         });
       };
-    }]);
+    });

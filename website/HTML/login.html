@@ -6,20 +6,10 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
   <script type="text/javascript" src="../JavaScript/login.js"></script>
-  <body ng-app="login">
+  <body>
     <div class="container">
-      <div class="wrapper">
-        <form name="Login_Form" class="form-signin" ng-controller="loginForm" ng-submit="login()">
-          <h3 class="form-signin-heading">Admin Login</h3>
-          <input type="email" class="form-control" placeholder="Email" ng-model="email" ng-required="true" ng-disabled="uploading" autofocus required/>
-          <input type="password" class="form-control" placeholder="Password" ng-model="password" ng-required="true" ng-disabled="uploading" required/>
-          <div class="alert alert-danger login-fail" ng-hide="!failedLogin">
-            <strong>{{error}}</strong>
-          </div>
-          <button class="btn btn-lg btn-primary btn-block" value="Login" type="submit" ng-disabled="uploading">
-            <span class="glyphicon glyphicon-refresh spinning" ng-hide="!uploading"></span> {{buttonText}}
-          </button>
-        </form>
+      <div class="wrapper" ng-app="login">
+        <cms-login-form />
       </div>
     </div>
   </body>

@@ -1,0 +1,11 @@
+<form name="Login_Form" class="form-signin" ng-submit="loginCtrl.login()">
+  <h3 class="form-signin-heading">Admin Login</h3>
+  <input type="email" class="form-control" placeholder="Email" ng-model="loginCtrl.email" ng-required="true" ng-disabled="loginCtrl.uploading" autofocus required/>
+  <input type="password" class="form-control" placeholder="Password" ng-model="loginCtrl.password" ng-required="true" ng-disabled="loginCtrl.uploading" required/>
+  <div class="alert alert-danger login-fail" ng-hide="!loginCtrl.failedLogin">
+    <strong>{{loginCtrl.error}}</strong>
+  </div>
+  <button class="btn btn-lg btn-primary btn-block" value="Login" type="submit" ng-disabled="loginCtrl.uploading">
+    <span class="glyphicon glyphicon-refresh spinning" ng-hide="!loginCtrl.uploading"></span> {{loginCtrl.buttonText}}
+  </button>
+</form>
