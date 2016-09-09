@@ -1,13 +1,17 @@
 html * {
-  font-family: 'Play', sans-serif;
+    font-family: 'Oswald', sans-serif;
 }
 
 body {
-  background-repeat: repeat-yx;
   display: table;
   width: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url("../Images/seigaiha.png");
-  background-position: center top;
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.3),
+      rgba(0, 0, 0, 0.3)
+  ), url("../Images/login-background.jpeg");
+  background-position: center right;
+  background-repeat: no-repeat;
+  background-size: cover;
   height: 350px;
 }
 
@@ -20,20 +24,20 @@ body {
   max-width: 420px;
   padding: 20px 38px 55px;
   margin: 0 auto;
-  background: rgba(200, 200, 200, 0.7);
-  border: 1px solid rgba(0,0,0,0.4);
-  border-radius: 40px;
+  background: rgba(0, 0, 0, 0.0);
   }
 
 .form-signin-heading {
-  color: #575757;
-  font-size: 300%;
-  text-align:center;;
+  color: #fff;
+  font-family: 'Lobster', cursive !important;
+  font-size: 250%;
+  text-align:center;
   margin-bottom: 30px;
 }
 
 .form-control {
-  margin-top: -1px;
+  margin-top: -1;
+  border-radius: 5px;
   border-color: rgba(0, 0, 0, 0.4);
   border-width: 1px;
   position: relative;
