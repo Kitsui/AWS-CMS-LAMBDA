@@ -1,10 +1,6 @@
 /*global angular, FileReader, post, FormData*/
 
 angular.module("root", [])
-  .config(function ($httpProvider) {
-    "use strict";
-    $httpProvider.defaults.withCredentials = true;
-  })
   .controller("index", ["$scope", "$http",
     function ($scope, $http) {
       "use strict";
@@ -25,8 +21,11 @@ angular.module("root", [])
         };
         
         $http.post(
-          "https://2eprazdmue.execute-api.us-east-1.amazonaws.com/prod",
-          presignedRequest
+          "https://i5q0xhg2lg.execute-api.us-east-1.amazonaws.com/prod",
+          presignedRequest,
+          {
+            withCredentials: true
+          }
         ).then(function successCallback(response) {
           $scope.status = "Uploading image to s3";
           
@@ -35,18 +34,24 @@ angular.module("root", [])
           fields = responseData.fields;
           
           postData = new FormData();
-          postData.append("key", "images/${filename}");
+          postData.append("key", fields.key);
+          postData.append("Content-Type", $scope.image.type);
           postData.append("AWSAccessKeyId", fields.AWSAccessKeyId);
           postData.append("acl", fields.acl);
           postData.append("policy", fields.policy);
           postData.append("signature", fields.signature);
           postData.append("x-amz-security-token", fields["x-amz-security-token"]);
           postData.append("file", $scope.image);
-          postData.append("Content-Type", $scope.image.type);
           
-          $http.post(responseData.url, postData, {
+          $http({
+            method: "POST",
+            url: responseData.url,
+            data: postData,
+            headers: {"Content-Type": undefined,
+                      "Cache-Control": "max-age=0",
+                      "Upgrade-Insecure-Requests": "1"},
             transformRequest: angular.identity,
-            headers: {"content-Type": undefined}
+            withCredentials: false
           }).then(function successCallback(response) {
             $scope.status = "Successfully uploaded " + $scope.image.name;
           }, function errorCallback(response) {

@@ -21,7 +21,7 @@ class UploadImage(object):
             s3 = boto3.client("s3")
             return s3.generate_presigned_post(
                 self.constants["BUCKET"],
-                "images/%s" % self.event["fileName"],
+                "Images/%s" % self.event["fileName"],
                 Fields={
                     "acl": self.event["acl"]
                 },

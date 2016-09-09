@@ -24,7 +24,7 @@ from response import Response
 class User(object):
 
     def __init__(self, event, context):
-        self.hash_rounds = 20000
+        self.hash_rounds = 10000
         self.event = event
         self.context = context
         with open("constants.json", "r") as constants_file:
@@ -79,7 +79,7 @@ class User(object):
     def register(self):
         # Get password for hashing
         password = self.event["user"]["password"]
-        hashed = pbkdf2_sha256.encrypt(password,)
+        hashed = pbkdf2_sha256.encrypt(password, rounds=self.hash_rounds)
         # Get user register params
         register_params = {
             "ID": {"S": str(uuid.uuid4())},
