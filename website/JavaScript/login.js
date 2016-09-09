@@ -10,37 +10,37 @@ angular.module("login", [])
     return {
       http: $http,
       window: $window,
-      templateUrl: 'cms_login_form.html',
+      templateUrl: "cms_login_form.html",
       replace: true,
-      controller: 'cmsLoginFormCtrl',
-      controllerAs: 'loginCtrl'
+      controller: "cmsLoginFormCtrl",
+      controllerAs: "loginCtrl"
     };
   }])
-  .controller("cmsLoginFormCtrl",
-    function ($http, $window) {
-      "use strict";
-      this.buttonText = "Login";
-      this.failedLogin = false;
-      this.login = function () {
-        this.uploading = true;
-        this.failedLogin = false;
-        this.buttonText = "Logging in...";
-        $http.post(
-          "$(API_URL)",
-          {
-            "request": "loginUser",
-            "User": {
-              "Email": this.email,
-              "Password": this.password
-            }
+  .controller("cmsLoginFormCtrl", function ($http, $window) {
+    "use strict";
+    var ctrlScope = this;
+    ctrlScope.buttonText = "Login";
+    ctrlScope.failedLogin = false;
+    ctrlScope.login = function () {
+      ctrlScope.uploading = true;
+      ctrlScope.failedLogin = false;
+      ctrlScope.buttonText = "Logging in...";
+      $http.post(
+        "$(API_URL)",
+        {
+          "request": "loginUser",
+          "User": {
+            "Email": ctrlScope.email,
+            "Password": ctrlScope.password
           }
-        ).then(function successCallback(response) {
-          $window.location.href = "admin.html";
-        }, function errorCallback(response) {
-          this.failedLogin = true;
-          this.error = "Unable to log in";
-          this.uploading = false;
-          this.buttonText = "Login";
-        });
-      };
-    });
+        }
+      ).then(function successCallback(response) {
+        $window.location.href = "admin.html";
+      }, function errorCallback(response) {
+        ctrlScope.failedLogin = true;
+        ctrlScope.error = "Unable to log in";
+        ctrlScope.uploading = false;
+        ctrlScope.buttonText = "Login";
+      });
+    };
+  });

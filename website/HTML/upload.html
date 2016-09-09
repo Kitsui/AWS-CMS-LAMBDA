@@ -1,10 +1,7 @@
 <html ng-app="root">
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
   <script type="text/javascript" src="../JavaScript/upload.js"></script>
-  <body ng-controller="index">
-    <input type="file" accept="image/*" file-model="image"/>
-    <button type='button' ng-click='upload()'>Upload</button>
-    <img ng-src="{{imageUrl}}" alt="{{imageName}}" />
-      <p>{{status}}</p>
+  <body>
+    <cms-upload-form />
   </body>
 </html>
