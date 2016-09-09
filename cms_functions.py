@@ -88,11 +88,32 @@ class AwsFunc:
             bucket_kwargs["CreateBucketConfiguration"] = {
                 "LocationConstraint": self.region}
         
+        # Create bucket
         try:
             s3 = boto3.client("s3")
             print "Creating bucket: %s" % (bucket_name)
             bucket = s3.create_bucket(**bucket_kwargs)
             print "Bucket created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
+        
+        # add bucket CORS
+        try:
+            s3 = boto3.client("s3")
+            s3.put_bucket_cors(
+                Bucket=bucket_name,
+                CORSConfiguration={
+                    "CORSRules": [{
+                        "AllowedOrigins": ["*"],
+                        "AllowedMethods": ["GET", "POST"],
+                        "AllowedHeaders": ["Authorization", "Cache-Control",
+                                           "Upgrade-Insecure-Requests"],
+                        "MaxAgeSeconds": 3000
+                    }]
+                }
+            )
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
