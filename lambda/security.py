@@ -2,158 +2,115 @@
 # security.py
 # Author: Miguel Saavedra
 # Date: 05/08/2016
+# Edited: 10/09/2016 | Christopher Treadgold
 """
+
+import uuid
 
 import boto3
 import botocore
-import uuid
-import json
-from boto3.dynamodb.conditions import Attr, Key
 
 class Security(object):
 
-    def __init__(self, event, context):
-        self.event = event
-        self.context = context
-        with open("constants.json", "r") as constants_file:
-            self.constants = json.loads(constants_file.read())
-
-    """ function authenticates user """
-    def authenticate(self):
-
-        # Get user token
-        token = self.event["token"]
+    @staticmethod
+    def authenticate_and_authorize(token, request, token_table, user_table,
+                                   role_table):
+        """ Authenticates a token and checks that the associated user has the
+        rights to be making a provided request
+        """
+        # Get a dynamodb client instance from boto3
+        try:
+            dynamodb = boto3.client('dynamodb')
+        except botocore.exceptions.ClientError as e:
+            action = "Getting dynamodb client instance in authenticate and authorize"
+            return {"error": e.response["error"]["code"],
+                    "data": {"exception": str(e), "action": action}}
         
+        # Query the token table for the provided token
         try:
-            dynamodb = boto3.client('dynamodb')
-            auth = dynamodb.query(
-                TableName=self.constants["TOKEN_TABLE"],
+            token_query = dynamodb.query(
+                TableName=token_table,
                 KeyConditionExpression="TokenString = :v1",
-                ExpressionAttributeValues={
-                    ":v1": {
-                        "S": token
-                    }
-                }
+                ExpressionAttributeValues={":v1": {"S": token}}
             )
         except botocore.exceptions.ClientError as e:
-            print e.response['Error']['Code']
-            response = Response("Error", None)
-            return response.to_JSON()
-        if(len(auth['Items']) > 0):
-            return True
-
-        return False
-
-    """ Evaluates role permissions of a user """
-    def authorize(self):
-
-        # Get user token
-        token = self.event["token"]
-
+            action = "Querying token table for authentication"
+            return {"error": e.response["error"]["code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # Check that the token has an entry in the database associated with it
+        matching_tokens = len(token_query["Items"])
+        if matching_tokens <= 0:
+            action = "Querying token table for authentication"
+            return {"error": "invalidToken",
+                    "data": {"token": token, "action": action}}
+        
+        # Check that the token has a user associated with it
         try:
-            dynamodb = boto3.client('dynamodb')
-            # Query token table for user id
-            token_results = dynamodb.query(
-                TableName=self.constants["TOKEN_TABLE"],
-                KeyConditionExpression="TokenString = :v1",
-                ExpressionAttributeValues={
-                    ":v1": {
-                        "S": token
-                    }
-                }
-            )
-
-            # extract user id
-            if token_results["Count"] > 0:
-                user_id = token_results["Items"][0]["UserID"]["S"]
-            else:
-                return False;
-
-            # Query user table for role id
-            user_results = dynamodb.query(
-                TableName=self.constants["USER_TABLE"],
+            user_email = token_query["Items"][0]["UserEmail"]["S"]
+        except KeyError:
+            action = "Querying token table for authentication"
+            return {"error": "tokenHasNoUser",
+                    "data": {"token": token, "action": action}}
+        
+        # Query the user table for the user id extracted from the token table
+        try:
+            user_query = dynamodb.query(
+                TableName=user_table,
                 KeyConditionExpression="ID = :v1",
-                ExpressionAttributeValues={
-                    ":v1": {
-                        "S": user_id
-                    }
-                }
+                ExpressionAttributeValues={":v1": {"S": user_email}}
             )
-
-            # extract role id
-            if user_results["Count"] > 0:
-                role_id = user_results["Items"][0]["Role"]["S"]
-            else:
-                return False
-
-            # Query role table for role permissions
-            role_results = dynamodb.query(
-                TableName=self.constants["ROLE_TABLE"],
-                KeyConditionExpression="RoleID = :v1",
-                ExpressionAttributeValues={
-                    ":v1": {
-                        "S": role_id
-                    }
-                }
-            )
-
-            # extract role permissions
-            if role_results["Count"] > 0:
-                permissions = role_results["Items"][0]["Permissions"]["M"]
-            else:
-                return False
-
         except botocore.exceptions.ClientError as e:
-            print e.response['Error']['Code']
-            response = Response("Error", None)
-            return response.to_JSON()
-
-        # Request to Permission mapping
-        # TODO: Move somewhere more appropriate
-        request_access = {
-            "getBlogData": "Blog_CanRead",
-            "getBlogs": "Blog_CanRead",
-            "editBlog": "Blog_CanUpdate",
-            "saveNewBlog": "Blog_CanCreate",
-            "deleteSingleBlog": "Blog_CanDelete",
-            "getUsers": "User_CanRead",
-            "registerUser": "User_CanCreate",
-            "editUser": "User_CanUpdate",
-            "deleteUser": "User_CanDelete",
-            "getRoles": "Role_CanRead",
-            "createRole": "Role_CanCreate",
-            "editRole": "Role_CanUpdate",
-            "deleteRole": "Role_CanDelete",
-            "getPages": "Page_CanRead",
-            "createPage": "Page_CanCreate",
-            "deletePage": "Page_CanDelete",
-            "editPage": "Page_CanUpdate",
-            "getSiteSettings": "Site_Settings_CanUpdate",
-            "editSiteSettings": "Site_Settings_CanUpdate",
-            "setSiteSettings": "Site_Settings_CanUpdate",
-            "getMenuItems": "Menu_CanUpdate",
-            "setMenuItems": "Menu_CanUpdate",
-			"uploadImage": "Image_CanUpload"
-        }
-
-        # Eval POST request for access
-        request = self.event["request"]
-        form_type = ""
-        if "getForm" in request:
-            if "blog" in self.event["type"]:
-                request = "saveNewBlog"
-            elif "user" in self.event["type"]:
-                request = "registerUser"
-            elif "siteSettings" in self.event["type"]:
-                request = "getSiteSettings"
-            else:
-                f_letter = self.event["type"][:1]
-                form_type = self.event["type"].replace(f_letter, "")
-                f_letter = f_letter.upper()
-                request = "create"+f_letter+form_type
-
-
-        has_access = permissions[request_access[request]]
-
-        # return success/fail bitflag
-        return has_access['N']
+            action = "Querying user table for authorization"
+            return {"error": e.response["error"]["code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # Check that the user id has an enty in the database associated with it
+        matching_users = len(user_query["Items"])
+        if matching_users <= 0:
+            action = "Querying user table for authorization"
+            return {"error": "invalidUserEmail",
+                    "data": {"user": user_email, "action": action}}
+        
+        # Check that the user has a role associated with it
+        try:
+            role_id = user_query["Items"][0]["Role"]["S"]
+        except KeyError:
+            action = "Querying user table for authorization"
+            return {"error": "userHasNoRole",
+                    "data": {"user": user_email, "action": action}}
+        
+        # Query the role table for the role id extracted from the user table
+        try:
+            role_query = dynamodb.query(
+                TableName=role_table,
+                KeyConditionExpression="RoleID = :v1",
+                ExpressionAttributeValues={":v1": {"S": role_id}}
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Querying role table for authorization"
+            return {"error": e.response["error"]["code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # Check that the role has an entry in the database associated with it
+        matching_roles = len(role_query["Items"])
+        if matching_roles <= 0:
+            action = "Querying role table for authorization"
+            return {"error": "invalidRoleId",
+                    "data": {"role": role_id, "action": action}}
+        
+        # Check that the role has permissions attatched to it
+        try:
+            permissions = role_results["Items"][0]["Permissions"]["L"]
+        except KeyError:
+            action = "Querying role table for authorization"
+            return {"error": "roleHasNoPermissions",
+                    "data": {"user": user_email, "action": action}}
+        
+        # Check that user has the appropriate permissions to make the request
+        for permission in permissions:
+            if permission == request:
+                return True
+            
+        return {"error": "unauthorizedRequest",
+                "data": {"user": user_email, "request": request}}

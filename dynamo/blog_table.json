@@ -3,20 +3,12 @@
 		{
 			"AttributeName": "BlogID",
 			"AttributeType": "S"
-		},
-		{
-			"AttributeName": "Author",
-			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
 			"AttributeName": "BlogID",
 			"KeyType": "HASH"
-		},
-		{
-			"AttributeName": "Author",
-			"KeyType": "RANGE"
 		}
 	],
 	"ProvisionedThroughput": {

@@ -20,20 +20,14 @@ from validator import Validator
 
 class Blog(object):
 
-    def __init__(self, event, context):
-        self.event = event
-        self.context = context
-        with open("constants.json", "r") as constants_file:
-            self.constants = json.loads(constants_file.read())
-
-    """ function gets a blog record from dynamo """
-    def get_blog_data(self):
+    @staticmethod
+    def get_blog_data(self, table_name, blog_id):
         """ Gets blog data from dynamoDB """
         blog_id = self.event["blog"]["blogID"]
         try:
             dynamodb = boto3.client("dynamodb")
             blog_data = dynamodb.query(
-                TableName=self.constants["BLOG_TABLE"],
+                TableName=table_name,
                 KeyConditionExpression="BlogID = :v1",
                 ExpressionAttributeValues={
                     ":v1": {
@@ -42,11 +36,7 @@ class Blog(object):
                 }
             )
         except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            response = Response("Error", None)
-            response.errorMessage = "Unable to get blog data: %s" % (
-                e.response["Error"]["Code"])
-            return response.to_JSON()
+            return e
 
         return blog_data
 

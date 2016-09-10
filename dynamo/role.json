@@ -1,29 +1,36 @@
 {
 	"Item": {
 	    "RoleID": {"S": "0322f11b-2ae8-48d0-aac6-1b2dc5400816"},
-        "RoleType": {"S": "Admin"},
     	"RoleName": {"S": "Admin"},
-    	"Permissions": {"M": 
-    		{ "User_CanCreate": { "N": "1"},
-    		  "User_CanRead": { "N": "1"},
-    		  "User_CanUpdate": { "N": "1"},
-    		  "User_CanDelete": { "N": "1"},
-    		  "Blog_CanCreate": { "N": "1"},
-    		  "Blog_CanRead": { "N": "1"},
-    		  "Blog_CanUpdate": { "N": "1"},
-    		  "Blog_CanDelete": { "N": "1"},
-			  "Page_CanCreate": {"N" : "1"},
-			  "Page_CanDelete": {"N" : "1"},
-			  "Page_CanRead": {"N" : "1"},
-			  "Page_CanUpdate": {"N" : "1"},
-			  "Role_CanCreate": {"N" : "1"},
-			  "Role_CanDelete": {"N" : "1"},
-			  "Role_CanUpdate": {"N" : "1"},
-			  "Role_CanRead": {"N" : "1"},
-			  "Site_Settings_CanUpdate": {"N": "1"},
-			  "Menu_CanUpdate": {"N": "1"},
-			  "Image_CanUpload": {"N": "1"}
-    		}
+    	"Permissions": {"L": 
+    		[ 
+		        {"S": "getBlogData"},
+		        {"S": "getBlogs"},
+		        {"S": "editBlog"},
+		        {"S": "getRoles"},
+		        {"S": "getUsers"},
+                {"S": "getPages"},
+                {"S": "getSiteSettings"},
+                {"S": "getMenuItems"},
+                {"S": "getForm"},
+                {"S": "getImagePostUrl"},
+                {"S": "loginUser"},
+                {"S": "logoutUser"},
+                {"S": "saveNewBlog"},
+                {"S": "registerUser"},
+                {"S": "editUser"},
+                {"S": "createRole"},
+                {"S": "editRole"},
+                {"S": "createPage"},
+                {"S": "editPage"},
+                {"S": "editSiteSettings"},
+                {"S": "setSiteSettings"},
+                {"S": "setMenuItems"},
+                {"S": "deleteSingleBlog"},
+                {"S": "deleteUser"},
+                {"S": "deleteRole"},
+                {"S": "deletePage"}
+    		]
     	}
 	},
 	"ReturnConsumedCapacity": "TOTAL"

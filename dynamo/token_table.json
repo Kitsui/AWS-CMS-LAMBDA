@@ -1,22 +1,14 @@
 {	
 	"AttributeDefinitions": [
 		{
-			"AttributeName": "TokenString",
-			"AttributeType": "S"
-		},
-		{
-			"AttributeName": "UserID",
+			"AttributeName": "Token",
 			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
-			"AttributeName": "TokenString",
+			"AttributeName": "Token",
 			"KeyType": "HASH"
-		},
-		{
-			"AttributeName": "UserID",
-			"KeyType": "RANGE"
 		}
 	],
 	"ProvisionedThroughput": {

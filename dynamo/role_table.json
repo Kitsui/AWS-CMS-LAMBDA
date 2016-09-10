@@ -3,20 +3,12 @@
 		{
 			"AttributeName": "RoleID",
 			"AttributeType": "S"
-		},
-		{
-			"AttributeName": "RoleType",
-			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
 			"AttributeName": "RoleID",
 			"KeyType": "HASH"
-		},
-		{
-			"AttributeName": "RoleType",
-			"KeyType": "RANGE"
 		}
 	],
 	"ProvisionedThroughput": {

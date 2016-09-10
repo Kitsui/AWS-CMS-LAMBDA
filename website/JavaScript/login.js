@@ -29,10 +29,8 @@ angular.module("login", [])
         "$(API_URL)",
         {
           "request": "loginUser",
-          "User": {
-            "Email": ctrlScope.email,
-            "Password": ctrlScope.password
-          }
+          "Email": ctrlScope.email,
+          "Password": ctrlScope.password
         }
       ).then(function successCallback(response) {
         $window.location.href = "admin.html";

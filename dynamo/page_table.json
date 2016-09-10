@@ -3,20 +3,12 @@
 		{
 			"AttributeName": "PageID",
 			"AttributeType": "S"
-		},
-		{
-			"AttributeName": "Author",
-			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
 			"AttributeName": "PageID",
 			"KeyType": "HASH"
-		},
-		{
-			"AttributeName": "Author",
-			"KeyType": "RANGE"
 		}
 	],
 	"ProvisionedThroughput": {

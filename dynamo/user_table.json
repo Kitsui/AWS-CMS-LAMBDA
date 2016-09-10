@@ -1,42 +1,16 @@
 {	
 	"AttributeDefinitions": [
 		{
-			"AttributeName": "ID",
-			"AttributeType": "S"
-		},
-		{
 			"AttributeName": "Email",
 			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
-			"AttributeName": "ID",
-			"KeyType": "HASH"
-		},
-		{
 			"AttributeName": "Email",
-			"KeyType": "RANGE"
+			"KeyType": "HASH"
 		}
 	],
- 	"GlobalSecondaryIndexes":[
-    	{
-            "IndexName": "Email",
-            "KeySchema": [
-                {
-                    "AttributeName": "Email",
-                    "KeyType": "HASH"
-                }
-            ],
-            "Projection": {
-                "ProjectionType": "ALL"
-            },
-            "ProvisionedThroughput": {
-                "ReadCapacityUnits": 5,
-                "WriteCapacityUnits": 5
-            }
-        }
-    ],
 	"ProvisionedThroughput": {
 		"ReadCapacityUnits": 5,
 		"WriteCapacityUnits":5

@@ -39,42 +39,26 @@ cms.deploy_api()
 # Create the s3 bucket
 cms.create_bucket()
 # Create the cloudfront distribution
-cms.create_cloudfront_distribution()
+# cms.create_cloudfront_distribution() TODO: Reactivate
 
 # Create the dynamodb blog table
 cms.create_blog_table()
-# Add a blog to the blog table
-cms.create_blog_db_entry()
-
-# Create the dynamodb menu table
-cms.create_menu_table()
-# Add menu items to the menu table
-cms.create_menu_db_entries()
 
 # Create the dynamodb page table
 cms.create_page_table()
-# Add a page to the page table
-cms.create_page_db_entry()
+
+# Create the dynamodb token table
+cms.create_token_table()
 
 # Create the dynamodb role table
 cms.create_role_table()
 # Add an admin role to the role table
 cms.create_admin_role_db_entry()
 
-# Create the dynamodb token table
-cms.create_token_table()
-# Add a token to the token table
-cms.create_token_db_entry()
-
 # Create the dynamodb user table
 cms.create_user_table()
 # Add an admin to the user table
 cms.create_admin_user_db_entry()
-
-# Create the dynamodb site settings table
-cms.create_site_settings_table()
-# Add default site settings to the site settings table
-cms.create_site_settings_db_entry()
 
 
 # Saves the cms installation information
