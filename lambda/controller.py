@@ -29,28 +29,31 @@ def handler(event, context):
     # Get info on the cms' resources from the constants file
     with open("constants.json", "r") as resources_file:
         resources = json.loads(resources_file.read())
-	
+    
+    # Extract the request body
+	request_body = event["body"]
+    
     # Check that a request is included
-    if "request" in event:
-        request = event["request"]
+    if "request" in request_body:
+        request = request_body["request"]
     else:
-        return Error.send_error("noRequest")
+        Error.send_error("noRequest")
     
     # Check that the request is supported
     if not supported_request(request):
-        return Error.send_error("unsupportedRequest", data=request)
+        Error.send_error("unsupportedRequest", data=request)
     
     # If the request is login, attempt to login, as a token is not required
     if request == "loginUser":
-        if "email" in event and "password" in event:
-            response = User.login(event["email"], event["password"],
+        if "email" in request_body and "password" in request_body:
+            response = User.login(request_body["email"], request_body["password"],
                                   resources["USER_TABLE"], resources["TOKEN_TABLE"])
         else:
-            return Error.send_error("emailOrPasswordMissing")
+            Error.send_error("emailOrPasswordMissing")
         
         # Check if the login function returned an error
         if "error" in response:
-            return Error.send_error(response["error"], data=response["data"])
+            Error.send_error(response["error"], data=response["data"])
         
         return response
     
@@ -58,7 +61,7 @@ def handler(event, context):
     if "token" in event:
         token = remove_prefix(event["token"])
     else:
-        return Error.send_error("noToken")
+        Error.send_error("noToken")
     
     # Check that the user has the necessary permissions to make the request
     authorized = Security.authenticate_and_authorize(
@@ -68,18 +71,18 @@ def handler(event, context):
     
     # Check if authentication or authorization returned an error
     if "error" in authorized:
-        return Error.send_error(authorized["error"], data=authorized["data"])
+        Error.send_error(authorized["error"], data=authorized["data"])
     
     # Process the request
-    response = process_request(event, resources, request)
+    response = process_request(request_body, resources, request)
     
     # Check if response returned an error
     if "error" in response:
-        return Error.send_error(response["error"], data=response["error"])
+        Error.send_error(response["error"], data=response["error"])
     
     return response
 
-def process_request(event, resources, request):
+def process_request(request_body, resources, request):
     return {"data": "It worked!"}
 
 def remove_prefix(cookie):

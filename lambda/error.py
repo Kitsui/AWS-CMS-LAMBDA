@@ -14,7 +14,7 @@ class Error(object):
 #        if error_function is not None:
 #            return (error_function(data))
 #        else:
-        return {"status": 400, "error": error, "data": data}
+        raise Exception(json.dumps({"status": 400, "error": error, "data": data}))
     
     @staticmethod
     def error_function_map(error):

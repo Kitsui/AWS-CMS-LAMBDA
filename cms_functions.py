@@ -475,17 +475,21 @@ class AwsFunc:
                 uri=self.constants["API_INVOCATION_URI"],
                 requestTemplates={
                     "application/json": (
+                        "#if($input.params(\"Cookie\") && $input.params(\"Cookie\") != \"\") "
                         "{"
-                            "$input.body, "
-                            "#if($input.params(\"Cookie\") && $input.params(\"Cookie\") != \"\") "
-                                "\"token\": \"$input.params(\"Cookie\")\" "
-                            "#end"
+                            "\"body\": $input.body, "
+                            "\"token\": $input.params(\"Cookie\")"
                         "}"
+                        "#else"
+                        "{"
+                            "\"body\": $input.body"
+                        "}"
+                        "#end"
                     )
                 }
             )
             
-            # Put method response in the POST method
+            # Put a 200 method response in the POST method
             api_gateway.put_method_response(
                 restApiId=rest_api_id,
                 resourceId=rest_api_root_id,
@@ -501,7 +505,7 @@ class AwsFunc:
                 }
             )
             
-            # Put integration response in the POST method
+            # Put a 200 integration response in the POST method
             api_gateway.put_integration_response(
                 restApiId=rest_api_id,
                 resourceId=rest_api_root_id,
@@ -516,7 +520,40 @@ class AwsFunc:
                         "\'https://s3.amazonaws.com\'")
                 },
                 responseTemplates={
-                    "application/json": ""
+                    "application/json": "$input.body"
+                }
+            )
+            
+            # Put a 400 method response in the POST method
+            api_gateway.put_method_response(
+                restApiId=rest_api_id,
+                resourceId=rest_api_root_id,
+                httpMethod="POST",
+                statusCode="400",
+                responseParameters={
+                    "method.response.header.Access-Control-Allow-Credentials": False,
+                    "method.response.header.Access-Control-Allow-Origin": False
+                },
+                responseModels={
+                    "application/json": "Empty"
+                }
+            )
+            
+            # Put a 400 integration response in the POST method
+            api_gateway.put_integration_response(
+                restApiId=rest_api_id,
+                resourceId=rest_api_root_id,
+                httpMethod="POST",
+                statusCode="400",
+                selectionPattern=".*\"status\": 400.*",
+                responseParameters={
+                    "method.response.header.Access-Control-Allow-Credentials": (
+                        "\'true\'"),
+                    "method.response.header.Access-Control-Allow-Origin": (
+                        "\'https://s3.amazonaws.com\'")
+                },
+                responseTemplates={
+                    "application/json": "$input.path('$.errorMessage')"
                 }
             )
             print "POST method added"
