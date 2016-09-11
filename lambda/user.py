@@ -20,96 +20,102 @@ import botocore
 from passlib.hash import pbkdf2_sha256
 
 class User(object):
+    """ Provides functions for handling user based requests """
 
     @staticmethod
     def login(email, password, user_table, token_table):
+        """ Validates user login request. Adds a token to the token table 
+            and provides it in the response for future requests.
+        """
+        # Use email to fetch user information from the user table
         try:
             dynamodb = boto3.client('dynamodb')
-            result = dynamodb.query(
-                TableName=user_table,
-                KeyConditionExpression="Email = :v1",
-                ExpressionAttributeValues={":v1": {"S": email}}
-            )
+            user = dynamodb.get_item(TableName=user_table,
+                                     Key={"Email": {"S": email}})
         except botocore.exceptions.ClientError as e:
-            action = "Querying user table for login"
-            return {"error": e.response["error"]["code"],
+            action = "Fetching user from user table for login"
+            return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
-        users_found = len(result["Items"])
-        if users_found <= 0:
+        # Check that the email has a user in the database associated with it
+        if not "Item" in user:
             action = "Attempting to log in"
-            return {"error": "Invalid email",
+            return {"error": "InvalidEmail",
                     "data": {"email": email, "action": action}}
-
-        stored_password = result["Items"][0]["Password"]["S"]
-        if(pbkdf2_sha256.verify(password, stored_password)):
-            # Calculate an exiration date a day from now
-            expiration = datetime.datetime.now() + datetime.timedelta(days=1)
-            expiration = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
-            
-            # Generate a uuid for use as a token
-            token = str(uuid.uuid4())
-            
-            # Add the token to the token table
-            result = dynamodb.put_item(
-                TableName=token_table,
-                Item={'Token': {"S": token},
-                      'UserEmail': {"S": result["Items"][0]["Email"]["S"]},
-                      'Expiration': {"S": expiration}}
-            )
-            
-            # Create the cookie that will be returned
-            cookie = "token=%s; expires=%s" % (token, expiration)
-            
-            # Return the cookie
-            return {"Set-Cookie": cookie}
-        else:
+        
+        # Check that the user has a password associated with it
+        try:
+            actual_password = user["Item"]["Password"]["S"]
+        except KeyError:
+            action = "Attempting to log in"
+            return {"error": "userHasNoPassword",
+                    "data": {"token": token, "action": action}}
+        
+        # Verify that the password provided is correct
+        valid_password = pbkdf2_sha256.verify(password, actual_password)
+        if not valid_password:
             action = "Attempting to log in"
             return {"error": "invalidPassword",
                     "data": {"password": password, "action": action}}
+        
+        # Calculate an exiration date a day from now
+        expiration = datetime.datetime.now() + datetime.timedelta(days=1)
+        expiration = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
+        
+        # Generate a uuid for use as a token
+        token = str(uuid.uuid4())
+        
+        # Add the generated token to the token table
+        try:
+            dynamodb.put_item(
+                TableName=token_table,
+                Item={'Token': {"S": token},
+                      'UserEmail': {"S": email},
+                      'Expiration': {"S": expiration}}
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Putting token in token table for login"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # Create the cookie that will be returned
+        cookie = "token=%s; expires=%s" % (token, expiration)
+        
+        # Return the cookie
+        return {"Set-Cookie": cookie}
     
+    @staticmethod
+    def get_all_users(user_table):
+        """ Fetches all entries from user table """
+        try:
+            dynamodb = boto3.client('dynamodb')
+            users = dynamodb.scan(TableName=user_table, ConsistentRead=True)
+        except botocore.exceptions.ClientError as e:
+            action = "Getting all users"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        return users
     
-#    def get_all_users(self):
-#        """ function returns all user records frmo dynamo """
-#        try:
-#            dynamodb = boto3.client('dynamodb')
-#            data = dynamodb.scan(TableName=self.constants["USER_TABLE"],
-#                                 ConsistentRead=True)
-#        except botocore.exceptions.ClientError as e:
-#            print e.response['Error']['Code']
-#            response = Response("Error", None)
-#            response.errorMessage = "Unable to get user data: %s" % (
-#                e.response['Error']['Code'])
-#            return response.to_JSON()
+    @staticmethod
+    def get_user(email, user_table):
+        """ Fetches user entry associated with the provided email """
+        try:
+            dynamodb = boto3.client("dynamodb")
+            user = dynamodb.get_item(TableName=user_table,
+                                     Key={"Email": {"S": email}})
+        except botocore.exceptions.ClientError as e:
+            action = "Fetching user from user table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # Check that the email has a user in the database associated with it
+        if not "Item" in user:
+            action = "Fetching user from user table"
+            return {"error": "InvalidEmail",
+                    "data": {"email": email, "action": action}}
 
-#        response = Response("Success", data)
-#        # format for table response to admin dash
-#        # return response.format("All Users")
-#        return data
-
-#    """ function gets a user record from dynamo """
-#    def get_user_data(self):
-#        """ Gets user data from dynamoDB """
-#        user_id = self.event["user"]["userID"]
-#        try:
-#            dynamodb = boto3.client("dynamodb")
-#            user_data = dynamodb.query(
-#                TableName=self.constants["USER_TABLE"],
-#                KeyConditionExpression="ID = :v1",
-#                ExpressionAttributeValues={
-#                    ":v1": {
-#                        "S": user_id
-#                    }
-#                }
-#            )
-#        except botocore.exceptions.ClientError as e:
-#            print e.response["Error"]["Code"]
-#            response = Response("Error", None)
-#            response.errorMessage = "Unable to get user data: %s" % (
-#                e.response["Error"]["Code"])
-#            return response.to_JSON()
-
-#        return user_data
+        return user
 
 
 #    """ function adds a user record to dynamo """

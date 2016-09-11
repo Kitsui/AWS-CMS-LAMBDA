@@ -4,32 +4,8 @@
     	"RoleName": {"S": "Admin"},
     	"Permissions": {"L": 
     		[ 
-		        {"S": "getBlogData"},
-		        {"S": "getBlogs"},
-		        {"S": "editBlog"},
-		        {"S": "getRoles"},
-		        {"S": "getUsers"},
-                {"S": "getPages"},
-                {"S": "getSiteSettings"},
-                {"S": "getMenuItems"},
-                {"S": "getForm"},
-                {"S": "getImagePostUrl"},
-                {"S": "loginUser"},
-                {"S": "logoutUser"},
-                {"S": "saveNewBlog"},
-                {"S": "registerUser"},
-                {"S": "editUser"},
-                {"S": "createRole"},
-                {"S": "editRole"},
-                {"S": "createPage"},
-                {"S": "editPage"},
-                {"S": "editSiteSettings"},
-                {"S": "setSiteSettings"},
-                {"S": "setMenuItems"},
-                {"S": "deleteSingleBlog"},
-                {"S": "deleteUser"},
-                {"S": "deleteRole"},
-                {"S": "deletePage"}
+		        {"S": "getAllUsers"},
+				{"S": "getUser"}
     		]
     	}
 	},

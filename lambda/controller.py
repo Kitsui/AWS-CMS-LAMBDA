@@ -31,7 +31,7 @@ def handler(event, context):
         resources = json.loads(resources_file.read())
     
     # Extract the request body
-	request_body = event["body"]
+    request_body = event["body"]
     
     # Check that a request is included
     if "request" in request_body:
@@ -41,10 +41,17 @@ def handler(event, context):
     
     # Check that the request is supported
     if not supported_request(request):
-        Error.send_error("unsupportedRequest", data=request)
+        Error.send_error("unsupportedRequest", data={"request": request})
     
     # If the request is login, attempt to login, as a token is not required
     if request == "loginUser":
+        """ Request structure
+            {
+                request: loginUser,
+                email: <email>,
+                password: <password
+            }
+        """
         if "email" in request_body and "password" in request_body:
             response = User.login(request_body["email"], request_body["password"],
                                   resources["USER_TABLE"], resources["TOKEN_TABLE"])
@@ -70,7 +77,7 @@ def handler(event, context):
     )
     
     # Check if authentication or authorization returned an error
-    if "error" in authorized:
+    if authorized is not True and "error" in authorized:
         Error.send_error(authorized["error"], data=authorized["data"])
     
     # Process the request
@@ -78,12 +85,34 @@ def handler(event, context):
     
     # Check if response returned an error
     if "error" in response:
-        Error.send_error(response["error"], data=response["error"])
+        Error.send_error(response["error"], data=response["data"])
     
     return response
 
 def process_request(request_body, resources, request):
-    return {"data": "It worked!"}
+    if request == "getAllUsers":
+        """ Request structure
+            {
+                request: getAllUsers
+            }
+        """
+        response = User.get_all_users(resources["USER_TABLE"])
+    elif request == "getUser":
+        """ Request structure
+            {
+                request: getUser,
+                email: <email>
+            }
+        """
+        if not "email" in request_body:
+            Error.send_error("noEmail", data={"request": request})
+        
+        email = request_body["email"]
+        response = User.get_user(email, resources["USER_TABLE"])
+    else:
+        Error.send_error("unsupportedRequest", data={"request": request})
+    
+    return response
 
 def remove_prefix(cookie):
     equals_index = cookie.find("=") + 1
@@ -91,17 +120,19 @@ def remove_prefix(cookie):
 
 def supported_request(request):
     supported_gets = [
-        "getBlogData", "getBlogs", "editBlog", "getRoles", "getUsers",
-        "getPages", "getSiteSettings", "getMenuItems", "getForm",
-        "getImagePostUrl"
+        "getAllUsers", "getUser"
+        # "getBlogData", "getBlogs", "editBlog", "getRoles",
+        # "getPages", "getSiteSettings", "getMenuItems", "getForm",
+        # "getImagePresignedPost"
     ]
     supported_posts = [
-        "loginUser", "logoutUser", "saveNewBlog", "registerUser", "editUser",
-        "createRole", "editRole", "createPage", "editPage", "editSiteSettings",
-        "setSiteSettings", "setMenuItems"
+        "loginUser"
+        # "logoutUser", "saveNewBlog", "registerUser", "editUser",
+        # "createRole", "editRole", "createPage", "editPage", "editSiteSettings",
+        # "setSiteSettings", "setMenuItems"
     ]
     supported_deletes = [
-        "deleteSingleBlog", "deleteUser", "deleteRole", "deletePage"
+        # "deleteSingleBlog", "deleteUser", "deleteRole", "deletePage"
     ]
     supported_requests = supported_gets + supported_posts + supported_deletes
     if request in supported_requests:

@@ -478,7 +478,7 @@ class AwsFunc:
                         "#if($input.params(\"Cookie\") && $input.params(\"Cookie\") != \"\") "
                         "{"
                             "\"body\": $input.body, "
-                            "\"token\": $input.params(\"Cookie\")"
+                            "\"token\": \"$input.params(\"Cookie\")\""
                         "}"
                         "#else"
                         "{"
