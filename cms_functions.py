@@ -318,8 +318,18 @@ class AwsFunc:
 
     def create_lambda_function(self):
         """ Creates a lamda function and uploads AWS CMS to to it """
-        with open("lambda/role_policy.json", "r") as thefile:
-            lmda_role_json = thefile.read()
+        lmda_role = json.dumps{
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
         
         # Create the lambda iam role
         try:
@@ -328,7 +338,7 @@ class AwsFunc:
             lambda_role_name = self.constants["LAMBDA_ROLE"]
             lambda_role = iam.create_role(
                 RoleName=lambda_role_name,
-                AssumeRolePolicyDocument=lmda_role_json
+                AssumeRolePolicyDocument=lmda_role
             )
             
             # Attach permissions to the lambda role

@@ -16,12 +16,8 @@ import botocore
 
 # from blog           import Blog
 from error          import Error
-# from menu           import Menu
 # from page           import Page
-# from response       import Response
-# from role           import Role
 from security       import Security
-# from ui             import UI
 # from upload_image   import UploadImage
 from user           import User
 
