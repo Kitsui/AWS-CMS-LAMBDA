@@ -34,7 +34,7 @@ class User(object):
         """
         # Use email to fetch user information from the user table
         try:
-            dynamodb = boto3.client('dynamodb')
+            dynamodb = boto3.client("dynamodb")
             user = dynamodb.get_item(TableName=user_table,
                                      Key={"Email": {"S": email}})
         except botocore.exceptions.ClientError as e:
@@ -74,9 +74,9 @@ class User(object):
         try:
             dynamodb.put_item(
                 TableName=token_table,
-                Item={'Token': {"S": token},
-                      'UserEmail': {"S": email},
-                      'Expiration': {"S": expiration}}
+                Item={"Token": {"S": token},
+                      "UserEmail": {"S": email},
+                      "Expiration": {"S": expiration}}
             )
         except botocore.exceptions.ClientError as e:
             action = "Putting token in token table for login"
@@ -93,7 +93,7 @@ class User(object):
     def get_all_users(user_table):
         """ Fetches all entries from the user table """
         try:
-            dynamodb = boto3.client('dynamodb')
+            dynamodb = boto3.client("dynamodb")
             users = dynamodb.scan(TableName=user_table, ConsistentRead=True)
         except botocore.exceptions.ClientError as e:
             action = "Getting all users"
@@ -129,7 +129,7 @@ class User(object):
         hashed_pass = pbkdf2_sha256.encrypt(password,
                                             rounds=User.get_hash_rounds())
         
-        # Create user entry for the user table
+        # Create the user entry
         user = {
             "Email": {"S": email},
             "Password": {"S": hashed_pass},
@@ -139,12 +139,12 @@ class User(object):
         for permission in permissions:
             user["Permissions"]["L"].append({"S": permission})
         
-        # Add user to the user table
+        # Add the user to the user table
         try:
-            dynamodb = boto3.client('dynamodb')
+            dynamodb = boto3.client("dynamodb")
             put_response = dynamodb.put_item(
-                TableName=user_table, Item=user, ReturnConsumedCapacity='TOTAL',
-                ConditionExpression="attribute_not_exists(Email)")
+                TableName=user_table, Item=user, ReturnConsumedCapacity="TOTAL"
+            )
         except botocore.exceptions.ClientError as e:
             action = "Adding user to user table"
             return {"error": e.response["Error"]["Code"],
@@ -156,10 +156,11 @@ class User(object):
     def remove_user(email, user_table):
         """ Removes a user from the user table """
         try:
-            dynamodb = boto3.client('dynamodb')
+            dynamodb = boto3.client("dynamodb")
             delete_response = dynamodb.delete_item(
                 TableName=user_table,
-                Key={'Email': {"S": email}}
+                Key={"Email": {"S": email}},
+                ConditionExpression="attribute_exists(Email)"
             )
         except botocore.exceptions.ClientError as e:
             action = "Removing user from user table"
@@ -168,58 +169,26 @@ class User(object):
 
         return delete_response
 
-#    """ function edits a user record form dynamo """
-#    def edit_user(self):
-#        email = self.event["user"]["email"]
-#        userID = self.event["user"]["userID"]
-#        newUsername = self.event["user"]["newUsername"]
-#        newRoles = self.event["user"]["newRoles"]
-#        newPassword = self.event["user"]["newPassword"]
-
-#        try:
-#            dynamodb = boto3.client('dynamodb')
-#            dynamodb.update_item(
-#                TableName=self.constants["USER_TABLE"],
-#                Key={
-#                    'ID': {"S": userID},
-#                    'Email': {"S": email}
-#                },
-#                UpdateExpression='SET Username = :u, UserRoles = :r, Password = :p',
-#                ExpressionAttributeValues={
-#                    ':u': {"S": newUsername},
-#                    ':r': {"S": newRoles},
-#                    ':p': {"S": newPassword}
-#                }
-#            )
-#        except botocore.exceptions.ClientError as e:
-#            print e.response['Error']['Code']
-#            response = Response("Error", None)
-#            response.errorMessage = "Unable to edit user: %s" % e.response['Error']['Code']
-#            return response.to_JSON()
-
-#        return Response("Success", None).to_JSON()
-
-
 #    """ function deletes a token record from dynamo"""
 #    def logout(self):
 #        # get user credentials
-#        token = self.event['tokenString']
-#        user = self.event['userID']
+#        token = self.event["tokenString"]
+#        user = self.event["userID"]
 
 #        try:
 #            # remove token from user
-#            dynamodb = boto3.client('dynamodb')
+#            dynamodb = boto3.client("dynamodb")
 #            response = table.delete_item(
 #                TableName=self.constants["TOKEN_TABLE"],
 #                Key={
-#                    'TokenString': {"S": token},
-#                    'UserID': {"S": user}
+#                    "TokenString": {"S": token},
+#                    "UserID": {"S": user}
 #                }
 #            )
 #        except botocore.exceptions.ClientError as e:
-#            print e.response['Error']['Code']
+#            print e.response["Error"]["Code"]
 #            response = Response("Error", None)
-#            response.errorMessage = "Unable to log out: %s" % e.response['Error']['Code']
+#            response.errorMessage = "Unable to log out: %s" % e.response["Error"]["Code"]
 #            return response.to_JSON()
 
 #        return Response("Success", None).to_JSON()
