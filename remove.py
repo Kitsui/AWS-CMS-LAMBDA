@@ -55,13 +55,8 @@ role_names = [
 dynamodb_table_names = [
     constants["BLOG_TABLE"],
     constants["PAGE_TABLE"],
-    constants["ROLE_TABLE"],
     constants["TOKEN_TABLE"],
-    constants["USER_TABLE"],
-    constants["SETTINGS_TABLE"],
-    constants["TABLE_TABLE"],
-    constants["FORM_TABLE"],
-    constants["MENU_TABLE"]
+    constants["USER_TABLE"]
 ]
 s3_bucket_names = [
     constants["BUCKET"]
@@ -80,7 +75,7 @@ for rest_api in rest_apis:
         rest_apis_deleted += 1
 
 if rest_apis_deleted > 0:
-    print rest_apis_deleted, 'api gateway(s) removed'
+    print rest_apis_deleted, 'Rest api(s) removed'
 else:
     print 'No apis to remove'
 
