@@ -184,24 +184,6 @@ class AwsFunc:
         except botocore.exceptions.ClientError as e:
             print e
             sys.exit()
-    
-
-    def create_role_table(self):
-        """ Creates a role table. """
-        with open("dynamo/role_table.json", "r") as thefile:
-            role_table_json = json.loads(thefile.read())
-        role_table_json["TableName"] = self.constants["ROLE_TABLE"]
-        
-        try:
-            print "Creating table: %s" % (self.constants["ROLE_TABLE"])
-            dynamodb = boto3.client("dynamodb")
-            role_table = dynamodb.create_table(**role_table_json)
-            self.wait_for_table(role_table)
-            print "Table created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
 
 
     def create_user_table(self):
@@ -303,30 +285,12 @@ class AwsFunc:
                 TableName=table["TableDescription"]["TableName"])
 
 
-    def create_admin_role_db_entry(self):
-        """ Creates an entry in the role database that represents an
-        admin role
-        """
-        with open("dynamo/role.json", "r") as thefile:
-            admin_role_json = json.loads(thefile.read())
-        admin_role_json["TableName"] = self.constants["ROLE_TABLE"]
-        
-        try:
-            print "Creating admin role db entry"
-            dynamodb = boto3.client("dynamodb")
-            dynamodb.put_item(**admin_role_json)
-            print "Admin role db entry created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
-
-
     def create_admin_user_db_entry(self):
         """ Creates an entry in the user database that represents an admin """
         with open("dynamo/user.json", "r") as thefile:
             admin_user_json = json.loads(thefile.read())
         admin_user_json["TableName"] = self.constants["USER_TABLE"]
+        admin_user_json["Item"]["ID"] = {"S": str(uuid.uuid4())}
         
         try:
             print "Creating admin db entry"

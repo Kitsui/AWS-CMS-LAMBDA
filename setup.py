@@ -50,11 +50,6 @@ cms.create_page_table()
 # Create the dynamodb token table
 cms.create_token_table()
 
-# Create the dynamodb role table
-cms.create_role_table()
-# Add an admin role to the role table
-cms.create_admin_role_db_entry()
-
 # Create the dynamodb user table
 cms.create_user_table()
 # Add an admin to the user table

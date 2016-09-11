@@ -16,8 +16,7 @@ class Security(object):
     """
 
     @staticmethod
-    def authenticate_and_authorize(token, request, token_table, user_table,
-                                   role_table):
+    def authenticate_and_authorize(token, request, token_table, user_table):
         """ Authenticates a token and checks that the associated user has the
         rights to be making a provided request.
         """
@@ -69,37 +68,12 @@ class Security(object):
             return {"error": "invalidUserEmail",
                     "data": {"user": user_email, "action": action}}
         
-        # Check that the user has a role associated with it
+        # Check that the user has permissions attatched to it
         try:
-            role_id = user_info["Item"]["Role"]["S"]
+            permissions = user_info["Item"]["Permissions"]["L"]
         except KeyError:
             action = "Fetching user from user table for authorization"
-            return {"error": "userHasNoRole",
-                    "data": {"user": user_email, "action": action}}
-        
-        # Query the role table for the role id extracted from the user table
-        try:
-            role_info = dynamodb.get_item(
-                TableName=role_table,
-                Key={"RoleID": {"S": role_id}}
-            )
-        except botocore.exceptions.ClientError as e:
-            action = "Fetching role from role table for authorization"
-            return {"error": e.response["Error"]["Code"],
-                    "data": {"exception": str(e), "action": action}}
-        
-        # Check that the role has an entry in the database associated with it
-        if not "Item" in role_info:
-            action = "Fetching role from role table for authorization"
-            return {"error": "invalidRoleId",
-                    "data": {"role": role_id, "action": action}}
-        
-        # Check that the role has permissions attatched to it
-        try:
-            permissions = role_info["Item"]["Permissions"]["L"]
-        except KeyError:
-            action = "Fetching role from role table for authorization"
-            return {"error": "roleHasNoPermissions",
+            return {"error": "userHasNoPermissions",
                     "data": {"user": user_email, "action": action}}
         
         # Check that user has the appropriate permissions to make the request

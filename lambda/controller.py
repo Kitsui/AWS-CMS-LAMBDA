@@ -48,8 +48,8 @@ def handler(event, context):
         """ Request structure
             {
                 request: loginUser,
-                email: <email>,
-                password: <password
+                email: <str: email>,
+                password: <str: password>
             }
         """
         if "email" in request_body and "password" in request_body:
@@ -72,8 +72,7 @@ def handler(event, context):
     
     # Check that the user has the necessary permissions to make the request
     authorized = Security.authenticate_and_authorize(
-        token, request, resources["TOKEN_TABLE"], resources["USER_TABLE"],
-        resources["ROLE_TABLE"]
+        token, request, resources["TOKEN_TABLE"], resources["USER_TABLE"]
     )
     
     # Check if authentication or authorization returned an error
@@ -101,7 +100,7 @@ def process_request(request_body, resources, request):
         """ Request structure
             {
                 request: getUser,
-                email: <email>
+                email: <str: email>
             }
         """
         if not "email" in request_body:
@@ -109,6 +108,31 @@ def process_request(request_body, resources, request):
         
         email = request_body["email"]
         response = User.get_user(email, resources["USER_TABLE"])
+    elif request == "addUser":
+        """ Request structure
+            {
+                request: addUser,
+                email: <str: email>,
+                password: <str: password>,
+                parmissions: <list:
+                    <str: permission1>,
+                    <str: permission2>,
+                    <str: etc...>
+                >
+            }
+        """
+        if not "email" in request_body:
+            Error.send_error("noEmail", data={"request": request})
+        if not "password" in request_body:
+            Error.send_error("noPassword", data={"request": request})
+        if not "permissions" in request_body:
+            Error.send_error("noPermissions", data={"request": request})
+        
+        email = request_body["email"]
+        password = request_body["password"]
+        permissions = request_body["permissions"]
+        response = User.add_user(email, password, permissions,
+                                 resources["USER_TABLE"])
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
     
@@ -126,8 +150,8 @@ def supported_request(request):
         # "getImagePresignedPost"
     ]
     supported_posts = [
-        "loginUser"
-        # "logoutUser", "saveNewBlog", "registerUser", "editUser",
+        "loginUser", "addUser"
+        # "logoutUser", "saveNewBlog", "editUser",
         # "createRole", "editRole", "createPage", "editPage", "editSiteSettings",
         # "setSiteSettings", "setMenuItems"
     ]

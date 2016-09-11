@@ -5,11 +5,6 @@
     "LAMBDA_ROLE": "-aws-cms-Lambda",
     "BLOG_TABLE": "-aws-cms-Blog",
     "PAGE_TABLE": "-aws-cms-Page",
-    "ROLE_TABLE": "-aws-cms-Role",
-    "MENU_TABLE": "-aws-cms-Menu",
-    "SETTINGS_TABLE": "-aws-cms-Site-Settings",
     "TOKEN_TABLE": "-aws-cms-Token",
-    "USER_TABLE": "-aws-cms-User",
-    "TABLE_TABLE": "-aws-cms-Table",
-    "FORM_TABLE": "-aws-cms-Form"
+    "USER_TABLE": "-aws-cms-User"
 }

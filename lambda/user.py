@@ -23,6 +23,10 @@ class User(object):
     """ Provides functions for handling user based requests """
 
     @staticmethod
+    def get_hash_rounds():
+        return 10000
+    
+    @staticmethod
     def login(email, password, user_table, token_table):
         """ Validates user login request. Adds a token to the token table 
             and provides it in the response for future requests.
@@ -117,37 +121,34 @@ class User(object):
 
         return user
 
+    @staticmethod
+    def add_user(email, password, permissions, user_table):
+        # Hash the password
+        hashed_pass = pbkdf2_sha256.encrypt(password,
+                                            rounds=User.get_hash_rounds())
+        
+        # Create user entry for the user table
+        user = {
+            "Email": {"S": email},
+            "Password": {"S": hashed_pass},
+            "ID": {"S": str(uuid.uuid4())},
+            "Permissions": {"L": []}
+        }
+        for permission in permissions:
+            user["Permissions"]["L"].append({"S": permission})
+        
+        # Add user to the user table
+        try:
+            dynamodb = boto3.client('dynamodb')
+            put_response = dynamodb.put_item(
+                TableName=user_table, Item=user, ReturnConsumedCapacity='TOTAL',
+                ConditionExpression="attribute_not_exists(Email)")
+        except botocore.exceptions.ClientError as e:
+            action = "Adding user to user table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
 
-#    """ function adds a user record to dynamo """
-#    def register(self):
-#        # Get password for hashing
-#        password = self.event["user"]["password"]
-#        hashed = pbkdf2_sha256.encrypt(password, rounds=self.hash_rounds)
-#        # Get user register params
-#        register_params = {
-#            "ID": {"S": str(uuid.uuid4())},
-#            "Username": {"S": self.event["user"]["username"]},
-#            "Email": {"S": self.event["user"]["email"]},
-#            "Password": {"S": hashed},
-#            "Role": {"S": "c104ea59-7deb-4ae4-8418-225d8f4f42cd"}
-#        }
-
-#        # Attempt to add to dynamo
-#        try:
-#            dynamodb = boto3.client('dynamodb')
-#            dynamodb.put_item(
-#                TableName=self.constants["USER_TABLE"],
-#                Item=register_params,
-#                ReturnConsumedCapacity='TOTAL'
-#            )
-#        except botocore.exceptions.ClientError as e:
-#            print e.response['Error']['Code']
-#            response = Response("Error")
-#            response.errorMessage = "Unable to register new user: %s" % (
-#                e.response['Error']['Code'])
-#            return response.to_JSON()
-
-#        return Response("Success", None).to_JSON()
+        return put_response
 
 
 #    """ function deletes a user record from dynamo """
