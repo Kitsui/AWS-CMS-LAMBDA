@@ -80,7 +80,7 @@ def handler(event, context):
         Error.send_error(authorized["error"], data=authorized["data"])
     
     # Process the request
-    response = process_request(request_body, resources, request)
+    response = process_request(request_body, resources, token, request)
     
     # Check if response returned an error
     if "error" in response:
@@ -88,7 +88,7 @@ def handler(event, context):
     
     return response
 
-def process_request(request_body, resources, request):
+def process_request(request_body, resources, token, request):
     if request == "getAllUsers":
         """ Request structure
             {
@@ -145,14 +145,17 @@ def process_request(request_body, resources, request):
         
         email = request_body["email"]
         response = User.remove_user(email, resources["USER_TABLE"])
+    elif request == "logoutUser":
+        """ Request structure
+            {
+                request: logoutUser
+            }
+        """
+        response = User.logout(token, resources["TOKEN_TABLE"])
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
     
     return response
-
-def remove_prefix(cookie):
-    equals_index = cookie.find("=") + 1
-    return cookie[equals_index:]
 
 def supported_request(request):
     supported_gets = [
@@ -163,12 +166,12 @@ def supported_request(request):
     ]
     supported_posts = [
         "loginUser", "addUser"
-        # "logoutUser", "saveNewBlog", "editUser",
+        # "saveNewBlog", "editUser",
         # "createRole", "editRole", "createPage", "editPage", "editSiteSettings",
         # "setSiteSettings", "setMenuItems"
     ]
     supported_deletes = [
-        "removeUser"
+        "logoutUser", "removeUser"
         # "deleteSingleBlog", "deleteRole", "deletePage"
     ]
     supported_requests = supported_gets + supported_posts + supported_deletes
@@ -176,3 +179,7 @@ def supported_request(request):
         return True
     else:
         return False
+
+def remove_prefix(cookie):
+    equals_index = cookie.find("=") + 1
+    return cookie[equals_index:]

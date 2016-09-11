@@ -28,9 +28,9 @@ class User(object):
     
     @staticmethod
     def login(email, password, user_table, token_table):
-        """ Validates a user login request. Adds a token to the token table 
-            and provides it as a cookie in the response for use in future
-            request validation.
+        """ Validates a user login request.
+            Adds a token to the token table and provides it as a cookie in the
+            response for use in future request validation.
         """
         # Use email to fetch user information from the user table
         try:
@@ -169,26 +169,20 @@ class User(object):
 
         return delete_response
 
-#    """ function deletes a token record from dynamo"""
-#    def logout(self):
-#        # get user credentials
-#        token = self.event["tokenString"]
-#        user = self.event["userID"]
+    @staticmethod
+    def logout(token, token_table):
+        """ Logs out the user who made this request by removing their active
+        token from the token table
+        """
+        try:
+            dynamodb = boto3.client("dynamodb")
+            delete_response = dynamodb.delete_item(
+                TableName=token_table,
+                Key={"Token": {"S": token}}
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Logging out user"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
 
-#        try:
-#            # remove token from user
-#            dynamodb = boto3.client("dynamodb")
-#            response = table.delete_item(
-#                TableName=self.constants["TOKEN_TABLE"],
-#                Key={
-#                    "TokenString": {"S": token},
-#                    "UserID": {"S": user}
-#                }
-#            )
-#        except botocore.exceptions.ClientError as e:
-#            print e.response["Error"]["Code"]
-#            response = Response("Error", None)
-#            response.errorMessage = "Unable to log out: %s" % e.response["Error"]["Code"]
-#            return response.to_JSON()
-
-#        return Response("Success", None).to_JSON()
+        return delete_response
