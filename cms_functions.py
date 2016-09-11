@@ -318,7 +318,7 @@ class AwsFunc:
 
     def create_lambda_function(self):
         """ Creates a lamda function and uploads AWS CMS to to it """
-        lmda_role = json.dumps{
+        lmda_role = json.dumps({
             "Version": "2012-10-17",
             "Statement": [
                 {
@@ -329,7 +329,7 @@ class AwsFunc:
                     "Action": "sts:AssumeRole"
                 }
             ]
-        }
+        })
         
         # Create the lambda iam role
         try:
