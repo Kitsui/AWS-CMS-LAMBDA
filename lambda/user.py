@@ -28,8 +28,9 @@ class User(object):
     
     @staticmethod
     def login(email, password, user_table, token_table):
-        """ Validates user login request. Adds a token to the token table 
-            and provides it in the response for future requests.
+        """ Validates a user login request. Adds a token to the token table 
+            and provides it as a cookie in the response for use in future
+            request validation.
         """
         # Use email to fetch user information from the user table
         try:
@@ -90,7 +91,7 @@ class User(object):
     
     @staticmethod
     def get_all_users(user_table):
-        """ Fetches all entries from user table """
+        """ Fetches all entries from the user table """
         try:
             dynamodb = boto3.client('dynamodb')
             users = dynamodb.scan(TableName=user_table, ConsistentRead=True)
@@ -103,7 +104,7 @@ class User(object):
     
     @staticmethod
     def get_user(email, user_table):
-        """ Fetches user entry associated with the provided email """
+        """ Fetches a user entry from the user table """
         try:
             dynamodb = boto3.client("dynamodb")
             user = dynamodb.get_item(TableName=user_table,
@@ -123,6 +124,7 @@ class User(object):
 
     @staticmethod
     def add_user(email, password, permissions, user_table):
+        """ Adds a user to the user table """
         # Hash the password
         hashed_pass = pbkdf2_sha256.encrypt(password,
                                             rounds=User.get_hash_rounds())
@@ -150,28 +152,21 @@ class User(object):
 
         return put_response
 
+    @staticmethod
+    def remove_user(email, user_table):
+        """ Removes a user from the user table """
+        try:
+            dynamodb = boto3.client('dynamodb')
+            delete_response = dynamodb.delete_item(
+                TableName=user_table,
+                Key={'Email': {"S": email}}
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Removing user from user table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
 
-#    """ function deletes a user record from dynamo """
-#    def delete_user(self):
-#        userID = self.event["user"]["userID"]
-#        email = self.event["user"]["email"]
-#        try:
-#            dynamodb = boto3.client('dynamodb')
-#            dynamodb.delete_item(
-#                TableName=self.constants["USER_TABLE"],
-#                Key={
-#                    'ID': {"S": userID},
-#                    'Email': {"S": email}
-#                }
-#            )
-#        except botocore.exceptions.ClientError as e:
-#            print e.response['Error']['Code']
-#            response = Response("Error", None)
-#            response.errorMessage = "Unable to delete role: %s" % e.response['Error']['Code']
-#            return response.to_JSON()
-
-#        return Response("Success", None).to_JSON()
-
+        return delete_response
 
 #    """ function edits a user record form dynamo """
 #    def edit_user(self):

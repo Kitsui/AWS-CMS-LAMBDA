@@ -5,7 +5,8 @@
 		"Permissions": {"L": [
 			{"S": "getAllUsers"},
 			{"S": "getUser"},
-			{"S": "addUser"}
+			{"S": "addUser"},
+			{"S": "removeUser"}
 		]}
 	},
 	"ReturnConsumedCapacity": "TOTAL"

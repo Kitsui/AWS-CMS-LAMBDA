@@ -133,6 +133,18 @@ def process_request(request_body, resources, request):
         permissions = request_body["permissions"]
         response = User.add_user(email, password, permissions,
                                  resources["USER_TABLE"])
+    elif request == "removeUser":
+        """ Request structure
+            {
+                request: removeUser,
+                email: <str: email>
+            }
+        """
+        if not "email" in request_body:
+            Error.send_error("noEmail", data={"request": request})
+        
+        email = request_body["email"]
+        response = User.remove_user(email, resources["USER_TABLE"])
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
     
@@ -156,7 +168,8 @@ def supported_request(request):
         # "setSiteSettings", "setMenuItems"
     ]
     supported_deletes = [
-        # "deleteSingleBlog", "deleteUser", "deleteRole", "deletePage"
+        "removeUser"
+        # "deleteSingleBlog", "deleteRole", "deletePage"
     ]
     supported_requests = supported_gets + supported_posts + supported_deletes
     if request in supported_requests:
