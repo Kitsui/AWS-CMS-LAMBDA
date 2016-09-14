@@ -1,0 +1,208 @@
+Author: Christopher Treadgold
+Date: 14/09/2016
+
+Note:
+Testcases are designed to be entered into the lambda test console. For testing
+through the api gateway test console, simply copy the contents of "body" instead.
+
+------------------------------VALID LOGIN---------------------------------------
+(required for all other test cases)
+
+	Prerequisites: None
+	{
+		"body": {
+			"request": "loginUser",
+			"email": "email@gmail.com",
+			"password": "password123"
+		}
+	}
+	Expected response: A Cookie (Save this for future requests)
+
+------------------------------REQUEST TESTCASES---------------------------------
+
+### INVALID REQUESTS ###
+
+Testcase 001IVD: No request
+	Prerequisites: None
+	{
+		"body": {
+			"email": "adfaefdaesf",
+			"password": "agdsfdsafasd"
+		}
+	}
+	Expected response: Error about missing request
+
+Testcase 002IVD: Invalid request
+	Prerequisites: None
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "save",
+			"file": "fungraphs.txt"
+		}
+	}
+	Expected response: Error about invalid request
+
+------------------------------USER TESTCASES------------------------------------
+
+					########## VALID REQUESTS ##########
+
+Testcase 101VD: Valid put user (admin)
+	Prerequisites: None
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "putUser",
+			"email": "testuser@gmail.com",
+			"password": "testpassword",
+			"userType": "admin",
+			"permissions": ["all"]
+		}
+	}
+	Expected response: Success message and details of the put user
+
+Testcase 102VD: Valid put user (custom permissions)
+	Prerequisites: None
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "putUser",
+			"email": "testuser2@gmail.com",
+			"password": "testpassword2",
+			"userType": "viewer",
+			"permissions": ["getUser", "getAllUsers", "getBlog", "getAllBlogs"]
+		}
+	}
+	Expected response: Success message and details of the put user
+
+Testcase 103VD: Valid get user
+	Prerequisites: 102VD
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "getUser",
+			"email": "testuser2@gmail.com"
+		}
+	}
+	Expected response: Success message and data containing the user
+	
+Testcase 104VD: Valid get all users
+	Prerequisites: 101VD, 102VD
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "getAllUsers"
+		}
+	}
+	Expected response: Success message and data containing a list of all users
+
+Testcase 105VD: Valid logout user
+	Prerequisites: 102VD
+	{
+		"token": <str: valid token from logging in 102VD>,
+		"body": {
+			"request": "logoutUser"
+		}
+	}
+	Expected response: Success message
+
+Testcase 105VD: Valid delete user
+	Prerequisites: 102VD
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "deleteUser",
+			"email": "testuser2@gmail.com"
+		}
+	}
+	Expected response: Success message
+
+					######### INVALID REQUESTS ##########
+	
+Testcase 101IVD: Invalid email for login
+	Prerequisites: None
+	{
+		"body": {
+			"request": "loginUser",
+			"email": "iafeaoiefasdbk",
+			"password": "password123"
+		}
+	}
+	Expected response: Error about invalid email
+
+Testcase 102IVD: Invalid password for login
+	Prerequisites: None
+	{
+		"body": {
+			"request": "loginUser",
+			"email": "email@gmail.com",
+			"password": "ajdhvdjabsafui"
+		}
+	}
+	Expected response: Error about invalid password
+
+------------------------------BLOG TESTCASES------------------------------------
+
+					########## VALID REQUESTS ##########
+
+Testcase 201VD: Valid put blog
+	Prerequisites: None
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "putBlog",
+			"author": "Steve Test",
+			"title": "Test",
+			"content": "This is test content",
+			"description": "This is a test blog",
+			"keywords": ["test", "test1", "test2"]
+		}
+	}
+	Expected response: Success message and details of the put blog
+
+Testcase 202VD: Valid put blog (identical to previous)
+	Prerequisites: None
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "putBlog",
+			"author": "Steve Test",
+			"title": "Test",
+			"content": "This is test content",
+			"description": "This is a test blog",
+			"keywords": ["test", "test1", "test2"]
+		}
+	}
+	Expected response: Success message and details of the put blog
+
+Testcase 203VD: Valid get blog
+	Prerequisites: None
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "getBlog",
+			"blogID": <str: valid blog id from 201VD or 202VD>
+		}
+	}
+	Expected response: Success message and data containing the blog
+
+Testcase 204VD: Valid get all blogs
+	Prerequisites: None
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "getAllBlogs"
+		}
+	}
+	Expected response: Success message and data containing a list of all blogs
+
+Testcase 205VD: Valid delete blog
+	Prerequisites: None
+	{
+		"token": <str: valid token>,
+		"body": {
+			"request": "deleteBlog",
+			"blogID": <str: valid blog id from 201VD or 202VD>
+		}
+	}
+	Expected response: Success message

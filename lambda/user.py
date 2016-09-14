@@ -20,11 +20,8 @@ import botocore
 from passlib.hash import pbkdf2_sha256
 
 class User(object):
-    """ Provides functions for handling user based requests """
-
-    @staticmethod
-    def get_hash_rounds():
-        return 10000
+    """ Provides functions for handling user related requests """
+    HASH_ROUNDS = 10000
     
     @staticmethod
     def login(email, password, user_table, token_table):
@@ -42,7 +39,7 @@ class User(object):
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
-        # Check that the email has a user in the database associated with it
+        # Check that the email has a user associated with it
         if not "Item" in user:
             action = "Attempting to log in"
             return {"error": "InvalidEmail",
@@ -87,7 +84,24 @@ class User(object):
         cookie = "token=%s; expires=%s" % (token, expiration)
         
         # Return the cookie
-        return {"Set-Cookie": cookie}
+        return {"message": "Successfully logged in", "Set-Cookie": cookie}
+    
+    @staticmethod
+    def logout(token, token_table):
+        """ Logs out the user who made this request by removing their active
+        token from the token table
+        """
+        try:
+            dynamodb = boto3.client("dynamodb")
+            delete_response = dynamodb.delete_item(
+                TableName=token_table, Key={"Token": {"S": token}}
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Logging out user"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+
+        return {"message": "Successfully logged out"}
     
     @staticmethod
     def get_all_users(user_table):
@@ -100,7 +114,13 @@ class User(object):
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
-        return users
+        # Check that the email has a user associated with it
+        if not "Items" in users:
+            action = "Fetching users from user table"
+            return {"error": "noUsers",
+                    "data": {"action": action}}
+        
+        return {"message": "Successfully fetched users", "data": users["Items"]}
     
     @staticmethod
     def get_user(email, user_table):
@@ -114,47 +134,47 @@ class User(object):
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
-        # Check that the email has a user in the database associated with it
+        # Check that the email has a user associated with it
         if not "Item" in user:
             action = "Fetching user from user table"
             return {"error": "InvalidEmail",
                     "data": {"email": email, "action": action}}
 
-        return user
+        return {"message": "Successfully fetched user", "data": user["Item"]}
 
     @staticmethod
-    def add_user(email, password, permissions, user_table):
-        """ Adds a user to the user table """
+    def put_user(email, password, user_type, permissions, user_table):
+        """ Puts a user in the user table """
         # Hash the password
         hashed_pass = pbkdf2_sha256.encrypt(password,
-                                            rounds=User.get_hash_rounds())
-        
+                                            rounds=User.HASH_ROUNDS)
         # Create the user entry
         user = {
             "Email": {"S": email},
             "Password": {"S": hashed_pass},
             "ID": {"S": str(uuid.uuid4())},
+            "UserType": {"S": user_type},
             "Permissions": {"L": []}
         }
         for permission in permissions:
             user["Permissions"]["L"].append({"S": permission})
         
-        # Add the user to the user table
+        # Put the user in the user table
         try:
             dynamodb = boto3.client("dynamodb")
             put_response = dynamodb.put_item(
                 TableName=user_table, Item=user, ReturnConsumedCapacity="TOTAL"
             )
         except botocore.exceptions.ClientError as e:
-            action = "Adding user to user table"
+            action = "Putting user in user table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
 
-        return put_response
+        return {"message": "Successfully put user", "data": user}
 
     @staticmethod
-    def remove_user(email, user_table):
-        """ Removes a user from the user table """
+    def delete_user(email, user_table):
+        """ Deletes a user from the user table """
         try:
             dynamodb = boto3.client("dynamodb")
             delete_response = dynamodb.delete_item(
@@ -163,26 +183,8 @@ class User(object):
                 ConditionExpression="attribute_exists(Email)"
             )
         except botocore.exceptions.ClientError as e:
-            action = "Removing user from user table"
+            action = "Deleting user from user table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
 
-        return delete_response
-
-    @staticmethod
-    def logout(token, token_table):
-        """ Logs out the user who made this request by removing their active
-        token from the token table
-        """
-        try:
-            dynamodb = boto3.client("dynamodb")
-            delete_response = dynamodb.delete_item(
-                TableName=token_table,
-                Key={"Token": {"S": token}}
-            )
-        except botocore.exceptions.ClientError as e:
-            action = "Logging out user"
-            return {"error": e.response["Error"]["Code"],
-                    "data": {"exception": str(e), "action": action}}
-
-        return delete_response
+        return {"message": "Successfully deleted user"}

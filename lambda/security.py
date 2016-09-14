@@ -43,6 +43,10 @@ class Security(object):
             return {"error": "invalidToken",
                     "data": {"token": token, "action": action}}
         
+        # Checks if request is logoutUser as permission is not required
+        if request == "logoutUser":
+            return True
+        
         # Check that the token has a user associated with it
         try:
             user_email = token_info["Item"]["UserEmail"]["S"]
@@ -78,8 +82,8 @@ class Security(object):
         
         # Check that user has the appropriate permissions to make the request
         for permission in permissions:
-            if request == permission["S"]:
+            if permission["S"] == request or permission["S"] == "all":
                 return True
             
-        return {"error": "unauthorizedRequest",
+        return {"error": "notAuthorizedForRequest",
                 "data": {"user": user_email, "request": request}}

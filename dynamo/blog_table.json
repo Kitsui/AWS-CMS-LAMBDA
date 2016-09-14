@@ -1,13 +1,13 @@
 {	
 	"AttributeDefinitions": [
 		{
-			"AttributeName": "BlogID",
+			"AttributeName": "ID",
 			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
-			"AttributeName": "BlogID",
+			"AttributeName": "ID",
 			"KeyType": "HASH"
 		}
 	],
