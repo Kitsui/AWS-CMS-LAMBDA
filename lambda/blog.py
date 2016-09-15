@@ -93,7 +93,7 @@ class Blog(object):
             s3 = boto3.client("s3")
             s3.put_object(
                 Bucket=bucket, ACL="public-read", Body=json.dumps(blog),
-                Key=("Content/Post/%s" % blog["Title"]),
+                Key=("Content/Blogs/%s" % blog["ID"]),
                 ContentType="application/json"
             )
         except botocore.exceptions.ClientError as e:
