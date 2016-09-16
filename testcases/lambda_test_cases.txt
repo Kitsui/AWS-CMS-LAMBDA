@@ -3,7 +3,8 @@ Date: 14/09/2016
 
 Note:
 Testcases are designed to be entered into the lambda test console. For testing
-through the api gateway test console, simply copy the contents of "body" instead.
+through the api gateway test console, simply copy the contents of "body" instead
+and put a valid token in the "cookie" header field.
 
 ------------------------------VALID LOGIN---------------------------------------
 (required for all other test cases)

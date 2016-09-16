@@ -47,8 +47,8 @@ angular.module("root", [])
       ctrlScope.status = "Fetching presigned URL";
 
       var presignedRequest = {
-        "request": "getImagePresignedPost",
-        "fileName": ctrlScope.image.name,
+        "request": "getPresignedPostImage",
+        "filename": ctrlScope.image.name,
         "acl": "public-read"
       };
 

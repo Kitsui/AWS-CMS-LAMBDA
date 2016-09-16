@@ -11,25 +11,12 @@ import datetime
 
 import boto3
 import botocore
-from boto3.dynamodb.conditions import Attr, Key
-
-from response import Response
 
 class Page(object):
+    """ Provides functions for handling blog related requests """
 
-    def __init__(self, event, context):
-        self.event = event
-        self.context = context
-        # Blog variables
-        self.s3 = boto3.client('s3')
-        self.Index_file= "PageIndex.html"
-        with open("constants.json", "r") as constants_file:
-            self.constants = json.loads(constants_file.read())
-
-    """ function gets a page record from dynamo """
-    def get_page_data(self):
-        """ Gets page data from dynamoDB """
-        page_id = self.event["page"]["pageID"]
+    def get_page_data(page_name, ):
+        """ Fetches a blog entry from the blog table """
         try:
             dynamodb = boto3.client("dynamodb")
             page_data = dynamodb.query(

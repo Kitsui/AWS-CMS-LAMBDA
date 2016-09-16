@@ -18,7 +18,7 @@ from blog           import Blog
 from error          import Error
 # from page           import Page
 from security       import Security
-# from upload_image   import UploadImage
+from s3_upload      import S3Upload
 from user           import User
 
 def handler(event, context):
@@ -217,13 +217,32 @@ def process_request(request_body, resources, request, token=None):
             Error.send_error("noKeywords", data={"request": request})
         
         blog_id = request_body["blogID"]
-        return Blog.delete_blog(blog_id, resources["BLOG_TABLE"])
+        return Blog.delete_blog(blog_id, resources["BLOG_TABLE"],
+                                resources["BUCKET"])
+    elif request == "getPresignedPostImage":
+        """ Request structure
+            {
+                request: getPresignedPostImage,
+                filename: <str: filename>,
+                acl: <str: acl>
+            }
+        """
+        if not "filename" in request_body:
+            Error.send_error("noFilename", data={"request": request})
+        if not "acl" in request_body:
+            Error.send_error("noAcl", data={"request": request})
+        
+        filename = request_body["filename"]
+        acl = request_body["acl"]
+        return S3Upload.get_presigned_post_image(filename, acl,
+                                                 resources["BUCKET"])
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
 
 def supported_request(request):
     supported_gets = [
-        "getUser", "getAllUsers", "getBlog", "getAllBlogs"
+        "getUser", "getAllUsers", "getBlog", "getAllBlogs",
+        "getPresignedPostImage"
     ]
     supported_puts = [
         "putUser", "putBlog"

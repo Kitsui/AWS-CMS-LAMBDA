@@ -104,13 +104,26 @@ class Blog(object):
         return {"message": "Successfully put blog", "data": blog}
         
     @staticmethod
-    def delete_blog(blog_id, blog_table):
+    def delete_blog(blog_id, blog_table, bucket):
         """ Deletes a blog from the blog table """
         try:
             dynamodb = boto3.client("dynamodb")
             delete_response = dynamodb.delete_item(
                 TableName=blog_table,
-                Key={"ID": {"S": blog_id}}
+                Key={"ID": {"S": blog_id}},
+                ConditionExpression="attribute_exists(ID)"
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Deleting blog from blog table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # Deletes the blog from the bucket
+        try:
+            s3 = boto3.client("s3")
+            delete_response = s3.delete_object(
+                Bucket=bucket,
+                Key=("Content/Blogs/%s" % blog_id)
             )
         except botocore.exceptions.ClientError as e:
             action = "Deleting blog from blog table"

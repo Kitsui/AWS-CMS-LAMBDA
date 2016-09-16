@@ -12,7 +12,6 @@
 
 import Cookie
 import datetime
-import json
 import uuid
 
 import boto3
