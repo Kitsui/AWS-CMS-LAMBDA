@@ -13,49 +13,38 @@ import boto3
 import botocore
 
 class Page(object):
-    """ Provides functions for handling blog related requests """
+    """ Provides functions for handling page related requests """
+    
+    def get_all_pages(page_table):
+        try:
+            dynamodb = boto3.client('dynamodb')
+            data = dynamodb.scan(TableName=self.constants["PAGE_TABLE"],
+                                 ConsistentRead=True)
+        except botocore.exceptions.ClientError as e:
+            action = "Getting all pages from the page table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
 
-    def get_page_data(page_name, ):
+        return data
+    
+    def get_page(page_name, page_table):
         """ Fetches a blog entry from the blog table """
         try:
             dynamodb = boto3.client("dynamodb")
-            page_data = dynamodb.query(
-                TableName=self.constants["PAGE_TABLE"],
-                KeyConditionExpression="PageID = :v1",
-                ExpressionAttributeValues={
-                    ":v1": {
-                        "S": page_id
-                    }
-                }
+            page = dynamodb.get_item(
+                TableName=page_table, Key={"Name": {"S": page_name}}
             )
         except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            response = Response("Error", None)
-            response.errorMessage = "Unable to get page data: %s" % (
-                e.response["Error"]["Code"])
-            return response.to_JSON()
+            action = "Getting page from the page table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
 
-        return page_data
-
-    """ function returns site settings from dynamo db """
-    def get_site_settings(self):
-        # Attempt to get all data from table
-        try:
-            # Get site settings and read in the file body
-            fileName= "Content/site-settings.json"
-            get_kwargs = {
-                'Bucket': self.constants["BUCKET"],
-                'Key': fileName
-            }
-            result =  self.s3.get_object(**get_kwargs)
-            site_settings_body = result['Body'].read()
-        except botocore.exceptions.ClientError as e:
-            print e.response['Error']['Code']
-            response = Response("Error", None)
-            response.errorMessage = "Unable to get site setting data: %s" % e.response['Error']['Code']
-            return response.to_JSON()
-        # Return site settings json to be used
-        return json.loads(site_settings_body)
+        if not "Item" in page:
+            action = "Fetching page from page table"
+            return {"error": "InvalidPageName",
+                    "data": {"pageName": page_name, "action": action}}
+            
+        return page["Item"]
 
     """ function sets up the site settings in dynamo and s3 """
     def set_site_settings(self):
@@ -69,24 +58,6 @@ class Page(object):
         site_atr_list["SavedDate"] = str(datetime.datetime.now())
         self.put_site_settings_object(self.event["site"])
         return Response("Success", None).to_JSON()
-
-    """ function returns all pages in dynamo """
-    def get_all_pages(self):
-        # Attempt to get all data from table
-        try:
-            dynamodb = boto3.client('dynamodb')
-            data = dynamodb.scan(TableName=self.constants["PAGE_TABLE"],
-                                 ConsistentRead=True)
-        except botocore.exceptions.ClientError as e:
-            print e.response['Error']['Code']
-            response = Response("Error", None)
-            response.errorMessage = "Unable to get page data: %s" % e.response['Error']['Code']
-            return response.to_JSON()
-
-        response = Response("Success", data)
-        # format for table response to admin dash
-        # return response.format("All Pages")
-        return data
 
 
     """ functions creates a page in s3 and dynamo """
