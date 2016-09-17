@@ -25,15 +25,14 @@ class Blog(object):
             dynamodb = boto3.client("dynamodb")
             blogs = dynamodb.scan(TableName=blog_table, ConsistentRead=True)
         except botocore.exceptions.ClientError as e:
-            action = "Fetching blogs from blog table"
+            action = "Fetching blogs from the blog table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
         # Check that the blog id has a blog associated with it
         if not "Items" in blogs:
-            action = "Fetching blogs from blog table"
-            return {"error": "noBlogs",
-                    "data": {"action": action}}
+            action = "Fetching blogs from the blog table"
+            return {"error": "noBlogs", "data": {"action": action}}
         
         return {"message": "Successfully fetched blogs", "data": blogs["Items"]}
     
@@ -46,13 +45,13 @@ class Blog(object):
                 TableName=blog_table, Key={"ID": {"S": blog_id}}
             )
         except botocore.exceptions.ClientError as e:
-            action = "Fetching blog from blog table"
+            action = "Fetching blog from the blog table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
         # Check that the blog id has a blog associated with it
         if not "Item" in blog:
-            action = "Fetching blog from blog table"
+            action = "Fetching blog from the blog table"
             return {"error": "InvalidBlogID",
                     "data": {"id": blog_id, "action": action}}
 
@@ -82,7 +81,7 @@ class Blog(object):
                 TableName=blog_table, Item=blog, ReturnConsumedCapacity="TOTAL"
             )
         except botocore.exceptions.ClientError as e:
-            action = "Putting blog in blog table"
+            action = "Putting blog in the blog table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
@@ -97,7 +96,7 @@ class Blog(object):
                 ContentType="application/json"
             )
         except botocore.exceptions.ClientError as e:
-            action = "Putting blog in bucket"
+            action = "Putting blog in the bucket"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
@@ -114,9 +113,11 @@ class Blog(object):
                 ConditionExpression="attribute_exists(ID)"
             )
         except botocore.exceptions.ClientError as e:
-            action = "Deleting blog from blog table"
+            action = "Deleting blog from the blog table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
+        
+        # TODO: Modify once pagination is implemented
         
         # Deletes the blog from the bucket
         try:
@@ -126,7 +127,7 @@ class Blog(object):
                 Key=("Content/Blogs/%s" % blog_id)
             )
         except botocore.exceptions.ClientError as e:
-            action = "Deleting blog from blog table"
+            action = "Deleting blog from the blog table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
 

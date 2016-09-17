@@ -20,7 +20,7 @@ from passlib.hash import pbkdf2_sha256
 
 class User(object):
     """ Provides functions for handling user related requests """
-    HASH_ROUNDS = 10000
+    HASH_ROUNDS = 10000 # The number of rounds to use for hashing passwords
     
     @staticmethod
     def login(email, password, user_table, token_table):
@@ -34,7 +34,7 @@ class User(object):
             user = dynamodb.get_item(TableName=user_table,
                                      Key={"Email": {"S": email}})
         except botocore.exceptions.ClientError as e:
-            action = "Fetching user from user table for login"
+            action = "Fetching user from the user table for login"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
@@ -62,7 +62,6 @@ class User(object):
         # Calculate an exiration date a day from now
         expiration = datetime.datetime.now() + datetime.timedelta(days=1)
         expiration = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
-        
         # Generate a uuid for use as a token
         token = str(uuid.uuid4())
         
@@ -75,13 +74,12 @@ class User(object):
                       "Expiration": {"S": expiration}}
             )
         except botocore.exceptions.ClientError as e:
-            action = "Putting token in token table for login"
+            action = "Putting token in the token table for login"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
         # Create the cookie that will be returned
         cookie = "token=%s; expires=%s" % (token, expiration)
-        
         # Return the cookie
         return {"message": "Successfully logged in", "Set-Cookie": cookie}
     
@@ -115,7 +113,7 @@ class User(object):
         
         # Check that the email has a user associated with it
         if not "Items" in users:
-            action = "Fetching users from user table"
+            action = "Fetching users from the user table"
             return {"error": "noUsers",
                     "data": {"action": action}}
         
@@ -129,13 +127,13 @@ class User(object):
             user = dynamodb.get_item(TableName=user_table,
                                      Key={"Email": {"S": email}})
         except botocore.exceptions.ClientError as e:
-            action = "Fetching user from user table"
+            action = "Fetching user from the user table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
         # Check that the email has a user associated with it
         if not "Item" in user:
-            action = "Fetching user from user table"
+            action = "Fetching user from the user table"
             return {"error": "InvalidEmail",
                     "data": {"email": email, "action": action}}
 
@@ -165,7 +163,7 @@ class User(object):
                 TableName=user_table, Item=user, ReturnConsumedCapacity="TOTAL"
             )
         except botocore.exceptions.ClientError as e:
-            action = "Putting user in user table"
+            action = "Putting user in the user table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
 
@@ -182,7 +180,7 @@ class User(object):
                 ConditionExpression="attribute_exists(Email)"
             )
         except botocore.exceptions.ClientError as e:
-            action = "Deleting user from user table"
+            action = "Deleting user from the user table"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
 

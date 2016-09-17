@@ -24,7 +24,7 @@ class Security(object):
         try:
             dynamodb = boto3.client('dynamodb')
         except botocore.exceptions.ClientError as e:
-            action = "Getting dynamodb client instance in authenticate and authorize"
+            action = "Getting dynamodb client"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
@@ -33,13 +33,13 @@ class Security(object):
             token_info = dynamodb.get_item(TableName=token_table,
                                             Key={"Token": {"S": token}})
         except botocore.exceptions.ClientError as e:
-            action = "Fetching token from token table for authentication"
+            action = "Fetching token from the token table for authentication"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
         # Check that the token has an entry in the database associated with it
         if not "Item" in token_info:
-            action = "Fetching token from token table for authentication"
+            action = "Fetching token from the token table for authentication"
             return {"error": "invalidToken",
                     "data": {"token": token, "action": action}}
         
@@ -51,7 +51,7 @@ class Security(object):
         try:
             user_email = token_info["Item"]["UserEmail"]["S"]
         except KeyError:
-            action = "Fetching token from token table for authentication"
+            action = "Fetching token from the token table for authentication"
             return {"error": "tokenHasNoUser",
                     "data": {"token": token, "action": action}}
         
@@ -62,13 +62,13 @@ class Security(object):
                 Key={"Email": {"S": user_email}}
             )
         except botocore.exceptions.ClientError as e:
-            action = "Querying user table for authorization"
+            action = "Querying the user table for authorization"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
         
         # Check that the user id has an enty in the database associated with it
         if not "Item" in user_info:
-            action = "Fetching user from user table for authorization"
+            action = "Fetching user from the user table for authorization"
             return {"error": "invalidUserEmail",
                     "data": {"user": user_email, "action": action}}
         
@@ -76,7 +76,7 @@ class Security(object):
         try:
             permissions = user_info["Item"]["Permissions"]["L"]
         except KeyError:
-            action = "Fetching user from user table for authorization"
+            action = "Fetching user from the user table for authorization"
             return {"error": "userHasNoPermissions",
                     "data": {"user": user_email, "action": action}}
         

@@ -698,7 +698,12 @@ class AwsFunc:
             "https://%s.execute-api.%s.amazonaws.com/prod" % (
                 self.constants["REST_API_ID"], self.region))
 
-
+    def print_login_link(self):
+        print "Username: email@gmail.com"
+        print "Password: password123"
+        print "Login at: https://s3.amazonaws.com/%s/HTML/login.html" % (
+            self.constants["BUCKET"])
+    
     @staticmethod
     def get_account_id():
         sts = boto3.client("sts")

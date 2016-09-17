@@ -16,7 +16,7 @@ import botocore
 
 from blog           import Blog
 from error          import Error
-# from page           import Page
+from page           import Page
 from security       import Security
 from s3_upload      import S3Upload
 from user           import User
@@ -214,10 +214,71 @@ def process_request(request_body, resources, request, token=None):
             }
         """
         if not "blogID" in request_body:
-            Error.send_error("noKeywords", data={"request": request})
+            Error.send_error("noBlogID", data={"request": request})
         
         blog_id = request_body["blogID"]
         return Blog.delete_blog(blog_id, resources["BLOG_TABLE"],
+                                resources["BUCKET"])
+    elif request == "getAllPages":
+        """ Request structure
+            {
+                request: getAllPages
+            }
+        """
+        return Page.get_all_pages(resources["PAGE_TABLE"])
+    elif request == "getPage":
+        """ Request structure
+            {
+                request: getBlog,
+                pageName: <str: page name>
+            }
+        """
+        if not "pageName" in request_body:
+            Error.send_error("noPageName", data={"request": request})
+        
+        page_name = request_body["pageName"]
+        return Page.get_page(page_name, resources["PAGE_TABLE"])
+    elif request == "putPage":
+        """ Request structure
+            {
+                request: putPage,
+                pageName: <str: page name>,
+                content: <str: content>,
+                description: <str: description>,
+                keywords: <list:
+                    <str: keyword1>,
+                    <str: keyword2>,
+                    <str: etc...>
+                >
+            }
+        """
+        if not "pageName" in request_body:
+            Error.send_error("noPageName", data={"request": request})
+        if not "content" in request_body:
+            Error.send_error("noContent", data={"request": request})
+        if not "description" in request_body:
+            Error.send_error("noDescription", data={"request": request})
+        if not "keywords" in request_body:
+            Error.send_error("noKeywords", data={"request": request})
+        
+        page_name = request_body["pageName"]
+        content = request_body["content"]
+        description = request_body["description"]
+        keywords = request_body["keywords"]
+        return Page.put_page(page_name, content, description, keywords,
+                             resources["PAGE_TABLE"], resources["BUCKET"])
+    elif request == "deletePage":
+        """ Request structure
+            {
+                request: deletePage,
+                pageName: <str: page name>
+            }
+        """
+        if not "pageName" in request_body:
+            Error.send_error("noPageName", data={"request": request})
+        
+        page_name = request_body["pageName"]
+        return Page.delete_page(page_name, resources["PAGE_TABLE"],
                                 resources["BUCKET"])
     elif request == "getPresignedPostImage":
         """ Request structure
@@ -241,17 +302,17 @@ def process_request(request_body, resources, request, token=None):
 
 def supported_request(request):
     supported_gets = [
-        "getUser", "getAllUsers", "getBlog", "getAllBlogs",
-        "getPresignedPostImage"
+        "getUser", "getAllUsers", "getBlog", "getAllBlogs", "getPage",
+        "getAllPages", "getPresignedPostImage"
     ]
     supported_puts = [
-        "putUser", "putBlog"
+        "putUser", "putBlog", "putPage"
     ]
     supported_posts = [
         "loginUser", "logoutUser"
     ]
     supported_deletes = [
-        "deleteUser", "deleteBlog"
+        "deleteUser", "deleteBlog", "deletePage"
     ]
     supported_requests = (supported_gets + supported_puts + supported_posts
         + supported_deletes)

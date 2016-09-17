@@ -55,6 +55,8 @@ cms.create_user_table()
 # Add an admin to the user table
 cms.create_admin_user_db_entry()
 
+# Print the default login credentials and the login link
+cms.print_login_link()
 
 # Saves the cms installation information
 cms.save_constants()
