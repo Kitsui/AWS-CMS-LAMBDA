@@ -148,7 +148,7 @@ class User(object):
         # Create the user entry
         user = {
             "Email": {"S": email},
-            "Username" {"S": username},
+            "Username": {"S": username},
             "Password": {"S": hashed_pass},
             "ID": {"S": str(uuid.uuid4())},
             "UserType": {"S": user_type},
