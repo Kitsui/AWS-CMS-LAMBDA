@@ -118,6 +118,7 @@ def process_request(request_body, resources, request, token=None):
             {
                 request: putUser,
                 email: <str: email>,
+                username: <str: username>,
                 password: <str: password>,
                 userType: <str: user type>,
                 parmissions: <list:
@@ -129,6 +130,8 @@ def process_request(request_body, resources, request, token=None):
         """
         if not "email" in request_body:
             Error.send_error("noEmail", data={"request": request})
+        if not "username" in request_body:
+            Error.send_error("noUsername", data={"request": request})
         if not "password" in request_body:
             Error.send_error("noPassword", data={"request": request})
         if not "userType" in request_body:
@@ -137,10 +140,11 @@ def process_request(request_body, resources, request, token=None):
             Error.send_error("noPermissions", data={"request": request})
         
         email = request_body["email"]
+        username = request_body["username"]
         password = request_body["password"]
         user_type = request_body["userType"]
         permissions = request_body["permissions"]
-        return User.put_user(email, password, user_type, permissions,
+        return User.put_user(email, username, password, user_type, permissions,
                              resources["USER_TABLE"])
     elif request == "deleteUser":
         """ Request structure

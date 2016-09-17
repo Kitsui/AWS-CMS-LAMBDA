@@ -140,7 +140,7 @@ class User(object):
         return {"message": "Successfully fetched user", "data": user["Item"]}
 
     @staticmethod
-    def put_user(email, password, user_type, permissions, user_table):
+    def put_user(email, username, password, user_type, permissions, user_table):
         """ Puts a user in the user table """
         # Hash the password
         hashed_pass = pbkdf2_sha256.encrypt(password,
@@ -148,6 +148,7 @@ class User(object):
         # Create the user entry
         user = {
             "Email": {"S": email},
+            "Username" {"S": username},
             "Password": {"S": hashed_pass},
             "ID": {"S": str(uuid.uuid4())},
             "UserType": {"S": user_type},
