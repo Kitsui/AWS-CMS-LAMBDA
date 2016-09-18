@@ -1,0 +1,57 @@
+<div id="page-wrapper">
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="page-header">Site Settings</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Edit The Site Settings
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-10">
+              <form role="form">
+                <div class="form-group">
+                  <label>Site Name</label>
+                  <input class="form-control" placeholder="Johns Pictures">
+                  <p class="help-block">Name of your Site</p>
+                </div>
+                <div class="form-group">
+                  <label>Site Url</label>
+                  <input class="form-control" placeholder="www.johnsictures.com">
+                  <p class="help-block">Url of your site</p>
+                </div>
+                <div class="form-group">
+                  <label>Disqus ID</label>
+                  <input class="form-control" placeholder="Disqus ID">
+                  <p class="help-block">Enter in the ID recieved from your Diqus</p>
+                </div>
+                <div class="form-group">
+                  <label>Google Search Engine ID</label>
+                  <input class="form-control" placeholder="Google ID">
+                  <p class="help-block">Enter in the ID recieved from Google for your search engine</p>
+                </div>
+                <div class="form-group">
+                  <label>Header</label>
+                  <textarea rows=20 id="header" ng-model="siteFooter" ui-tinymce></textarea>
+                  <p class="help-block">Enter in the Html for the Footer of your site</p>
+                </div>
+                <div class="form-group">
+                  <label>Footer</label>
+                  <textarea rows=20 id="footer" ng-model="siteHeader" ui-tinymce></textarea>
+                  <p class="help-block">Enter in the Html for the Header of your site</p>
+                </div>
+              </form>
+            </div>
+            <div class="col-lg-1"></div>
+          </div>
+          <button type="submit" class="btn btn-primary">Save</button> 
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
