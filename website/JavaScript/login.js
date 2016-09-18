@@ -33,7 +33,7 @@ angular.module("login", [])
           "password": ctrlScope.password
         }
       ).then(function successCallback(response) {
-        $window.location.href = "admin.html";
+        $window.location.href = "index.html";
       }, function errorCallback(response) {
         ctrlScope.failedLogin = true;
         ctrlScope.error = "Unable to log in";
