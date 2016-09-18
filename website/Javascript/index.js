@@ -1,6 +1,16 @@
 /*global angular*/
 
-angular.module("index", ["forms"])
+angular.module("index", ["ngRoute"])
+  .config(["$routeProvider", function($routeProvider) {
+    $routeProvider
+      .when("/dashboard", {templateUrl: "dashboard-sample.html"})
+      .when("/page-form", {templateUrl: "page-form.html"})
+      .when("/blog-form", {templateUrl: "blog-form.html"})
+      .when("/user-form", {templateUrl: "user-registration-form.html"})
+      .when("/role-form", {templateUrl: "user-role-form.html"})
+      .when("/settings", {templateUrl: "site-settings.html"})
+      .otherwise({templateUrl: "dashboard-sample.html"})
+  }])
   .directive("cmsNav", [function () {
     "use strict";
     return {
@@ -8,17 +18,3 @@ angular.module("index", ["forms"])
       replace: true
     };
   }])
-  .directive("cmsExampleTable", [function () {
-    "use strict";
-    return {
-      templateUrl: "table-sample.html",
-      replace: true
-    };
-  }])
-  .directive("cmsDashboardSample", [function () {
-    "use strict";
-    return {
-      templateUrl: "dashboard-sample.html",
-      replace: true
-    };
-  }]);

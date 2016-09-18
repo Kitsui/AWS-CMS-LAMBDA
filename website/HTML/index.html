@@ -22,6 +22,7 @@
     <!-- Required External Javascript-->
       <!-- Angular -->
       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
       <!-- jQuery -->
       <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
       <!-- Bootstrap Core JavaScript -->
@@ -33,9 +34,8 @@
     
     <!-- Required CMS Javascript-->
       <script src="../Javascript/index.js"></script>
-      <script src="../Javascript/forms.js"></script>
       <script src="../Javascript/ui-tinymce-min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.3/tinymce.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.3/tinymce.min.js"></script>
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -45,10 +45,9 @@
     <![endif]-->
   </head>
   <body ng-app="index">
-    <div id="wrapper">
+    <div id="wrapper" style="position:fixed; z-index: 1">
       <cms-nav />
     </div>
-    <cms-user-roles-form />
-    
+    <div ng-view style="padding-top:30px"></div>
   </body>
 </html>
