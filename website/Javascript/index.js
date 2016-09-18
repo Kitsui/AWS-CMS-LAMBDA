@@ -1,9 +1,8 @@
 /*global angular*/
 
-angular.module("index", ["ngRoute"])
+angular.module("index", ["ngRoute", "ui.tinymce"])
   .config(["$routeProvider", function($routeProvider) {
     $routeProvider
-      .when("/dashboard", {templateUrl: "dashboard-sample.html"})
       .when("/page-form", {templateUrl: "page-form.html"})
       .when("/blog-form", {templateUrl: "blog-form.html"})
       .when("/user-form", {templateUrl: "user-registration-form.html"})
