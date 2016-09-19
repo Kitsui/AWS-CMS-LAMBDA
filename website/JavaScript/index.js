@@ -1,7 +1,8 @@
 /*global angular*/
 
-angular.module("index", ["ngRoute", "ui.tinymce", "forms"])
-  .config(["$routeProvider", function($routeProvider) {
+angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
+  .config(["$routeProvider", function ($routeProvider) {
+    "use strict";
     $routeProvider
       .when("/pages", {
         templateUrl: "pages.html",
@@ -23,6 +24,12 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms"])
         templateUrl: "blog-form.html",
         replace: true
       })
+      .when("/upload-image", {
+        templateUrl: "upload-image.html",
+        controller: "cmsUploadImageCtrl",
+        controllerAs: "imageCtrl",
+        replace: true
+      })
       .when("/user-form", {
         templateUrl: "user-registration-form.html",
         replace: true
@@ -38,7 +45,7 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms"])
       .otherwise({
         templateUrl: "dashboard-sample.html",
         replace: true
-      })
+      });
   }])
   .directive("cmsNav", [function () {
     "use strict";

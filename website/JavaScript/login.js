@@ -1,22 +1,23 @@
 /*global angular*/
 
-angular.module("login", [])
+angular.module("login", ["api"])
   .config(function ($httpProvider) {
     "use strict";
     $httpProvider.defaults.withCredentials = true;
   })
-  .directive("cmsLoginForm", ["$http", "$window", function ($http, $window) {
+  .directive("cmsLoginForm", ["$http", "$window", "apiUrl", function ($http, $window, apiUrl) {
     "use strict";
     return {
       http: $http,
       window: $window,
+      apiUrl: apiUrl,
       templateUrl: "cms_login_form.html",
       replace: true,
       controller: "cmsLoginFormCtrl",
       controllerAs: "loginCtrl"
     };
   }])
-  .controller("cmsLoginFormCtrl", function ($http, $window) {
+  .controller("cmsLoginFormCtrl", function ($http, $window, apiUrl) {
     "use strict";
     var ctrlScope = this;
     ctrlScope.buttonText = "Login";
@@ -26,7 +27,7 @@ angular.module("login", [])
       ctrlScope.failedLogin = false;
       ctrlScope.buttonText = "Logging in...";
       $http.post(
-        "$(API_URL)",
+        apiUrl,
         {
           "request": "loginUser",
           "email": ctrlScope.email,

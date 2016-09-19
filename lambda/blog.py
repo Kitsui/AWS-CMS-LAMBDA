@@ -92,7 +92,7 @@ class Blog(object):
             s3 = boto3.client("s3")
             s3.put_object(
                 Bucket=bucket, ACL="public-read", Body=json.dumps(blog),
-                Key=("Content/Blogs/%s" % blog["ID"]),
+                Key=("Content/Blogs/%s.json" % blog["ID"]["S"]),
                 ContentType="application/json"
             )
         except botocore.exceptions.ClientError as e:
@@ -124,7 +124,7 @@ class Blog(object):
             s3 = boto3.client("s3")
             delete_response = s3.delete_object(
                 Bucket=bucket,
-                Key=("Content/Blogs/%s" % blog_id)
+                Key=("Content/Blogs/%s.json" % blog_id)
             )
         except botocore.exceptions.ClientError as e:
             action = "Deleting blog from the blog table"

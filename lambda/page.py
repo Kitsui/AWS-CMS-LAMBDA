@@ -32,7 +32,7 @@ class Page(object):
             action = "Fetching pages from the page table"
             return {"error": "noPages", "data": {"action": action}}
         
-        return pages["Items"]
+        return {"message": "Successfully fetched pages", "data": pages["Items"]}
     
     @staticmethod
     def get_page(page_name, page_table):
@@ -66,7 +66,7 @@ class Page(object):
             "Keywords": {"L": []}
         }
         for keyword in keywords:
-            blog["Keywords"]["L"].append({"S": keyword})
+            page["Keywords"]["L"].append({"S": keyword})
 
         # Put the page in the page table
         try:
@@ -81,12 +81,12 @@ class Page(object):
         
         # TODO: Add paging table
         
-        # Add blog as json to bucket
+        # Add page as json to bucket
         try:
             s3 = boto3.client("s3")
             s3.put_object(
                 Bucket=bucket, ACL="public-read", Body=json.dumps(page),
-                Key=("Content/Pages/%s" % page["Name"]),
+                Key=("Content/Pages/%s.json" % page["Name"]["S"]),
                 ContentType="application/json"
             )
         except botocore.exceptions.ClientError as e:
@@ -94,11 +94,11 @@ class Page(object):
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
 
-        return {"message": "Successfully put page", "data": blog}
+        return {"message": "Successfully put page", "data": page}
 
     @staticmethod
     def delete_page(page_name, page_table, bucket):
-        """ Deletes a blog from the blog table """
+        """ Deletes a page from the page table """
         try:
             dynamodb = boto3.client("dynamodb")
             delete_response = dynamodb.delete_item(
@@ -113,12 +113,12 @@ class Page(object):
         
         # TODO: Modify once pagination is implemented
         
-        # Deletes the blog from the bucket
+        # Deletes the page from the bucket
         try:
             s3 = boto3.client("s3")
             delete_response = s3.delete_object(
                 Bucket=bucket,
-                Key=("Content/Pages/%s" % page_name)
+                Key=("Content/Pages/%s.json" % page_name)
             )
         except botocore.exceptions.ClientError as e:
             action = "Deleting page from the page table"
