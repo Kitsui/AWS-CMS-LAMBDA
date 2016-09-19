@@ -15,18 +15,26 @@ angular.module("forms", [])
         "request": "getAllBlogs"
       }
     ).then(function successCallback(response) {
-      var blogNum, responseMessage, responseData;
+      var blogNum, responseMessage, responseData, tempKeywords, keyword, keywords;
       responseMessage = response.message
       responseData = response.data.data
       
       ctrlScope.posts = [];
       for (blogNum in responseData) {
+        keywords = responseData[blogNum].Keywords.L;
+        tempKeywords = "";
+        for (keyword in keywords) {
+          tempKeywords = tempKeywords.concat(keywords[keyword].S)
+          tempKeywords = tempKeywords.concat(", ")
+        }
+        tempKeywords = tempKeywords.substring(0, tempKeywords.length - 2);
+        
         ctrlScope.posts.push(
           {
             title: responseData[blogNum].Title.S,
             author: responseData[blogNum].Author.S,
             description: responseData[blogNum].Description.S,
-            keywords: responseData[blogNum].Keywords.L,
+            keywords: tempKeywords,
             id: responseData[blogNum].ID.S,
             date: responseData[blogNum].SavedDate.S
           }
