@@ -5,7 +5,8 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms"])
     $routeProvider
       .when("/pages", {
         templateUrl: "pages.html",
-        
+        controller: "cmsPageListCtrl",
+        controllerAs: "pageCtrl",
         replace: true
       })
       .when("/posts", {
