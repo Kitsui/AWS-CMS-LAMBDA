@@ -61,6 +61,8 @@ def handler(event, context):
         # Check if authentication or authorization returned an error
         if "error" in user_info:
             Error.send_error(authorized["error"], data=authorized["data"])
+        
+    user_info = strip_dynamo_types(user_info)
     
     # Process the request
     if not user_token == None:
@@ -179,7 +181,6 @@ def process_request(request_body, resources, request, user_info, token=None):
         """ Request structure
             {
                 request: putBlog,
-                author: <str: author>,
                 title: <str: title>,
                 content: <str: content>,
                 description: <str: description>,
@@ -190,8 +191,6 @@ def process_request(request_body, resources, request, user_info, token=None):
                 >
             }
         """
-        if not "author" in request_body:
-            Error.send_error("noAuthor", data={"request": request})
         if not "title" in request_body:
             Error.send_error("noTitle", data={"request": request})
         if not "content" in request_body:
@@ -201,7 +200,7 @@ def process_request(request_body, resources, request, user_info, token=None):
         if not "keywords" in request_body:
             Error.send_error("noKeywords", data={"request": request})
         
-        author = request_body["author"]
+        author = user_info["Username"]
         title = request_body["title"]
         content = request_body["content"]
         description = request_body["description"]

@@ -117,6 +117,27 @@ angular.module("forms", ["api"])
       ];
     });
   }])
+  .controller("cmsBlogFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    
+    ctrlScope.submitBlog = function () {
+      $http.post(
+        apiUrl,
+        {
+          "request": "putBlog",
+          "title": ctrlScope.blog.title,
+          "content": ctrlScope.blog.content,
+          "description": ctrlScope.blog.description,
+          "keywords": ctrlScope.blog.keywords.match(/\S+/g)
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.status = ("Successfully published blog: " + ctrlScope.blog.title)
+      }, function errorCallback(response) {
+        ctrlScope.status = response.data.error;
+      })
+    };
+  }])
   .controller("cmsUploadImageCtrl", ["$http", "apiUrl", "$scope", function ($http, apiUrl, $scope) {
     "use strict";
     var ctrlScope = this;

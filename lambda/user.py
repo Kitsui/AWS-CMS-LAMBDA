@@ -128,7 +128,7 @@ class User(object):
         
         # Removed hashed passwords from users
         for index in range(len(users)):
-            del users[index]["Password"]["S"]
+            del users[index]["Password"]
         
         return {"message": "Successfully fetched users", "data": users}
     

@@ -28,12 +28,8 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
       })
       .when("/blog-form", {
         templateUrl: "blog-form.html",
-        replace: true
-      })
-      .when("/upload-image", {
-        templateUrl: "upload-image.html",
-        controller: "cmsUploadImageCtrl",
-        controllerAs: "imageCtrl",
+        controller: "cmsBlogFormCtrl",
+        controllerAs: "blogFormCtrl",
         replace: true
       })
       .when("/user-form", {
@@ -42,6 +38,12 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
       })
       .when("/role-form", {
         templateUrl: "user-role-form.html",
+        replace: true
+      })
+      .when("/upload-image", {
+        templateUrl: "upload-image.html",
+        controller: "cmsUploadImageCtrl",
+        controllerAs: "imageCtrl",
         replace: true
       })
       .when("/settings", {
