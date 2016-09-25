@@ -52,8 +52,6 @@ def handler(event, context):
         if user_token == None:
             Error.send_error("noToken")
         
-        return resources
-        
         # Check that the user has the necessary permissions to make the request
         user_info = Security.authenticate_and_authorize(
             user_token, request, resources["TOKEN_TABLE"],
