@@ -5,6 +5,7 @@
     "LAMBDA_ROLE": "-aws-cms-Lambda",
     "BLOG_TABLE": "-aws-cms-Blog",
     "PAGE_TABLE": "-aws-cms-Page",
+	"ROLE_TABLE": "-aws-cms-Role",
     "TOKEN_TABLE": "-aws-cms-Token",
     "USER_TABLE": "-aws-cms-User"
 }

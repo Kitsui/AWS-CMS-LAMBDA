@@ -51,7 +51,8 @@ def handler(event, context):
         
         # Check that the user has the necessary permissions to make the request
         authorized = Security.authenticate_and_authorize(
-            user_token, request, resources["TOKEN_TABLE"], resources["USER_TABLE"]
+            user_token, request, resources["TOKEN_TABLE"],
+            resources["USER_TABLE"], resources["ROLE_TABLE"]
         )
         
         # Check if authentication or authorization returned an error
@@ -104,8 +105,10 @@ def process_request(request_body, resources, request, token=None):
         if not "password" in request_body:
             Error.send_error("noPassword", data={"request": request})
         
-        return User.login(request_body["email"], request_body["password"],
-                          resources["USER_TABLE"], resources["TOKEN_TABLE"])
+        email = request_body["email"]
+        password = request_body["password"]
+        return User.login(email, password, token, resources["USER_TABLE"],
+                          resources["TOKEN_TABLE"])
     elif request == "logoutUser":
         """ Request structure
             {
@@ -120,12 +123,7 @@ def process_request(request_body, resources, request, token=None):
                 email: <str: email>,
                 username: <str: username>,
                 password: <str: password>,
-                userType: <str: user type>,
-                parmissions: <list:
-                    <str: permission1>,
-                    <str: permission2>,
-                    <str: etc...>
-                >
+                roleName: <str: role name>
             }
         """
         if not "email" in request_body:
@@ -134,17 +132,14 @@ def process_request(request_body, resources, request, token=None):
             Error.send_error("noUsername", data={"request": request})
         if not "password" in request_body:
             Error.send_error("noPassword", data={"request": request})
-        if not "userType" in request_body:
-            Error.send_error("noUserType", data={"request": request})
-        if not "permissions" in request_body:
-            Error.send_error("noPermissions", data={"request": request})
+        if not "roleName" in request_body:
+            Error.send_error("noRoleName", data={"request": request})
         
         email = request_body["email"]
         username = request_body["username"]
         password = request_body["password"]
-        user_type = request_body["userType"]
-        permissions = request_body["permissions"]
-        return User.put_user(email, username, password, user_type, permissions,
+        role_name = request_body["roleName"]
+        return User.put_user(email, username, password, role_name,
                              resources["USER_TABLE"])
     elif request == "deleteUser":
         """ Request structure

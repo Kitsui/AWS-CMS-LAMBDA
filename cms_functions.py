@@ -40,7 +40,6 @@ class AwsFunc:
 
         self.constants["DISQUS-ID"] = "arc-cms"
     
-    
     def upload_file(self, path, key):
         """ Uploads a file to s3 """
         # Prepare argument variables
@@ -74,7 +73,6 @@ class AwsFunc:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
             sys.exit()
-        
         
     def create_bucket(self):
         """ Creates a bucket in region "bucket_region".
@@ -130,7 +128,6 @@ class AwsFunc:
                 self.upload_file(path, key)
         print "Bucket populated"
 
-    
     def create_cloudfront_distribution(self):
         """ Creates a coudfront distribution linked to the s3 bucket """
         try:
@@ -185,7 +182,6 @@ class AwsFunc:
             print e
             sys.exit()
 
-
     def create_user_table(self):
         """ Creates a user table. """
         with open("dynamo/user_table.json", "r") as thefile:
@@ -202,7 +198,6 @@ class AwsFunc:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
             sys.exit()
-
 
     def create_token_table(self):
         """ Creates a token table. """
@@ -221,7 +216,6 @@ class AwsFunc:
             print e.response["Error"]["Message"]
             sys.exit()
         
-    
     def create_blog_table(self):
         """ Creates a blog table. """
         with open("dynamo/blog_table.json", "r") as thefile:
@@ -238,7 +232,6 @@ class AwsFunc:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
             sys.exit()
-        
 
     def create_page_table(self):
         """ Creates a page table. """
@@ -255,8 +248,24 @@ class AwsFunc:
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
-            sys.exit()          
-
+            sys.exit()
+    
+    def create_role_table(self):
+        """ Creates a role table. """
+        with open("dynamo/role_table.json", "r") as thefile:
+            role_table_json = json.loads(thefile.read())
+        role_table_json["TableName"] = self.constants["ROLE_TABLE"]
+        
+        try:
+            print "Creating table: %s" % (self.constants["ROLE_TABLE"])
+            dynamodb = boto3.client("dynamodb")
+            role_table = dynamodb.create_table(**role_table_json)
+            self.wait_for_table(role_table)
+            print "Role table created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
 
     def wait_for_table(self, table):
         """ Waits for a table to finish being created. """
@@ -284,7 +293,6 @@ class AwsFunc:
             response = dynamodb.describe_table(
                 TableName=table["TableDescription"]["TableName"])
 
-
     def create_admin_user_db_entry(self):
         """ Creates an entry in the user database that represents an admin """
         with open("dynamo/user.json", "r") as thefile:
@@ -301,8 +309,23 @@ class AwsFunc:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
             sys.exit()
+    
+    def create_admin_role_db_entry(self):
+        """ Creates an entry in the role database that represents an admin """
+        with open("dynamo/role.json", "r") as thefile:
+            admin_role_json = json.loads(thefile.read())
+        admin_role_json["TableName"] = self.constants["ROLE_TABLE"]
+        
+        try:
+            print "Creating admin role db entry"
+            dynamodb = boto3.client("dynamodb")
+            dynamodb.put_item(**admin_role_json)
+            print "Admin role db entry created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
             
-
     def update_lambda(self):
         try:
             lmda = boto3.client("lambda")
@@ -315,7 +338,6 @@ class AwsFunc:
             print e.response["Error"]["Message"]
             sys.exit()
             
-
     def create_lambda_function(self):
         """ Creates a lamda function and uploads AWS CMS to to it """
         lmda_role = json.dumps({
@@ -380,6 +402,7 @@ class AwsFunc:
                 Code={"ZipFile": AwsFunc.zip_lambda()},
                 Description=("Aws cms central management function designed to "
                              "handle any API Gateway request"),
+                MemorySize=512,
                 Timeout=10
             )
             print "Function created"
@@ -392,7 +415,6 @@ class AwsFunc:
         
         self.create_api_invocation_uri()
         self.remove_lambda_constants()
-    
     
     def create_rest_api(self):
         """ Creates the api gateway and links it to the lambda function """
@@ -418,7 +440,6 @@ class AwsFunc:
             
         self.create_api_permissions_uri()
         self.create_api_url()
-        
         
     def api_add_post_method(self):
         try:
@@ -536,7 +557,6 @@ class AwsFunc:
             print e.response["Error"]["Message"]
             sys.exit()
             
-            
     def api_add_options_method(self):
         try:
             api_gateway = boto3.client("apigateway")
@@ -609,7 +629,6 @@ class AwsFunc:
             print e.response["Error"]["Message"]
             sys.exit()
     
-    
     def deploy_api(self):
         try:
             api_gateway = boto3.client("apigateway")
@@ -640,13 +659,11 @@ class AwsFunc:
             print e.response["Error"]["Message"]
             sys.exit()
             
-            
     def store_lambda_constants(self):
         """ Stores aws service constants in the lambda directory """
         with open ("lambda/constants.json", "w") as constants_file:
             constants_file.write(json.dumps(self.constants, indent=4,
                                  sort_keys=True))
-    
     
     def save_constants(self):
         """ Stores aws service constants in a file """
@@ -668,7 +685,6 @@ class AwsFunc:
                 installed.write(json.dumps(installed_json, indent=4,
                                            sort_keys=True))
     
-    
     def remove_lambda_constants(self):
         """ Removes aws service constants from the lambda directory """
         os.remove("lambda/constants.json")
@@ -681,7 +697,6 @@ class AwsFunc:
             "path/2015-03-31/functions/%s/invocations"
         ) % (self.region, self.constants["LAMBDA_FUNCTION_ARN"])
         
-        
     def create_api_permissions_uri(self):
         """ Creates the uri that is needed for giving the api deployment
         permission to trigger the lambda function
@@ -690,7 +705,6 @@ class AwsFunc:
             "arn:aws:execute-api:%s:%s:%s/*/POST/"
         ) % (self.region, AwsFunc.get_account_id(),
              self.constants["REST_API_ID"])
-        
         
     def create_api_url(self):
         """ Creates the url needed to send requests to the api gateway """
@@ -709,7 +723,6 @@ class AwsFunc:
         sts = boto3.client("sts")
         return sts.get_caller_identity()["Account"]
         
-    
     @staticmethod
     def zip_lambda():
         """ Zips all files needed to create the controller function and stores

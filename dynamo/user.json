@@ -1,13 +1,9 @@
 {
 	"Item": {
 		"Email": {"S": "email@gmail.com"},
+		"Username": {"S": "Kitsui"},
 		"Password": {"S": "$pbkdf2-sha256$10000$8J5TqrX2fs/537tXKsUYgw$gZv3DmaPzyfQKnmh7F5689c4HO0yLVPcgaOn5fgF.58"},
-		"UserType": {"S": "admin"},
-		"Permissions": {
-			"L": [
-				{"S": "all"}
-			]
-		}
+		"Role": {"S": "FullAdmin"}
 	},
 	"ReturnConsumedCapacity": "TOTAL"
 }

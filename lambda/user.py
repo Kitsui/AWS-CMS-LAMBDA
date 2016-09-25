@@ -10,7 +10,6 @@
 #         10/09/2016 | Christopher Treadgold
 """
 
-import Cookie
 import datetime
 import uuid
 
@@ -23,7 +22,7 @@ class User(object):
     HASH_ROUNDS = 10000 # The number of rounds to use for hashing passwords
     
     @staticmethod
-    def login(email, password, user_table, token_table):
+    def login(email, password, token, user_table, token_table):
         """ Validates a user login request.
             Adds a token to the token table and provides it as a cookie in the
             response for use in future request validation.
@@ -41,16 +40,24 @@ class User(object):
         # Check that the email has a user associated with it
         if not "Item" in user:
             action = "Attempting to log in"
-            return {"error": "InvalidEmail",
+            return {"error": "invalidEmail",
                     "data": {"email": email, "action": action}}
         
+        user = user["Item"]
+                    
+        # Check that the email has a user associated with it
+        if not "Role" in user:
+            action = "Attempting to log in"
+            return {"error": "userHasNoRole",
+                    "data": {"user": user, "action": action}}
+        
         # Check that the user has a password associated with it
-        try:
-            actual_password = user["Item"]["Password"]["S"]
-        except KeyError:
+        if not "Password" in user:
             action = "Attempting to log in"
             return {"error": "userHasNoPassword",
-                    "data": {"token": token, "action": action}}
+                    "data": {"user": user, "action": action}}
+        
+        actual_password = user["Password"]["S"]
         
         # Verify that the password provided is correct
         valid_password = pbkdf2_sha256.verify(password, actual_password)
@@ -60,8 +67,8 @@ class User(object):
                     "data": {"password": password, "action": action}}
         
         # Calculate an exiration date a day from now
-        expiration = datetime.datetime.now() + datetime.timedelta(days=1)
-        expiration = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
+        expiration = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        expiration = expiration.strftime("%a, %d-%b-%Y %H:%M:%S UTC")
         # Generate a uuid for use as a token
         token = str(uuid.uuid4())
         
@@ -140,7 +147,7 @@ class User(object):
         return {"message": "Successfully fetched user", "data": user["Item"]}
 
     @staticmethod
-    def put_user(email, username, password, user_type, permissions, user_table):
+    def put_user(email, username, password, role_name, user_table):
         """ Puts a user in the user table """
         # Hash the password
         hashed_pass = pbkdf2_sha256.encrypt(password,
@@ -151,11 +158,8 @@ class User(object):
             "Username": {"S": username},
             "Password": {"S": hashed_pass},
             "ID": {"S": str(uuid.uuid4())},
-            "UserType": {"S": user_type},
-            "Permissions": {"L": []}
+            "Role": {"S": role_name}
         }
-        for permission in permissions:
-            user["Permissions"]["L"].append({"S": permission})
         
         # Put the user in the user table
         try:
