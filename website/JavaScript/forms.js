@@ -16,27 +16,19 @@ angular.module("forms", ["api"])
       }
     ).then(function successCallback(response) {
       var blogNum, responseMessage, responseData, tempKeywords, keyword, keywords;
-      responseMessage = response.message;
+      responseMessage = response.data.message;
       responseData = response.data.data;
       
       ctrlScope.posts = [];
       for (blogNum in responseData) {
-        keywords = responseData[blogNum].Keywords.L;
-        tempKeywords = "";
-        for (keyword in keywords) {
-          tempKeywords = tempKeywords.concat(keywords[keyword].S);
-          tempKeywords = tempKeywords.concat(", ");
-        }
-        tempKeywords = tempKeywords.substring(0, tempKeywords.length - 2);
-        
         ctrlScope.posts.push(
           {
-            title: responseData[blogNum].Title.S,
-            author: responseData[blogNum].Author.S,
-            description: responseData[blogNum].Description.S,
-            keywords: tempKeywords,
-            id: responseData[blogNum].ID.S,
-            date: responseData[blogNum].SavedDate.S
+            title: responseData[blogNum].Title,
+            author: responseData[blogNum].Author,
+            description: responseData[blogNum].Description,
+            keywords: responseData[blogNum].Keywords.join(", "),
+            id: responseData[blogNum].ID,
+            date: responseData[blogNum].SavedDate
           }
         );
       }
@@ -64,25 +56,17 @@ angular.module("forms", ["api"])
       }
     ).then(function successCallback(response) {
       var pageNum, responseMessage, responseData, tempKeywords, keyword, keywords;
-      responseMessage = response.message;
+      responseMessage = response.data.message;
       responseData = response.data.data;
       
       ctrlScope.pages = [];
       for (pageNum in responseData) {
-        keywords = responseData[pageNum].Keywords.L;
-        tempKeywords = "";
-        for (keyword in keywords) {
-          tempKeywords = tempKeywords.concat(keywords[keyword].S);
-          tempKeywords = tempKeywords.concat(", ");
-        }
-        tempKeywords = tempKeywords.substring(0, tempKeywords.length - 2);
-        
         ctrlScope.pages.push(
           {
-            name: responseData[pageNum].Name.S,
-            description: responseData[pageNum].Description.S,
-            keywords: tempKeywords,
-            date: responseData[pageNum].SavedDate.S
+            name: responseData[pageNum].Name,
+            description: responseData[pageNum].Description,
+            keywords: responseData[pageNum].Keywords.join(", "),
+            date: responseData[pageNum].SavedDate
           }
         );
       }

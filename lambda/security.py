@@ -132,7 +132,7 @@ class Security(object):
         
         # Check that the user is authorized to perform the request
         if request in role_permissions or "all" in role_permissions:
-            return True
+            return {"user": {"info": user_info, "permissions": role_permissions}}
         
         # Return error as user did not pass permissions check
         return {"error": "notAuthorizedForRequest",

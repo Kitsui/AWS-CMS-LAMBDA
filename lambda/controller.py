@@ -39,29 +39,32 @@ def handler(event, context):
     if not supported_request(request):
         Error.send_error("unsupportedRequest", data={"request": request})
     
+    if "token" in event:
+        user_token = remove_prefix(event["token"])
+    else:
+        user_token = None
+    
     """ Authenticate the request unless it is login, as login requires no
         authentication
     """
     if request != "loginUser":
         # Check that a token is provided with the request
-        if "token" in event:
-            user_token = remove_prefix(event["token"])
-        else:
+        if user_token == None:
             Error.send_error("noToken")
         
         # Check that the user has the necessary permissions to make the request
-        authorized = Security.authenticate_and_authorize(
+        user_info = Security.authenticate_and_authorize(
             user_token, request, resources["TOKEN_TABLE"],
             resources["USER_TABLE"], resources["ROLE_TABLE"]
         )
         
         # Check if authentication or authorization returned an error
-        if authorized is not True and "error" in authorized:
+        if "error" in user_info:
             Error.send_error(authorized["error"], data=authorized["data"])
     
     # Process the request
-    if "token" in event:
-        response = process_request(request_body, resources, request,
+    if not user_token == None:
+        response = process_request(request_body, resources, request, user_info,
                                    token=user_token)
     else:
         response = process_request(request_body, resources, request)
@@ -70,9 +73,9 @@ def handler(event, context):
     if "error" in response:
         Error.send_error(response["error"], data=response["data"])
     
-    return response
+    return strip_dynamo_types(response)
 
-def process_request(request_body, resources, request, token=None):
+def process_request(request_body, resources, request, user_info, token=None):
     if request == "getAllUsers":
         """ Request structure
             {
@@ -323,3 +326,24 @@ def supported_request(request):
 def remove_prefix(cookie):
     equals_index = cookie.find("=") + 1
     return cookie[equals_index:]
+
+def strip_dynamo_types(response):
+    type_identifiers = [
+        "S", "N", "B", "SS", "NS", "BS", "M", "L", "NULL", "BOOL"
+    ]
+
+    if type(response).__name__ == "dict":
+        if len(response) == 1:
+            for key in response:
+                if key in type_identifiers:
+                    response = strip_dynamo_types(response[key])
+                else:
+                    response[key] = strip_dynamo_types(response[key])
+        else:
+            for key in response:
+                response[key] = strip_dynamo_types(response[key])
+    elif type(response).__name__ == "list":
+        for index in range(len(response)):
+            response[index] = strip_dynamo_types(response[index])
+        
+    return response
