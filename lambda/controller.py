@@ -52,22 +52,27 @@ def handler(event, context):
         if user_token == None:
             Error.send_error("noToken")
         
+        return resources
+        
         # Check that the user has the necessary permissions to make the request
         user_info = Security.authenticate_and_authorize(
             user_token, request, resources["TOKEN_TABLE"],
             resources["USER_TABLE"], resources["ROLE_TABLE"]
         )
         
+        # Strip dynamo type identifiers from user info
+        user_info = strip_dynamo_types(user_info)
+        
         # Check if authentication or authorization returned an error
         if "error" in user_info:
             Error.send_error(authorized["error"], data=authorized["data"])
-        
-    user_info = strip_dynamo_types(user_info)
+    else:
+        user_info = None
     
     # Process the request
-    if not user_token == None:
-        response = process_request(request_body, resources, request, user_info,
-                                   token=user_token)
+    if not user_info == None:
+        response = process_request(request_body, resources, request,
+                                   user_info=user_info, token=user_token)
     else:
         response = process_request(request_body, resources, request)
     
@@ -77,7 +82,7 @@ def handler(event, context):
     
     return strip_dynamo_types(response)
 
-def process_request(request_body, resources, request, user_info, token=None):
+def process_request(request_body, resources, request, user_info=None, token=None):
     if request == "getAllUsers":
         """ Request structure
             {
