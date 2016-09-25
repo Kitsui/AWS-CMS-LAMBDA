@@ -15,7 +15,7 @@ angular.module("forms", ["api"])
         "request": "getAllBlogs"
       }
     ).then(function successCallback(response) {
-      var blogNum, responseMessage, responseData, tempKeywords, keyword, keywords;
+      var blogNum, responseMessage, responseData;
       responseMessage = response.data.message;
       responseData = response.data.data;
       
@@ -55,7 +55,7 @@ angular.module("forms", ["api"])
         "request": "getAllPages"
       }
     ).then(function successCallback(response) {
-      var pageNum, responseMessage, responseData, tempKeywords, keyword, keywords;
+      var pageNum, responseMessage, responseData;
       responseMessage = response.data.message;
       responseData = response.data.data;
       
@@ -77,6 +77,42 @@ angular.module("forms", ["api"])
           description: response.data.error,
           keywords: response.data.error,
           date: response.data.error
+        }
+      ];
+    });
+  }])
+  .controller("cmsUserListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    ctrlScope.users = [{email: "loading"}];
+    $http.post(
+      apiUrl,
+      {
+        "request": "getAllUsers"
+      }
+    ).then(function successCallback(response) {
+      var userNum, responseMessage, responseData;
+      responseMessage = response.data.message;
+      responseData = response.data.data;
+      
+      ctrlScope.users = [];
+      for (userNum in responseData) {
+        ctrlScope.users.push(
+          {
+            email: responseData[userNum].Email,
+            username: responseData[userNum].Username,
+            role: responseData[userNum].Role,
+            userId: responseData[userNum].ID
+          }
+        );
+      }
+    }, function errorCallback(response) {
+      ctrlScope.users = [
+        {
+          email: response.data.error,
+          username: response.data.error,
+          role: response.data.error,
+          userId: response.data.error
         }
       ];
     });

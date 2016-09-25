@@ -124,7 +124,13 @@ class User(object):
             return {"error": "noUsers",
                     "data": {"action": action}}
         
-        return {"message": "Successfully fetched users", "data": users["Items"]}
+        users = users["Items"]
+        
+        # Removed hashed passwords from users
+        for index in range(len(users)):
+            del users[index]["Password"]["S"]
+        
+        return {"message": "Successfully fetched users", "data": users}
     
     @staticmethod
     def get_user(email, user_table):
@@ -143,8 +149,13 @@ class User(object):
             action = "Fetching user from the user table"
             return {"error": "InvalidEmail",
                     "data": {"email": email, "action": action}}
-
-        return {"message": "Successfully fetched user", "data": user["Item"]}
+        
+        user = user["Item"]
+        
+        # Remove hashed password from the user
+        del user["Password"]
+        
+        return {"message": "Successfully fetched user", "data": user}
 
     @staticmethod
     def put_user(email, username, password, role_name, user_table):

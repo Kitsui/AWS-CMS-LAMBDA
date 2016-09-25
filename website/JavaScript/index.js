@@ -16,6 +16,12 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
         controllerAs: "postCtrl",
         replace: true
       })
+      .when("/users", {
+        templateUrl: "users.html",
+        controller: "cmsUserListCtrl",
+        controllerAs: "userCtrl",
+        replace: true
+      })
       .when("/page-form", {
         templateUrl: "page-form.html",
         replace: true
