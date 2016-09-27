@@ -23,13 +23,11 @@
                       <th>Author</th>
                       <th>Description</th>
                       <th>Keywords</th>
-                      <th>Blog ID</th>
                       <th>Date</th>
                     </tr>
                   </thead>
                   <tbody ng-repeat="post in postCtrl.posts">
                     <tr ng-if="post.title=='loading'">
-                      <td>Loading...</td>
                       <td>Loading...</td>
                       <td>Loading...</td>
                       <td>Loading...</td>
@@ -41,7 +39,6 @@
                       <td>{{post.author}}</td>
                       <td>{{post.description}}</td>
                       <td>{{post.keywords}}</td>
-                      <td>{{post.id}}</td>
                       <td>{{post.date}}</td>
                     </tr>
                   </tbody>

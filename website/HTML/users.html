@@ -22,12 +22,10 @@
                       <th>Email</th>
                       <th>Username</th>
                       <th>Role</th>
-                      <th>userID</th>
                     </tr>
                   </thead>
                   <tbody ng-repeat="user in userCtrl.users">
                     <tr ng-if="user.email=='loading'">
-                      <td>Loading...</td>
                       <td>Loading...</td>
                       <td>Loading...</td>
                       <td>Loading...</td>
@@ -36,7 +34,6 @@
                       <td>{{user.email}}</td>
                       <td>{{user.username}}</td>
                       <td>{{user.role}}</td>
-                      <td>{{user.userId}}</td>
                     </tr>
                   </tbody>
                 </table>

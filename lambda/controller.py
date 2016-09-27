@@ -161,6 +161,14 @@ def process_request(request_body, resources, request, user_info=None, token=None
         
         email = request_body["email"]
         return User.delete_user(email, resources["USER_TABLE"])
+    elif request == "getAllRoles":
+        
+    elif request == "getRole":
+        
+    elif request == "putRole":
+        
+    elif request == "deleteRole":
+        
     elif request == "getAllBlogs":
         """ Request structure
             {
@@ -306,17 +314,17 @@ def process_request(request_body, resources, request, user_info=None, token=None
 
 def supported_request(request):
     supported_gets = [
-        "getUser", "getAllUsers", "getBlog", "getAllBlogs", "getPage",
+        "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog", "getAllBlogs", "getPage",
         "getAllPages", "getPresignedPostImage"
     ]
     supported_puts = [
-        "putUser", "putBlog", "putPage"
+        "putUser", "putRole", "putBlog", "putPage"
     ]
     supported_posts = [
         "loginUser", "logoutUser"
     ]
     supported_deletes = [
-        "deleteUser", "deleteBlog", "deletePage"
+        "deleteUser", "deleteRole", "deleteBlog", "deletePage"
     ]
     supported_requests = (supported_gets + supported_puts + supported_posts
         + supported_deletes)

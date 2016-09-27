@@ -112,7 +112,13 @@ class User(object):
         """ Fetches all entries from the user table """
         try:
             dynamodb = boto3.client("dynamodb")
-            users = dynamodb.scan(TableName=user_table, ConsistentRead=True)
+            users = dynamodb.scan(
+                TableName=user_table, ConsistentRead=True,
+                ProjectionExpression="Email, Username, ID, #R",
+                ExpressionAttributeNames={
+                    "#R": "Role"
+                }
+            )
         except botocore.exceptions.ClientError as e:
             action = "Getting all users"
             return {"error": e.response["Error"]["Code"],
@@ -126,10 +132,6 @@ class User(object):
         
         users = users["Items"]
         
-        # Removed hashed passwords from users
-        for index in range(len(users)):
-            del users[index]["Password"]
-        
         return {"message": "Successfully fetched users", "data": users}
     
     @staticmethod
@@ -137,8 +139,13 @@ class User(object):
         """ Fetches a user entry from the user table """
         try:
             dynamodb = boto3.client("dynamodb")
-            user = dynamodb.get_item(TableName=user_table,
-                                     Key={"Email": {"S": email}})
+            user = dynamodb.get_item(
+                TableName=user_table, Key={"Email": {"S": email}},
+                ProjectionExpression="Email, Username, ID, #R",
+                ExpressionAttributeNames={
+                    "#R": "Role"
+                }
+            )
         except botocore.exceptions.ClientError as e:
             action = "Fetching user from the user table"
             return {"error": e.response["Error"]["Code"],
@@ -151,9 +158,6 @@ class User(object):
                     "data": {"email": email, "action": action}}
         
         user = user["Item"]
-        
-        # Remove hashed password from the user
-        del user["Password"]
         
         return {"message": "Successfully fetched user", "data": user}
 
@@ -201,3 +205,90 @@ class User(object):
                     "data": {"exception": str(e), "action": action}}
 
         return {"message": "Successfully deleted user"}
+    
+    @staticmethod
+    def get_all_roles(role_table):
+        """ Fetches all entries from the role table """
+        try:
+            dynamodb = boto3.client("dynamodb")
+            roles = dynamodb.scan(
+                TableName=role_table, ConsistentRead=True
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Getting all roles"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # Check that the email has a user associated with it
+        if not "Items" in roles:
+            action = "Fetching roless from the role table"
+            return {"error": "noRoles",
+                    "data": {"action": action}}
+        
+        roles = roles["Items"]
+        
+        return {"message": "Successfully fetched roles", "data": roles}
+    
+    @staticmethod
+    def get_role(role_name, role_table):
+        """ Fetches a role entry from the role table """
+        try:
+            dynamodb = boto3.client("dynamodb")
+            role = dynamodb.get_item(
+                TableName=role_table, Key={"Name": {"S": role_name}}
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Fetching role from the role table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # Check that the email has a user associated with it
+        if not "Item" in role:
+            action = "Fetching role from the role table"
+            return {"error": "InvalidRoleName",
+                    "data": {"roleName": role_name, "action": action}}
+        
+        role = role["Item"]
+        
+        return {"message": "Successfully fetched role", "data": role}
+    
+    @staticmethod
+    def put_role(role_name, permissions, role_table):
+        """ Puts a role in the role table """
+        # Create the role entry
+        user = {
+            "Name": {"S": role_name},
+            "Permissions": {"L": []}
+        }
+        for permission in permissions:
+            blog["Permissions"]["L"].append({"S": permission})
+        
+        # Put the role in the role table
+        try:
+            dynamodb = boto3.client("dynamodb")
+            put_response = dynamodb.put_item(
+                TableName=role_table, Item=role, ReturnConsumedCapacity="TOTAL"
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Putting role in the role table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+
+        return {"message": "Successfully put role", "data": role}
+    
+    @staticmethod
+    def delete_role(role_name, role_table):
+        """ Deletes a role from the role table """
+        try:
+            dynamodb = boto3.client("dynamodb")
+            delete_response = dynamodb.delete_item(
+                TableName=role_table,
+                Key={"Name": {"S": role_name}},
+                ConditionExpression="attribute_exists(Name)"
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Deleting role from the role table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+
+        return {"message": "Successfully deleted role"}

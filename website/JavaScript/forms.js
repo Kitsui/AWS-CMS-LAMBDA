@@ -27,7 +27,6 @@ angular.module("forms", ["api"])
             author: responseData[blogNum].Author,
             description: responseData[blogNum].Description,
             keywords: responseData[blogNum].Keywords.join(", "),
-            id: responseData[blogNum].ID,
             date: responseData[blogNum].SavedDate
           }
         );
@@ -39,7 +38,6 @@ angular.module("forms", ["api"])
           author: response.data.error,
           description: response.data.error,
           keywords: response.data.error,
-          id: response.data.error,
           date: response.data.error
         }
       ];
@@ -101,8 +99,7 @@ angular.module("forms", ["api"])
           {
             email: responseData[userNum].Email,
             username: responseData[userNum].Username,
-            role: responseData[userNum].Role,
-            userId: responseData[userNum].ID
+            role: responseData[userNum].Role
           }
         );
       }
@@ -111,8 +108,7 @@ angular.module("forms", ["api"])
         {
           email: response.data.error,
           username: response.data.error,
-          role: response.data.error,
-          userId: response.data.error
+          role: response.data.error
         }
       ];
     });

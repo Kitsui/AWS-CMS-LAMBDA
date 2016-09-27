@@ -23,7 +23,10 @@ class Blog(object):
         """ Fetches all entries from the blog table """
         try:
             dynamodb = boto3.client("dynamodb")
-            blogs = dynamodb.scan(TableName=blog_table, ConsistentRead=True)
+            blogs = dynamodb.scan(
+                TableName=blog_table, ConsistentRead=True, 
+                ProjectionExpression="ID, Author, Description, Keywords, SavedDate, Title"
+            )
         except botocore.exceptions.ClientError as e:
             action = "Fetching blogs from the blog table"
             return {"error": e.response["Error"]["Code"],
@@ -62,14 +65,26 @@ class Blog(object):
                  bucket):
         """ Puts a blog in the blog table """
         # Create the blog entry
+        saved_date = datetime.datetime.utcnow()
+        saved_date = saved_date.strftime("%d-%b-%Y %H:%M UTC")
+        blog_uuid = str(uuid.uuid4())
         blog = {
-            "ID": {"S": str(uuid.uuid4())},
-            "SavedDate": {"S": str(datetime.datetime.now())},
+            "ID": {"S": blog_uuid},
+            "SavedDate": {"S": saved_date},
             "Author": {"S": author},
             "Title": {"S": title},
             "Content": {"S": content},
             "Description": {"S": description},
             "Keywords": {"L": []}
+        }
+        blog_for_s3 = {
+            "ID": blog_uuid,
+            "SavedDate": saved_date,
+            "Author": author,
+            "Title": title,
+            "Content": content,
+            "Description": description,
+            "Keywords": keywords
         }
         for keyword in keywords:
             blog["Keywords"]["L"].append({"S": keyword})
@@ -91,8 +106,8 @@ class Blog(object):
         try:
             s3 = boto3.client("s3")
             s3.put_object(
-                Bucket=bucket, ACL="public-read", Body=json.dumps(blog),
-                Key=("Content/Blogs/%s.json" % blog["ID"]["S"]),
+                Bucket=bucket, ACL="public-read", Body=json.dumps(blog_for_s3),
+                Key=("Content/Post/%s.json" % blog_for_s3["ID"]),
                 ContentType="application/json"
             )
         except botocore.exceptions.ClientError as e:
@@ -124,7 +139,7 @@ class Blog(object):
             s3 = boto3.client("s3")
             delete_response = s3.delete_object(
                 Bucket=bucket,
-                Key=("Content/Blogs/%s.json" % blog_id)
+                Key=("Content/Post/%s.json" % blog_id)
             )
         except botocore.exceptions.ClientError as e:
             action = "Deleting blog from the blog table"
