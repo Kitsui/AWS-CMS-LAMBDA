@@ -162,13 +162,56 @@ def process_request(request_body, resources, request, user_info=None, token=None
         email = request_body["email"]
         return User.delete_user(email, resources["USER_TABLE"])
     elif request == "getAllRoles":
-        
+        """ Request structure
+            {
+                request: getAllRoles
+            }
+        """
+        return User.get_all_roles(resources["ROLE_TABLE"])
     elif request == "getRole":
+        """ Request structure
+            {
+                request: getRole,
+                roleName: <str: role name>
+            }
+        """
+        if not "roleName" in request_body:
+            Error.send_error("noRoleName", data={"request": request})
         
+        role_name = request_body["roleName"]
+        return User.get_role(role_name, resources["ROLE_TABLE"])
     elif request == "putRole":
+        """ Request structure
+            {
+                request: putRole,
+                roleName: <str: role name>,
+                permissions: <list:
+                    <str: permission1>,
+                    <str: permission2>,
+                    <str: etc...>
+                >
+            }
+        """
+        if not "roleName" in request_body:
+            Error.send_error("noRoleName", data={"request": request})
+        if not "permissions" in request_body:
+            Error.send_error("noPermissions", data={"request": request})
         
+        role_name = request_body["roleName"]
+        permissions = request_body["permissions"]
+        return User.put_role(role_name, permissions, resources["ROLE_TABLE"])
     elif request == "deleteRole":
+        """ Request structure
+            {
+                request: deleteRole,
+                roleName: <str: role name>
+            }
+        """
+        if not "roleName" in request_body:
+            Error.send_error("noRoleName", data={"request": request})
         
+        role_name = request_body["roleName"]
+        return User.delete_role(role_name, resources["ROLE_TABLE"])
     elif request == "getAllBlogs":
         """ Request structure
             {
