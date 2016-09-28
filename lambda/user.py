@@ -256,12 +256,12 @@ class User(object):
     def put_role(role_name, permissions, role_table):
         """ Puts a role in the role table """
         # Create the role entry
-        user = {
+        role = {
             "Name": {"S": role_name},
             "Permissions": {"L": []}
         }
         for permission in permissions:
-            blog["Permissions"]["L"].append({"S": permission})
+            role["Permissions"]["L"].append({"S": permission})
         
         # Put the role in the role table
         try:

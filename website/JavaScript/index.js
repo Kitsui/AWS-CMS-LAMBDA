@@ -22,8 +22,16 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
         controllerAs: "userCtrl",
         replace: true
       })
+      .when("/roles", {
+        templateUrl: "roles.html",
+        controller: "cmsRoleListCtrl",
+        controllerAs: "roleCtrl",
+        replace: true
+      })
       .when("/page-form", {
         templateUrl: "page-form.html",
+        controller: "cmsPageFormCtrl",
+        controllerAs: "pageFormCtrl",
         replace: true
       })
       .when("/blog-form", {
@@ -34,10 +42,14 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
       })
       .when("/user-form", {
         templateUrl: "user-registration-form.html",
+        controller: "cmsUserFormCtrl",
+        controllerAs: "userFormCtrl",
         replace: true
       })
       .when("/role-form", {
-        templateUrl: "user-role-form.html",
+        templateUrl: "role-form.html",
+        controller: "cmsRoleFormCtrl",
+        controllerAs: "roleFormCtrl",
         replace: true
       })
       .when("/upload-image", {

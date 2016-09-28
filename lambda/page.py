@@ -23,7 +23,10 @@ class Page(object):
             dynamodb = boto3.client('dynamodb')
             pages = dynamodb.scan(
                 TableName=page_table, ConsistentRead=True,
-                ProjectionExpression="Name, SavedDate, Description, Keywords"
+                ProjectionExpression="#N, SavedDate, Description, Keywords",
+                ExpressionAttributeNames={
+                    "#N": "Name"
+                }
             )
         except botocore.exceptions.ClientError as e:
             action = "Getting all pages from the page table"

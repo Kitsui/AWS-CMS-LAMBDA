@@ -113,6 +113,38 @@ angular.module("forms", ["api"])
       ];
     });
   }])
+  .controller("cmsRoleListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    ctrlScope.roles = [{roleName: "loading"}];
+    $http.post(
+      apiUrl,
+      {
+        "request": "getAllRoles"
+      }
+    ).then(function successCallback(response) {
+      var roleNum, responseMessage, responseData;
+      responseMessage = response.data.message;
+      responseData = response.data.data;
+      
+      ctrlScope.roles = [];
+      for (roleNum in responseData) {
+        ctrlScope.roles.push(
+          {
+            roleName: responseData[roleNum].Name,
+            permissions: responseData[roleNum].Permissions.join(", ")
+          }
+        );
+      }
+    }, function errorCallback(response) {
+      ctrlScope.roles = [
+        {
+          roleName: response.data.error,
+          permissions: response.data.error
+        }
+      ];
+    });
+  }])
   .controller("cmsBlogFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
     "use strict";
     var ctrlScope = this;
@@ -128,10 +160,76 @@ angular.module("forms", ["api"])
           "keywords": ctrlScope.blog.keywords.match(/\S+/g)
         }
       ).then(function successCallback(response) {
-        ctrlScope.status = ("Successfully published blog: " + ctrlScope.blog.title)
+        ctrlScope.status = ("Successfully published blog: " + ctrlScope.blog.title);
       }, function errorCallback(response) {
         ctrlScope.status = response.data.error;
-      })
+      });
+    };
+  }])
+  .controller("cmsPageFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    
+    ctrlScope.submitPage = function () {
+      $http.post(
+        apiUrl,
+        {
+          "request": "putPage",
+          "pageName": ctrlScope.page.name,
+          "content": ctrlScope.page.content,
+          "description": ctrlScope.page.description,
+          "keywords": ctrlScope.page.keywords.match(/\S+/g)
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.status = ("Successfully published page: " + ctrlScope.page.name);
+      }, function errorCallback(response) {
+        ctrlScope.status = response.data.error;
+      });
+    };
+  }])
+  .controller("cmsUserFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    
+    ctrlScope.submitUser = function () {
+      if (ctrlScope.user.password !== ctrlScope.user.passwordConfirm) {
+        ctrlScope.status = "Password confirmation does not match password";
+        return;
+      }
+      
+      $http.post(
+        apiUrl,
+        {
+          "request": "putUser",
+          "email": ctrlScope.user.email,
+          "username": ctrlScope.user.username,
+          "password": ctrlScope.user.password,
+          "roleName": ctrlScope.user.roleName
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.status = ("Successfully registered user: " + ctrlScope.user.username);
+      }, function errorCallback(response) {
+        ctrlScope.status = response.data.error;
+      });
+    };
+  }])
+  .controller("cmsRoleFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    
+    ctrlScope.submitRole = function () {
+      $http.post(
+        apiUrl,
+        {
+          "request": "putRole",
+          "roleName": ctrlScope.role.roleName,
+          "permissions": ctrlScope.role.permissions.match(/\S+/g)
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.status = ("Successfully added role: " + ctrlScope.role.roleName);
+      }, function errorCallback(response) {
+        ctrlScope.status = response.data.error;
+      });
     };
   }])
   .controller("cmsUploadImageCtrl", ["$http", "apiUrl", "$scope", function ($http, apiUrl, $scope) {
