@@ -1,13 +1,18 @@
-<div ng-controller="PostController as data">
+<div class="container">
 	<div class="row">
-		<div class="col-sm-8 col-sm-offset-2">
-			<p><h1 class="centered">{{ data.post.title }}</h1></p>
+		<h1 class="grey-text text-darken-3"> {{ post.title }} </h1>
+		<p><span class="grey-text text-darken-1">{{ post.description }}&nbsp;&#11834;</span> <span classs="grey-text">{{ post.date }} by {{ post.author }}</span></p>
+		<div class="col m10">
 			<hr />
 		</div>
 	</div>
-
-	<div class="row">
-		<div class="col-sm-8 col-sm-offset-2" ng-bind-html="data.post.content | unsafe">
+	 <div class="row">
+		<div class="col s12 m8 offset-m2">
+		  <div class="card white z-depth-1">
+			<div class="card-content" ng-bind-html="post.content | html">
+				<!-- Content inserted here -->
+			</div>
+		  </div>
 		</div>
-	</div>
+	  </div>
 </div>

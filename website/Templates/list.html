@@ -1,8 +1,23 @@
-<div ng-controller="HomeController as data">
-	<div class="col-md-8 col-md-offset-2" ng-repeat="post in data.posts">
-		<a href="#/post/{{ post.uuid }}"><h3>{{ post.title }}</h3></a>
-		<p>{{ post.content }}</p>
-		<small class="text-muted">07/07/2016</small><small class="pull-right text-info">Author Name</small>
-		<hr />
+<div class="container">
+	<div class="row">
+		<h1 class="center-align grey-text text-darken-3">Handa's Beeks</h1>
+		<p class="center-align grey-text text-darken-1">A blog about Honda motorcycles.</p>
+		<div class="col m6 offset-m3">
+			<hr />
+		</div>
 	</div>
+	 <div class="row">
+		<div class="col s12 m8 offset-m2">
+		  <div class="card white z-depth-2">
+			<div class="card-content">
+			  <a href="#/post/8" class="black-text"><span class="card-title">Honda GRX-7</span>
+			  <p>I review the 2017 Honda CBR1000RR.</p></a>
+			</div>
+			<div class="card-action">
+			  <a href="#/post/8" class="pink-text">August 17 2016, 20:36</a>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  
 </div>

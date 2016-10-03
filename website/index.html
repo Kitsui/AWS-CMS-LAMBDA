@@ -1,45 +1,72 @@
-<!DOCTYPE html>
 <html ng-app="Kitsui">
 <head>
-<title>{{ data.page.title }} | Hondas</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<script src="Javascript/site.js"></script>
+	<title>Latest | Site Name</title>
+	<!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<!-- Compiled and minified CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.js" integrity="sha256-OxCsGH/j2k+Ub6Lo55TiYwZ94bv9Jmgvbn7gDahtiIs=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular-route.js" integrity="sha256-SAQ4JgNuN5J22HeNmrNXLyvqEh6gUoWsetBCX8EUnZQ=" crossorigin="anonymous"></script>
+	<script src="site.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style>
+		nav.top-nav{
+			height: 122px;
+		}
+		a.page-title {
+			line-height: 122px;
+			font-size: 48px;
+		  }
+	</style>
 </head>
-<body>
-	
-	<nav class="navbar navbar-default">
-	  <div class="container-fluid">
-	    <div class="navbar-header">
-	      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	      </button>
-	      <a class="navbar-brand" href="#/">Logo</a>
-	    </div>
-	    <div class="collapse navbar-collapse" id="myNavbar">
-	      <ul class="nav navbar-nav">
-	        <li class="active"><a href="#/">Home</a></li>
-	        <li><a ng-href="index.html#/page/5" target="_self">About Us</a></li>
-	        <li><a ng-href="index.html#/page/8" target="_self">An Ode To Bacon</a></li>
-	      </ul>
-	      <ul class="nav navbar-nav navbar-right">
-	        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-	      </ul>
-	    </div>
-	  </div>
+
+<body class="grey lighten-4">
+<head>
+	<nav class="cyan darken-2">
+		<div class="nav-wrapper container">
+		  <a href="#/" class="brand-logo">Site Name</a>
+		  <ul id="nav-mobile" class="right hide-on-med-and-down">
+			<li><a href="#/page/8">Cold Tires</a></li>
+			<li><a href="#/post/8">GRX-7 Review</a></li>
+		  </ul>
+		</div>
 	</nav>
+</head>
 
-	<div class = "container" ng-view>
-		<!-- Content goes here -->
+<main ng-view>
+	<!-- Content is inserted here -->
+</main>
+
+<footer class="page-footer cyan">
+  <div class="container">
+	<div class="row">
+	  <div class="col l6 s12">
+		<h5 class="white-text">Footer Content</h5>
+		<p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+	  </div>
+	  <div class="col l4 offset-l2 s12">
+		<h5 class="white-text">Links</h5>
+		<ul>
+		  <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
+		  <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
+		  <li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
+		  <li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
+		</ul>
+	  </div>
 	</div>
-
+  </div>
+  <div class="footer-copyright">
+	<div class="container">
+	&copy; 2016 Your Name
+	<a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+	</div>
+  </div>
+</footer>
+  
 </body>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+
+
 </html>
-
-

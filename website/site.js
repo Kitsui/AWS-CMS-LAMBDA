@@ -11,12 +11,14 @@ var app = angular.module('Kitsui', ['ngRoute'])
 		
         $routeProvider.when('/page/:pageid', {
             templateUrl: 'Templates/page.html', 
-            controller: 'PageController'
+            controller: 'PageController',
+			controllerAs: 'page'
         });
 		
 		$routeProvider.when('/post/:postid', {
             templateUrl: 'Templates/post.html', 
-            controller: 'PostController'
+            controller: 'PostController',
+			controllerAs: 'post'
         });
         //$routeProvider.otherwise({redirectTo: '/home', controller: HomeCtrl});
      });
@@ -24,7 +26,7 @@ var app = angular.module('Kitsui', ['ngRoute'])
 
 
 	 
-app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });
+app.filter('html', function($sce) { return $sce.trustAsHtml; });
 
 
 
@@ -32,9 +34,10 @@ app.controller('PageController', ['$http', '$routeParams', function($http, $rout
 	
 	var controller = this;
 	
-	//var page.title = "Steven";
 	$http.get("Content/Page/"+ $routeParams.pageid +".json").then(function(response) {
         controller.page = response.data;
+		controller.title = response.data.title;
+		controller.content = response.data.content;
 		console.log(controller);
     });
 	
@@ -42,12 +45,16 @@ app.controller('PageController', ['$http', '$routeParams', function($http, $rout
 
 app.controller('PostController', ['$http', '$routeParams', function($http, $routeParams){
 	
-	var controller = this;
+	var post = this;
 	
-	//var page.title = "Steven";
 	$http.get("Content/Post/"+ $routeParams.postid +".json").then(function(response) {
-        controller.post = response.data;
-		console.log(controller);
+        post.post = response.data;
+		post.title = response.data.Title;
+		post.content = response.data.Content;
+		post.description = response.data.Description;
+		post.date = response.data.SavedDate;
+		post.author = response.data.Author;
+		console.log(post);
     });
 	
 } ]);
@@ -57,7 +64,6 @@ app.controller('HomeController', ['$http', '$location', function($http, $locatio
 	
 	var controller = this;
 	
-	//var page.title = "Steven";
 	$http.get("Content/post_list.json").then(function(response) {
         
 		controller.posts = [];
@@ -69,7 +75,6 @@ app.controller('HomeController', ['$http', '$location', function($http, $locatio
 			
 		}
 		
-		//controller.posts = response.data;
 		console.log(controller);
     });
 	
