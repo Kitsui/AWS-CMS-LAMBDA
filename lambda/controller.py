@@ -360,6 +360,35 @@ def process_request(request_body, resources, request, user_info=None, token=None
             }
         """
         return Site_Settings.get_all_settings(resources["BUCKET"]);
+    elif request == "getNavItems":
+        """ Request structure
+            {
+                request: getNavItems
+            }
+        """
+        return Site_Settings.get_nav_items(resources["BUCKET"])
+    elif request == "putNavItems":
+        """ Request structure
+            {
+                request: putNavItems,
+                nav_items: <list:
+                    {
+                        title: <str: title>
+                        url: <str: url>
+                        children: <list:
+                            {
+                                title: <str: title>
+                                url: <str: url>
+                            }
+                        >
+                    }
+                >
+            }
+        """
+        if not "nav_items" in request_body:
+            Error.send_error("noNavItems", data={"request": request})
+            
+        nav_items = request_body["nav_items"]
 
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
@@ -367,10 +396,10 @@ def process_request(request_body, resources, request, user_info=None, token=None
 def supported_request(request):
     supported_gets = [
         "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog", "getAllBlogs", "getPage",
-        "getAllPages", "getPresignedPostImage", "getSiteSettings"
+        "getAllPages", "getPresignedPostImage", "getSiteSettings", "getNavItems"
     ]
     supported_puts = [
-        "putUser", "putRole", "putBlog", "putPage"
+        "putUser", "putRole", "putBlog", "putPage", "putNavItems"
     ]
     supported_posts = [
         "loginUser", "logoutUser"
