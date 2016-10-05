@@ -353,6 +353,13 @@ def process_request(request_body, resources, request, user_info=None, token=None
         acl = request_body["acl"]
         return S3Upload.get_presigned_post_image(filename, acl,
                                                  resources["BUCKET"])
+    elif request == "getSiteSettings":
+        """ Request structure
+            {
+                request: getSiteSettings
+            }
+        """
+        return Site_Settings.get_all_settings(resources["BUCKET"]);
     elif request == "getNavItems":
         """ Request structure
             {
@@ -383,14 +390,13 @@ def process_request(request_body, resources, request, user_info=None, token=None
             
         nav_items = request_body["nav_items"]
 
-        return Site_Settings.put_nav_items(nav_items, resources["BUCKET"])
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
 
 def supported_request(request):
     supported_gets = [
         "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog", "getAllBlogs", "getPage",
-        "getAllPages", "getPresignedPostImage", "getNavItems"
+        "getAllPages", "getPresignedPostImage", "getSiteSettings", "getNavItems"
     ]
     supported_puts = [
         "putUser", "putRole", "putBlog", "putPage", "putNavItems"
