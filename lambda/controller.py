@@ -389,7 +389,7 @@ def process_request(request_body, resources, request, user_info=None, token=None
             Error.send_error("noNavItems", data={"request": request})
             
         nav_items = request_body["nav_items"]
-
+        return Site_Settings.put_nav_items(nav_items, resources["BUCKET"])
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
 

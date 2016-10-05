@@ -19,13 +19,13 @@
         "url": "www.example.com"
       }
     ],
-    "site_name": "",
-    "site_description": "",
-    "facebook": "",
-    "twitter": "",
-    "instgram": "",
-    "google_plus": "",
-    "footer": "",
-    "disqus_id": "",
-    "google_id": ""
+  "site_name": "",
+  "site_description": "",
+  "facebook": "",
+  "twitter": "",
+  "instgram": "",
+  "google_plus": "",
+  "footer": "",
+  "disqus_id": "",
+  "google_id": ""
 }

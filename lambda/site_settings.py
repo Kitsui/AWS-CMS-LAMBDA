@@ -26,21 +26,22 @@ class Site_Settings(object):
     def get_nav_items(bucket):
         """ Reads the visitor navigation items from site settings JSON """
         # Get site setting JSON
-        site_settings = read_site_settings(bucket)
+        site_settings = json.loads(Site_Settings.read_site_settings(bucket))
         # Get nav item JSON
         nav_items = site_settings["nav"]
         # Return nav item data
-        return nav_items
+        return json.dumps(nav_items)
 
     @staticmethod
     def put_nav_items(nav_items, bucket):
         """ Puts updated visitor navigation items into site settings """
         # Get site setting JSON
-        site_settings = json.loads(read_site_settings(bucket))
+        site_settings = json.loads(Site_Settings.read_site_settings(bucket))
         # Set nav items
         site_settings["nav"] = nav_items
         # Save site setting JSON
-        save_site_settings(site_settings, bucket)
+        Site_Settings.save_site_settings(site_settings, bucket)
+        return {"message": "Successfully saved nav items"}
 
     @staticmethod
     def read_site_settings(bucket):
@@ -53,10 +54,9 @@ class Site_Settings(object):
         }
         result =  s3.get_object(**get_kwargs)
         object_body = result['Body'].read()
-        print object_body
         
         # Return Body of the Site Setting file
-        return json.dumps(object_body)
+        return object_body
 
     @staticmethod
     def save_site_settings(site_settings, bucket):
