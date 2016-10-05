@@ -166,6 +166,30 @@ angular.module("forms", ["api"])
       });
     };
   }])
+  .controller("cmsVisitorNavFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    
+    ctrlScope.submitNav = function () {
+      $http.post(
+        apiUrl,
+        {
+          "request": "putNavItems",
+          "nav_items": [
+            {
+              "title": ctrlScope.nav_item.title,
+              "url": ctrlScope.nav_item.url,
+              "children": []
+            }
+          ]
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.status = ("Successfully published nav items");
+      }, function errorCallback(response) {
+        ctrlScope.status = response.data.error;
+      });
+    };
+  }])
   .controller("cmsPageFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
     "use strict";
     var ctrlScope = this;

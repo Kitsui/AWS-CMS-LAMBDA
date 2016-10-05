@@ -64,6 +64,8 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
       })
       .when("/visitor-nav", {
         templateUrl: "visitor-navigation.html",
+        controller: "cmsVisitorNavFormCtrl",
+        controllerAs: "visitorNavFormCtrl",
         replace: true
       })
       .otherwise({
