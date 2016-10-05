@@ -62,6 +62,10 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
         templateUrl: "site-settings.html",
         replace: true
       })
+      .when("/visitor-nav", {
+        templateUrl: "visitor-navigation.html",
+        replace: true
+      })
       .otherwise({
         templateUrl: "dashboard-sample.html",
         replace: true
