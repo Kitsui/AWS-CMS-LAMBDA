@@ -15,8 +15,8 @@ class Site_Settings(object):
     """ Provides functions for handling SiteSettings related requests """
     
     @staticmethod
-    def get_all_settings():
-        pass
+    def get_all_settings(bucket):
+        return Site_Settings.read_site_settings(bucket);
 
     @staticmethod
     def put_settings():
@@ -35,7 +35,18 @@ class Site_Settings(object):
     @staticmethod
     def read_site_settings(bucket):
         """ Reads the site settings JSON from an S3 Bucket """
-        pass
+        s3 = boto3.client('s3')
+        fileName= "Content/site_settings.json"
+        get_kwargs = {
+            'Bucket': bucket,
+            'Key': fileName
+        }
+        result =  s3.get_object(**get_kwargs)
+        object_body = result['Body'].read()
+        print object_body
+        
+        # Return Body of the Site Setting file
+        return json.dumps(object_body)
 
     @staticmethod
     def save_site_settings(site_settings, bucket):

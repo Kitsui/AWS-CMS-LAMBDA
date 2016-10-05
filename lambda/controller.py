@@ -20,6 +20,7 @@ from page           import Page
 from security       import Security
 from s3_upload      import S3Upload
 from user           import User
+from site_settings  import Site_Settings
 
 def handler(event, context):
     # Get info on the cms' resources from the constants file
@@ -352,13 +353,21 @@ def process_request(request_body, resources, request, user_info=None, token=None
         acl = request_body["acl"]
         return S3Upload.get_presigned_post_image(filename, acl,
                                                  resources["BUCKET"])
+    elif request == "getSiteSettings":
+        """ Request structure
+            {
+                request: getSiteSettings
+            }
+        """
+        return Site_Settings.get_all_settings(resources["BUCKET"]);
+
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
 
 def supported_request(request):
     supported_gets = [
         "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog", "getAllBlogs", "getPage",
-        "getAllPages", "getPresignedPostImage"
+        "getAllPages", "getPresignedPostImage", "getSiteSettings"
     ]
     supported_puts = [
         "putUser", "putRole", "putBlog", "putPage"
