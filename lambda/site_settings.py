@@ -23,14 +23,24 @@ class Site_Settings(object):
         pass
 
     @staticmethod
-    def get_nav_items():
+    def get_nav_items(bucket):
         """ Reads the visitor navigation items from site settings JSON """
-        pass
+        # Get site setting JSON
+        site_settings = read_site_settings(bucket)
+        # Get nav item JSON
+        nav_items = site_settings["nav"]
+        # Return nav item data
+        return nav_items
 
     @staticmethod
-    def put_nav_items(nav_items):
+    def put_nav_items(nav_items, bucket):
         """ Puts updated visitor navigation items into site settings """
-        pass
+        # Get site setting JSON
+        site_settings = json.loads(read_site_settings(bucket))
+        # Set nav items
+        site_settings["nav"] = nav_items
+        # Save site setting JSON
+        save_site_settings(site_settings, bucket)
 
     @staticmethod
     def read_site_settings(bucket):
@@ -40,7 +50,6 @@ class Site_Settings(object):
     @staticmethod
     def save_site_settings(site_settings, bucket):
         """ Saves site settings to an S3 Bucket """
-
         # Save site settings to s3
         try:
             s3 = boto3.client("s3")
@@ -53,3 +62,4 @@ class Site_Settings(object):
             action = "Putting site settings in the bucket"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
+
