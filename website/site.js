@@ -21,6 +21,7 @@ var app = angular.module('Kitsui', ['ngRoute'])
 			controllerAs: 'post'
         });
         //$routeProvider.otherwise({redirectTo: '/home', controller: HomeCtrl});
+		$routeProvider.otherwise({templateUrl: 'Templates/404.html'});
      });
 
 
