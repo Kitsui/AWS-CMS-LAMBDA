@@ -20,10 +20,12 @@ angular.module("forms", ["api"])
     a success/failure message will be displayed 
     */  
     $scope.deleteBlog = function (post) {
-      dim(true);
-      startLoadingAnimation();
+      // get identifier Variable
       var postID = post['id'];
       console.log(postID);
+      // Call Delete Request        
+      dim(true);
+      startLoadingAnimation();
       $http.post(
         apiUrl,
         {
@@ -43,7 +45,7 @@ angular.module("forms", ["api"])
         dim(false);
       });
     };
-    
+
     /**
      * Function: Returns all blogs by posting to the Lambda
      * package and populating a list for an ng-repeat
@@ -105,10 +107,12 @@ angular.module("forms", ["api"])
     a success/failure message will be displayed 
     */  
     $scope.deletePage = function (page) {
-      dim(true);
-      startLoadingAnimation();
+      // get identifier Variable
       var name = page['name'];
       console.log(name);
+           // Call Delete Request        
+      dim(true);
+      startLoadingAnimation();
       $http.post(
         apiUrl,
         {
@@ -164,9 +168,42 @@ angular.module("forms", ["api"])
       ];
     });
   }])
-  .controller("cmsUserListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsUserListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
     var ctrlScope = this;
+    /** Function: Delete User 
+    Passed an ID and submits a delete request to
+    Lambda. Displays a Wait animation while waiting 
+    for a response. On the event of a success/failure
+    a success/failure message will be displayed 
+    */  
+    $scope.deleteUser = function (user) {
+      // get identifier Variable
+      var email = user['email'];
+      console.log(email);
+           // Call Delete Request        
+      dim(true);
+      startLoadingAnimation();
+      $http.post(
+        apiUrl,
+        {
+          "request": "deleteUser",
+          "email": email
+        }
+      ).then(function successCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+        console.log("Deleted Successfully");
+        // Remove element from view and remove # and @ from selector
+        removeElement('#'+email.replace(/[#@]/g, ""));
+      }, function errorCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+      });
+    };
+
     ctrlScope.users = [{email: "loading"}];
     $http.post(
       apiUrl,
@@ -446,11 +483,18 @@ angular.module("forms", ["api"])
         }
       };
     }
-  ]);
+  ])
+  .filter("split", function () {
+    return function(input) {
+    return inputval = input.replace(/[#@]/g, "");
+  }});
 
 /**
  * Utility Functions
  */
+
+
+
 
 /**
  * Dims the screen
