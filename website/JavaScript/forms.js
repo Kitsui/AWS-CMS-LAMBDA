@@ -170,7 +170,9 @@ angular.module("forms", ["api"])
   }])
   .controller("cmsUserListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
+
     var ctrlScope = this;
+
     /** Function: Delete User 
     Passed an ID and submits a delete request to
     Lambda. Displays a Wait animation while waiting 
@@ -235,9 +237,43 @@ angular.module("forms", ["api"])
       ];
     });
   }])
-  .controller("cmsRoleListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsRoleListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
     var ctrlScope = this;
+    
+    /** Function: Delete Role 
+    Passed an ID and submits a delete request to
+    Lambda. Displays a Wait animation while waiting 
+    for a response. On the event of a success/failure
+    a success/failure message will be displayed 
+    */  
+    $scope.deleteRole = function (role) {
+      // get identifier Variable
+      var roleName = role['roleName'];
+      console.log(roleName);
+           // Call Delete Request        
+      dim(true);
+      startLoadingAnimation();
+      $http.post(
+        apiUrl,
+        {
+          "request": "deleteRole",
+          "roleName": roleName
+        }
+      ).then(function successCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+        console.log("Deleted Successfully");
+        // Remove element from view and remove # and @ from selector
+        removeElement('#'+roleName);
+      }, function errorCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+      });
+    };
+
     ctrlScope.roles = [{roleName: "loading"}];
     $http.post(
       apiUrl,
@@ -253,7 +289,7 @@ angular.module("forms", ["api"])
       for (roleNum in responseData) {
         ctrlScope.roles.push(
           {
-            roleName: responseData[roleNum].Name,
+            roleName: responseData[roleNum].RoleName,
             permissions: responseData[roleNum].Permissions.join(", ")
           }
         );

@@ -1,0 +1,14 @@
+{
+	"Item": {
+		"Description": {"S": "I review the 2017 Honda CBR1000RR."},
+        "Title": {"S": "Handa's Honda CBR1000RR Review"},
+        "Author": {"S": "Kitsui"},
+        "Content": {"S": "<p>Spicy jalapeno bacon ipsum dolor amet pig shank t-bone tenderloin tri-tip ribeye kevin prosciutto sirloin drumstick capicola leberkas alcatra. Pork loin brisket bresaola beef capicola chuck kielbasa. Sirloin doner short ribs prosciutto ground round capicola fatback burgdoggen tail tenderloin shank jowl. Chicken salami ground round cow pork loin turkey chuck corned beef beef fatback short ribs. Turducken fatback bresaola, ball tip burgdoggen biltong swine jowl brisket pork loin alcatra. Shoulder turducken shankle, tail ribeye corned beef spare ribs short loin meatball.</p> <p>Swine tail kevin tongue, spare ribs biltong salami jowl kielbasa. Chuck boudin kielbasa, frankfurter andouille doner picanha. Pork belly jerky hamburger strip steak shoulder. Shankle pastrami drumstick t-bone. Beef leberkas ball tip biltong strip steak. Doner ham hock rump tenderloin beef ribs ham burgdoggen fatback t-bone hamburger drumstick pork loin tail tongue.</p> <p>Shankle shoulder jerky meatloaf burgdoggen rump fatback meatball. Biltong jerky spare ribs venison hamburger. Flank picanha doner, kielbasa pork chop rump biltong meatball porchetta turducken chuck shankle alcatra bresaola swine. Tongue ball tip capicola corned beef swine shoulder brisket beef picanha. Beef ribs t-bone prosciutto sirloin doner tongue tail chicken shoulder. Tail fatback turkey, meatloaf cupim bacon pork kielbasa turducken capicola short loin brisket venison ground round.</p>"},
+		"Keywords": {"L": [
+			"Honda", "CBR1000RR"
+		]},
+        "SavedDate": {"S": "02-Oct-2016 00:14 UTC"},
+        "ID": {"S": "9dc1fd93-d071-45b2-b668-adad2faf980f"}
+	},
+	"ReturnConsumedCapacity": "TOTAL"
+}

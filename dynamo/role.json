@@ -1,6 +1,6 @@
 {
 	"Item": {
-		"Name": {"S": "FullAdmin"},
+		"RoleName": {"S": "FullAdmin"},
 		"Permissions": {"SS": [
 			"all"
 		]}
