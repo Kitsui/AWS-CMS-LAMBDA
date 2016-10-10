@@ -16,6 +16,7 @@ angular.module("forms", ["api"])
     a success/failure message will be displayed 
     */  
     $scope.deleteBlog = function (post) {
+      startLoadingAnimation();
       console.log(post['id']);
       $http.post(
         apiUrl,
@@ -25,9 +26,10 @@ angular.module("forms", ["api"])
         }
       ).then(function successCallback(response) {
         // Do Something
-        alert("Deleted Successfully");
+        stopLoadingAnimation();
+        // alert("Deleted Successfully");
       }, function errorCallback(response) {
-
+        stopLoadingAnimation();
       });
     };
     
@@ -35,45 +37,45 @@ angular.module("forms", ["api"])
      * Function: Get all posts
      */
     var getAllBlogs  = function () {
-      ctrlScope.posts = [{title: "loading"}];
-      $http.post(
-        apiUrl,
-        {
-          "request": "getAllBlogs"
-        }
-      ).then(function successCallback(response) {
-        var blogNum, responseMessage, responseData;
-        responseMessage = response.data.message;
-        responseData = response.data.data;
-        ctrlScope.posts = [];
-        
-        for (blogNum in responseData) {
-          ctrlScope.posts.push(
-            {
-              title: responseData[blogNum].Title,
-              author: responseData[blogNum].Author,
-              description: responseData[blogNum].Description,
-              keywords: responseData[blogNum].Keywords.join(", "),
-              date: responseData[blogNum].SavedDate,
-              id: responseData[blogNum].ID,
-            }
-          );    
-        }
-      }, function errorCallback(response) {
-        ctrlScope.posts = [
+        // LoadingAnimation();
+        ctrlScope.posts = [{title: "loading"}];
+        $http.post(
+          apiUrl,
           {
-            title: response.data.error,
-            author: response.data.error,
-            description: response.data.error,
-            keywords: response.data.error,
-            date: response.data.error,
-            id: response.data.error,
-            counter: response.data.error
+            "request": "getAllBlogs"
           }
-        ];
-      });
+        ).then(function successCallback(response) {
+          var blogNum, responseMessage, responseData;
+          responseMessage = response.data.message;
+          responseData = response.data.data;
+          ctrlScope.posts = [];
+          
+          for (blogNum in responseData) {
+            ctrlScope.posts.push(
+              {
+                title: responseData[blogNum].Title,
+                author: responseData[blogNum].Author,
+                description: responseData[blogNum].Description,
+                keywords: responseData[blogNum].Keywords.join(", "),
+                date: responseData[blogNum].SavedDate,
+                id: responseData[blogNum].ID,
+              }
+            );    
+          }
+        }, function errorCallback(response) {
+          ctrlScope.posts = [
+            {
+              title: response.data.error,
+              author: response.data.error,
+              description: response.data.error,
+              keywords: response.data.error,
+              date: response.data.error,
+              id: response.data.error,
+              counter: response.data.error
+            }
+          ];
+        });
     }
-
     // Get all blogs on page load
     getAllBlogs();
   }
@@ -398,12 +400,11 @@ angular.module("forms", ["api"])
     }
   ]);
 
-
   /**
  * Loading animation function which summons a loading
  * wheel in a DOM element selected by id
  */
-var LoadingAnimation =  function () {
+var startLoadingAnimation =  function () {
   console.log("lol.");
     var opts = {
       lines: 13 // The number of lines to draw
