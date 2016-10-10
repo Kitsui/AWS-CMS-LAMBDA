@@ -9,6 +9,9 @@ angular.module("forms", ["api"])
     "use strict";
     var ctrlScope = this;
 
+    // Set post list
+    ctrlScope.posts = [];
+
     /** Function: Delete Blog 
     Passed an ID and submits a delete request to
     Lambda. Displays a Wait animation while waiting 
@@ -16,28 +19,36 @@ angular.module("forms", ["api"])
     a success/failure message will be displayed 
     */  
     $scope.deleteBlog = function (post) {
+      dim(true);
       startLoadingAnimation();
-      console.log(post['id']);
+      var postID = post['id'];
+      console.log(postID);
       $http.post(
         apiUrl,
         {
           "request": "deleteBlog",
-          "blogID": post['id']
+          "blogID": postID
         }
       ).then(function successCallback(response) {
-        // Do Something
+        // Stop animation
         stopLoadingAnimation();
-        // alert("Deleted Successfully");
+        dim(false);
+        console.log("Deleted Successfully");
+        // Remove element from view
+        removeElement('#'+postID);
       }, function errorCallback(response) {
+        // Stop animation
         stopLoadingAnimation();
+        dim(false);
       });
     };
     
     /**
-     * Function: Get all posts
+     * Function: Returns all blogs by posting to the Lambda
+     * package and populating a list for an ng-repeat
      */
     var getAllBlogs  = function () {
-        // LoadingAnimation();
+        //LoadingAnimation();
         ctrlScope.posts = [{title: "loading"}];
         $http.post(
           apiUrl,
@@ -76,7 +87,8 @@ angular.module("forms", ["api"])
           ];
         });
     }
-    // Get all blogs on page load
+
+    // Get all blogs on Page load
     getAllBlogs();
   }
   ])
@@ -400,6 +412,19 @@ angular.module("forms", ["api"])
     }
   ]);
 
+/**
+ * Utility Functions
+ */
+
+/**
+ * Dims the screen
+ */
+var dim = function (bool)
+{
+    if (typeof bool=='undefined') bool=true; // so you can shorten dim(true) to dim()
+    document.getElementById('dimmer').style.display=(bool?'block':'none');
+}    
+
   /**
  * Loading animation function which summons a loading
  * wheel in a DOM element selected by id
@@ -413,7 +438,7 @@ var startLoadingAnimation =  function () {
       , radius: 42 // The radius of the inner circle
       , scale: 1 // Scales overall size of the spinner
       , corners: 0.6 // Corner roundness (0..1)
-      , color: '#000' // #rgb or #rrggbb or array of colors
+      , color: '#FFF' // #rgb or #rrggbb or array of colors
       , opacity: 0.05 // Opacity of the lines
       , rotate: 0 // The rotation offset
       , direction: 1 // 1: clockwise, -1: counterclockwise
@@ -424,7 +449,7 @@ var startLoadingAnimation =  function () {
       , className: 'spinner' // The CSS class to assign to the spinner
       , top: '50%' // Top position relative to parent
       , left: '50%' // Left position relative to parent
-      , shadow: true // Whether to render a shadow
+      , shadow: false // Whether to render a shadow
       , hwaccel: false // Whether to use hardware acceleration
       , position: 'absolute' // Element positioning
     }
@@ -437,6 +462,27 @@ var startLoadingAnimation =  function () {
  */
 var stopLoadingAnimation = function () {
     $('.spinner').remove();
+}
+
+/**
+ * Removes element by ID
+ */
+var removeElement = function (id) {
+    $(id).remove();
+}
+
+/**
+ * Adds an attribute to an element in the DOM
+ */
+var addAttribute = function (element, attribute, type) {
+  var myEl = angular.element( document.querySelector( element ) );
+  // Check type and apply attribute
+  if (type == "class") {
+    myEl.addClass(attribute);
+  }
+  else if (type == "id") {
+    myEl.addIDToElement(attribute);
+  }
 }
 
 
