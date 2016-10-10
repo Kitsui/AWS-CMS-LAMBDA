@@ -58,6 +58,8 @@ def handler(event, context):
             user_token, request, resources["TOKEN_TABLE"],
             resources["USER_TABLE"], resources["ROLE_TABLE"]
         )
+
+        print user_info
         
         # Strip dynamo type identifiers from user info
         user_info = strip_dynamo_types(user_info)
@@ -125,6 +127,14 @@ def process_request(request_body, resources, request, user_info=None, token=None
             }
         """
         return User.logout(token, resources["TOKEN_TABLE"])
+    elif request == "getPermissions":
+        """ Request structure
+            {
+                request: logoutUser
+            }
+        """
+        return Security.get_permissions(token, request, resources["TOKEN_TABLE"],
+            resources["USER_TABLE"], resources["ROLE_TABLE"])
     elif request == "putUser":
         """ Request structure
             {
@@ -393,10 +403,14 @@ def process_request(request_body, resources, request, user_info=None, token=None
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
 
+
 def supported_request(request):
+    """Function which Returns back a boolean indicating if the request type is valid or not
+    New request types need to be added to the corresponding arrays """
+
     supported_gets = [
         "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog", "getAllBlogs", "getPage",
-        "getAllPages", "getPresignedPostImage", "getSiteSettings", "getNavItems"
+        "getAllPages", "getPresignedPostImage", "getSiteSettings", "getNavItems", "getPermissions"
     ]
     supported_puts = [
         "putUser", "putRole", "putBlog", "putPage", "putNavItems"
