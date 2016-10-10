@@ -1,13 +1,13 @@
 {	
 	"AttributeDefinitions": [
 		{
-			"AttributeName": "Name",
+			"AttributeName": "PageName",
 			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
-			"AttributeName": "Name",
+			"AttributeName": "PageName",
 			"KeyType": "HASH"
 		}
 	],

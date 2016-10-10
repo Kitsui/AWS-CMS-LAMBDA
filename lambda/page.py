@@ -25,7 +25,7 @@ class Page(object):
                 TableName=page_table, ConsistentRead=True,
                 ProjectionExpression="#N, SavedDate, Description, Keywords",
                 ExpressionAttributeNames={
-                    "#N": "Name"
+                    "#N": "PageName"
                 }
             )
         except botocore.exceptions.ClientError as e:
@@ -45,7 +45,7 @@ class Page(object):
         try:
             dynamodb = boto3.client("dynamodb")
             page = dynamodb.get_item(
-                TableName=page_table, Key={"Name": {"S": page_name}}
+                TableName=page_table, Key={"PageName": {"S": page_name}}
             )
         except botocore.exceptions.ClientError as e:
             action = "Getting page from the page table"
@@ -66,14 +66,14 @@ class Page(object):
         saved_date = datetime.datetime.utcnow()
         saved_date = saved_date.strftime("%d-%b-%Y %H:%M UTC")
         page = {
-            "Name": {"S": page_name},
+            "PageName": {"S": page_name},
             "SavedDate": {"S": saved_date},
             "Content": {"S": content},
             "Description": {"S": description},
             "Keywords": {"L": []}
         }
         page_for_s3 = {
-            "Name": page_name,
+            "PageName": page_name,
             "SavedDate": saved_date,
             "Content": content,
             "Description": description,
@@ -117,8 +117,8 @@ class Page(object):
             dynamodb = boto3.client("dynamodb")
             delete_response = dynamodb.delete_item(
                 TableName=page_table,
-                Key={"Name": {"S": page_name}},
-                ConditionExpression="attribute_exists(Name)"
+                Key={"PageName": {"S": page_name}},
+                ConditionExpression="attribute_exists(PageName)"
             )
         except botocore.exceptions.ClientError as e:
             action = "Deleting page from the page table"

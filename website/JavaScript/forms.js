@@ -7,6 +7,7 @@ angular.module("forms", ["api"])
   })
   .controller("cmsPostListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
+    
     var ctrlScope = this;
 
     // Set post list
@@ -92,9 +93,44 @@ angular.module("forms", ["api"])
     getAllBlogs();
   }
   ])
-  .controller("cmsPageListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsPageListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
+
     var ctrlScope = this;
+
+    /** Function: Delete Page 
+    Passed an ID and submits a delete request to
+    Lambda. Displays a Wait animation while waiting 
+    for a response. On the event of a success/failure
+    a success/failure message will be displayed 
+    */  
+    $scope.deletePage = function (page) {
+      dim(true);
+      startLoadingAnimation();
+      var name = page['name'];
+      console.log(name);
+      $http.post(
+        apiUrl,
+        {
+          "request": "deletePage",
+          "pageName": name
+        }
+      ).then(function successCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+        console.log("Deleted Successfully");
+        // Remove element from view
+        removeElement('#'+name);
+      }, function errorCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+      });
+    };
+    
+
+    
     ctrlScope.pages = [{name: "loading"}];
     $http.post(
       apiUrl,
@@ -110,7 +146,7 @@ angular.module("forms", ["api"])
       for (pageNum in responseData) {
         ctrlScope.pages.push(
           {
-            name: responseData[pageNum].Name,
+            name: responseData[pageNum].PageName,
             description: responseData[pageNum].Description,
             keywords: responseData[pageNum].Keywords.join(", "),
             date: responseData[pageNum].SavedDate
@@ -430,7 +466,6 @@ var dim = function (bool)
  * wheel in a DOM element selected by id
  */
 var startLoadingAnimation =  function () {
-  console.log("lol.");
     var opts = {
       lines: 13 // The number of lines to draw
       , length: 0 // The length of each line

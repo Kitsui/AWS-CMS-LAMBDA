@@ -34,15 +34,14 @@
                       <td>Loading...</td>
                       <td>Loading...</td>
                     </tr>
-                    <tr ng-hide="page.name=='loading'">
+                    <tr id={{page.name}} ng-hide="page.name=='loading'">
                       <td>{{page.name}}</td>
                       <td>{{page.description}}</td>
                       <td>{{page.keywords}}</td>
                       <td>{{page.date}}</td>
                         <td>
-                          <form ng-submit="cmsBlogFormCtrl.deleteBlog()">
-                            <button type="submit" 
-                          class="btn btn-danger">Delete</button>
+                          <form ng-submit="deletePage(page)" ng-controller="cmsPageListCtrl">
+                            <button type="submit" class="btn btn-danger">Delete</button>
                           </form>
                         </td> <!-- Delete Button -->
                     </tr>
