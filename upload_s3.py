@@ -21,7 +21,7 @@ from cms_functions import AwsFunc
 
 # Get file local location and destination
 path = str(sys.argv[1])
-fileKey = str(sys.argv[0])
+fileKey = str(sys.argv[2])
 
 print "Uploading ::" + path + " to Location in s3 ::" + fileKey
 
