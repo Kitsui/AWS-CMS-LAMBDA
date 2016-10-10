@@ -23,10 +23,29 @@ angular.module("forms", ["api"])
       // get identifier Variable
       var postID = post['id'];
       console.log(postID);
-      // Call Delete Request
-      deleteRequest("BlogID", postID, "deleteBlog");
+      // Call Delete Request        
+      dim(true);
+      startLoadingAnimation();
+      $http.post(
+        apiUrl,
+        {
+          "request": "deleteBlog",
+          "blogID": postID
+        }
+      ).then(function successCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+        console.log("Deleted Successfully");
+        // Remove element from view
+        removeElement('#'+postID);
+      }, function errorCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+      });
     };
-    
+
     /**
      * Function: Returns all blogs by posting to the Lambda
      * package and populating a list for an ng-repeat
@@ -91,7 +110,27 @@ angular.module("forms", ["api"])
       // get identifier Variable
       var name = page['name'];
       console.log(name);
-      deleteRequest("pageName", name, "deletePage");
+           // Call Delete Request        
+      dim(true);
+      startLoadingAnimation();
+      $http.post(
+        apiUrl,
+        {
+          "request": "deletePage",
+          "pageName": name
+        }
+      ).then(function successCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+        console.log("Deleted Successfully");
+        // Remove element from view
+        removeElement('#'+name);
+      }, function errorCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+      });
     };
     
 
@@ -129,9 +168,42 @@ angular.module("forms", ["api"])
       ];
     });
   }])
-  .controller("cmsUserListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsUserListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
     var ctrlScope = this;
+    /** Function: Delete User 
+    Passed an ID and submits a delete request to
+    Lambda. Displays a Wait animation while waiting 
+    for a response. On the event of a success/failure
+    a success/failure message will be displayed 
+    */  
+    $scope.deleteUser = function (user) {
+      // get identifier Variable
+      var email = user['email'];
+      console.log(email);
+           // Call Delete Request        
+      dim(true);
+      startLoadingAnimation();
+      $http.post(
+        apiUrl,
+        {
+          "request": "deleteUser",
+          "email": email
+        }
+      ).then(function successCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+        console.log("Deleted Successfully");
+        // Remove element from view and remove # and @ from selector
+        removeElement('#'+email.replace(/[#@]/g, ""));
+      }, function errorCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+      });
+    };
+
     ctrlScope.users = [{email: "loading"}];
     $http.post(
       apiUrl,
@@ -411,40 +483,17 @@ angular.module("forms", ["api"])
         }
       };
     }
-  ]);
+  ])
+  .filter("split", function () {
+    return function(input) {
+    return inputval = input.replace(/[#@]/g, "");
+  }});
 
 /**
  * Utility Functions
  */
 
-/**
- * Post Delete Request
- * Takes an Identifier type of the record requested to be Deleted,
- * an id which maps to the record and a requestType which maps to the 
- * type of deletion method being accessed on the lamdbda controller
- */
-  var deleteRequest = function (identifier, id, requestType) {
-    dim(true);
-    startLoadingAnimation();
-    $http.post(
-      apiUrl,
-      {
-        "request": requestType,
-        identifier: id
-      }
-    ).then(function successCallback(response) {
-      // Stop animation
-      stopLoadingAnimation();
-      dim(false);
-      console.log("Deleted Successfully");
-      // Remove element from view
-      removeElement('#'+id);
-    }, function errorCallback(response) {
-      // Stop animation
-      stopLoadingAnimation();
-      dim(false);
-    });
-  }
+
 
 
 /**
