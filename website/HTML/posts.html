@@ -24,10 +24,12 @@
                       <th>Description</th>
                       <th>Keywords</th>
                       <th>Date</th>
+                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody ng-repeat="post in postCtrl.posts">
                     <tr ng-if="post.title=='loading'">
+                      <td>Loading...</td>
                       <td>Loading...</td>
                       <td>Loading...</td>
                       <td>Loading...</td>
@@ -40,6 +42,12 @@
                       <td>{{post.description}}</td>
                       <td>{{post.keywords}}</td>
                       <td>{{post.date}}</td>
+                      <td>
+                        <form ng-submit="deleteBlog(post)" ng-controller="cmsPostListCtrl">
+                          <input type="hidden"  ng-model="blogID" value="{{post.id}}" />
+                          <button type="submit" id="{{post.counter}}}" class="btn btn-danger">Delete</button>
+                        </form>
+                      </td> <!-- Delete Button -->
                     </tr>
                   </tbody>
                 </table>

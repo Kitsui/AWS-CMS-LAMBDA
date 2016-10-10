@@ -5,9 +5,35 @@ angular.module("forms", ["api"])
     "use strict";
     $httpProvider.defaults.withCredentials = true;
   })
-  .controller("cmsPostListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsPostListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
     var ctrlScope = this;
+
+    /** Function: Delete Blog 
+    Passed an ID and submits a delete request to
+    Lambda. Displays a Wait animation while waiting 
+    for a response. On the event of a success/failure
+    a success/failure message will be displayed 
+    */  
+    $scope.deleteBlog = function (post) {
+      console.log(post['id']);
+      $http.post(
+        apiUrl,
+        {
+          "request": "deleteBlog",
+          "blogID": post['id']
+        }
+      ).then(function successCallback(response) {
+        // Do Something
+        alert("Deleted Successfully");
+      }, function errorCallback(response) {
+
+      });
+    };
+    
+    /**
+     * Function: Get all posts
+     */
     ctrlScope.posts = [{title: "loading"}];
     $http.post(
       apiUrl,
@@ -18,8 +44,8 @@ angular.module("forms", ["api"])
       var blogNum, responseMessage, responseData;
       responseMessage = response.data.message;
       responseData = response.data.data;
-      
       ctrlScope.posts = [];
+      
       for (blogNum in responseData) {
         ctrlScope.posts.push(
           {
@@ -27,9 +53,10 @@ angular.module("forms", ["api"])
             author: responseData[blogNum].Author,
             description: responseData[blogNum].Description,
             keywords: responseData[blogNum].Keywords.join(", "),
-            date: responseData[blogNum].SavedDate
+            date: responseData[blogNum].SavedDate,
+            id: responseData[blogNum].ID,
           }
-        );
+        );    
       }
     }, function errorCallback(response) {
       ctrlScope.posts = [
@@ -38,7 +65,9 @@ angular.module("forms", ["api"])
           author: response.data.error,
           description: response.data.error,
           keywords: response.data.error,
-          date: response.data.error
+          date: response.data.error,
+          id: response.data.error,
+          counter: response.data.error
         }
       ];
     });
@@ -148,7 +177,7 @@ angular.module("forms", ["api"])
   .controller("cmsBlogFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
     "use strict";
     var ctrlScope = this;
-    
+
     ctrlScope.submitBlog = function () {
       $http.post(
         apiUrl,

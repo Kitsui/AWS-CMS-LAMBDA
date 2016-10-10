@@ -39,8 +39,12 @@
                       <td>{{page.description}}</td>
                       <td>{{page.keywords}}</td>
                       <td>{{page.date}}</td>
-                      <td><button type="submit" value="Submit">Delete</button>
-                        {{page.delete}}</td> <!-- Delete Button -->
+                        <td>
+                          <form ng-submit="cmsBlogFormCtrl.deleteBlog()">
+                            <button type="submit" 
+                          class="btn btn-danger">Delete</button>
+                          </form>
+                        </td> <!-- Delete Button -->
                     </tr>
                   </tbody>
                 </table>
