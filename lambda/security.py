@@ -107,7 +107,7 @@ class Security(object):
         try:
             role_info = dynamodb.get_item(
                 TableName=role_table,
-                Key={"Name": {"S": user_role}}
+                Key={"RoleName": {"S": user_role}}
             )
         except botocore.exceptions.ClientError as e:
             action = "Querying the role table for authorization"

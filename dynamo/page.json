@@ -1,0 +1,13 @@
+{
+	"Item": {
+	"title": {"S": "About Us"},
+	"content": {"S": "We are Kitsui"},
+	"uuid": {"S": "b1ae9738-87e4-453a-9b11-789941f0fb6f"},
+	"meta-data": {
+		"description": {"S": "test Description"},
+		"keywords": {"S": "keyword1, keyword2, keyword3, keyword4"}
+	},
+	"script-src": {"S": "something"}
+    },
+	"ReturnConsumedCapacity": "TOTAL"
+}
