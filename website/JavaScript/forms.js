@@ -20,28 +20,11 @@ angular.module("forms", ["api"])
     a success/failure message will be displayed 
     */  
     $scope.deleteBlog = function (post) {
-      dim(true);
-      startLoadingAnimation();
+      // get identifier Variable
       var postID = post['id'];
       console.log(postID);
-      $http.post(
-        apiUrl,
-        {
-          "request": "deleteBlog",
-          "blogID": postID
-        }
-      ).then(function successCallback(response) {
-        // Stop animation
-        stopLoadingAnimation();
-        dim(false);
-        console.log("Deleted Successfully");
-        // Remove element from view
-        removeElement('#'+postID);
-      }, function errorCallback(response) {
-        // Stop animation
-        stopLoadingAnimation();
-        dim(false);
-      });
+      // Call Delete Request
+      deleteRequest("BlogID", postID, "deleteBlog");
     };
     
     /**
@@ -105,28 +88,10 @@ angular.module("forms", ["api"])
     a success/failure message will be displayed 
     */  
     $scope.deletePage = function (page) {
-      dim(true);
-      startLoadingAnimation();
+      // get identifier Variable
       var name = page['name'];
       console.log(name);
-      $http.post(
-        apiUrl,
-        {
-          "request": "deletePage",
-          "pageName": name
-        }
-      ).then(function successCallback(response) {
-        // Stop animation
-        stopLoadingAnimation();
-        dim(false);
-        console.log("Deleted Successfully");
-        // Remove element from view
-        removeElement('#'+name);
-      }, function errorCallback(response) {
-        // Stop animation
-        stopLoadingAnimation();
-        dim(false);
-      });
+      deleteRequest("pageName", name, "deletePage");
     };
     
 
@@ -451,6 +416,36 @@ angular.module("forms", ["api"])
 /**
  * Utility Functions
  */
+
+/**
+ * Post Delete Request
+ * Takes an Identifier type of the record requested to be Deleted,
+ * an id which maps to the record and a requestType which maps to the 
+ * type of deletion method being accessed on the lamdbda controller
+ */
+  var deleteRequest = function (identifier, id, requestType) {
+    dim(true);
+    startLoadingAnimation();
+    $http.post(
+      apiUrl,
+      {
+        "request": requestType,
+        identifier: id
+      }
+    ).then(function successCallback(response) {
+      // Stop animation
+      stopLoadingAnimation();
+      dim(false);
+      console.log("Deleted Successfully");
+      // Remove element from view
+      removeElement('#'+id);
+    }, function errorCallback(response) {
+      // Stop animation
+      stopLoadingAnimation();
+      dim(false);
+    });
+  }
+
 
 /**
  * Dims the screen
