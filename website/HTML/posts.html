@@ -24,6 +24,7 @@
                       <th>Description</th>
                       <th>Keywords</th>
                       <th>Date</th>
+                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody ng-repeat="post in postCtrl.posts">
@@ -33,13 +34,19 @@
                       <td>Loading...</td>
                       <td>Loading...</td>
                       <td>Loading...</td>
+                      <td>Loading...</td>
                     </tr>
-                    <tr ng-hide="post.title=='loading'">
+                    <tr id={{post.id}} ng-hide="post.title=='loading'">
                       <td>{{post.title}}</td>
                       <td>{{post.author}}</td>
                       <td>{{post.description}}</td>
                       <td>{{post.keywords}}</td>
                       <td>{{post.date}}</td>
+                      <td>
+                        <form ng-submit="deleteBlog(post, $index)" ng-controller="cmsPostListCtrl">
+                          <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                      </td> <!-- Delete Button -->
                     </tr>
                   </tbody>
                 </table>

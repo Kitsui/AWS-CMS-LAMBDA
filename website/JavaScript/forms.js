@@ -5,44 +5,93 @@ angular.module("forms", ["api"])
     "use strict";
     $httpProvider.defaults.withCredentials = true;
   })
-  .controller("cmsPostListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsPostListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
     var ctrlScope = this;
-    ctrlScope.posts = [{title: "loading"}];
-    $http.post(
-      apiUrl,
-      {
-        "request": "getAllBlogs"
-      }
-    ).then(function successCallback(response) {
-      var blogNum, responseMessage, responseData;
-      responseMessage = response.data.message;
-      responseData = response.data.data;
-      
-      ctrlScope.posts = [];
-      for (blogNum in responseData) {
-        ctrlScope.posts.push(
-          {
-            title: responseData[blogNum].Title,
-            author: responseData[blogNum].Author,
-            description: responseData[blogNum].Description,
-            keywords: responseData[blogNum].Keywords.join(", "),
-            date: responseData[blogNum].SavedDate
-          }
-        );
-      }
-    }, function errorCallback(response) {
-      ctrlScope.posts = [
+
+    // Set post list
+    ctrlScope.posts = [];
+
+    /** Function: Delete Blog 
+    Passed an ID and submits a delete request to
+    Lambda. Displays a Wait animation while waiting 
+    for a response. On the event of a success/failure
+    a success/failure message will be displayed 
+    */  
+    $scope.deleteBlog = function (post) {
+      dim(true);
+      startLoadingAnimation();
+      var postID = post['id'];
+      console.log(postID);
+      $http.post(
+        apiUrl,
         {
-          title: response.data.error,
-          author: response.data.error,
-          description: response.data.error,
-          keywords: response.data.error,
-          date: response.data.error
+          "request": "deleteBlog",
+          "blogID": postID
         }
-      ];
-    });
-  }])
+      ).then(function successCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+        console.log("Deleted Successfully");
+        // Remove element from view
+        removeElement('#'+postID);
+      }, function errorCallback(response) {
+        // Stop animation
+        stopLoadingAnimation();
+        dim(false);
+      });
+    };
+    
+    /**
+     * Function: Returns all blogs by posting to the Lambda
+     * package and populating a list for an ng-repeat
+     */
+    var getAllBlogs  = function () {
+        //LoadingAnimation();
+        ctrlScope.posts = [{title: "loading"}];
+        $http.post(
+          apiUrl,
+          {
+            "request": "getAllBlogs"
+          }
+        ).then(function successCallback(response) {
+          var blogNum, responseMessage, responseData;
+          responseMessage = response.data.message;
+          responseData = response.data.data;
+          ctrlScope.posts = [];
+          
+          for (blogNum in responseData) {
+            ctrlScope.posts.push(
+              {
+                title: responseData[blogNum].Title,
+                author: responseData[blogNum].Author,
+                description: responseData[blogNum].Description,
+                keywords: responseData[blogNum].Keywords.join(", "),
+                date: responseData[blogNum].SavedDate,
+                id: responseData[blogNum].ID,
+              }
+            );    
+          }
+        }, function errorCallback(response) {
+          ctrlScope.posts = [
+            {
+              title: response.data.error,
+              author: response.data.error,
+              description: response.data.error,
+              keywords: response.data.error,
+              date: response.data.error,
+              id: response.data.error,
+              counter: response.data.error
+            }
+          ];
+        });
+    }
+
+    // Get all blogs on Page load
+    getAllBlogs();
+  }
+  ])
   .controller("cmsPageListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
     "use strict";
     var ctrlScope = this;
@@ -148,7 +197,7 @@ angular.module("forms", ["api"])
   .controller("cmsBlogFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
     "use strict";
     var ctrlScope = this;
-    
+
     ctrlScope.submitBlog = function () {
       $http.post(
         apiUrl,
@@ -362,6 +411,79 @@ angular.module("forms", ["api"])
       };
     }
   ]);
+
+/**
+ * Utility Functions
+ */
+
+/**
+ * Dims the screen
+ */
+var dim = function (bool)
+{
+    if (typeof bool=='undefined') bool=true; // so you can shorten dim(true) to dim()
+    document.getElementById('dimmer').style.display=(bool?'block':'none');
+}    
+
+  /**
+ * Loading animation function which summons a loading
+ * wheel in a DOM element selected by id
+ */
+var startLoadingAnimation =  function () {
+  console.log("lol.");
+    var opts = {
+      lines: 13 // The number of lines to draw
+      , length: 0 // The length of each line
+      , width: 19 // The line thickness
+      , radius: 42 // The radius of the inner circle
+      , scale: 1 // Scales overall size of the spinner
+      , corners: 0.6 // Corner roundness (0..1)
+      , color: '#FFF' // #rgb or #rrggbb or array of colors
+      , opacity: 0.05 // Opacity of the lines
+      , rotate: 0 // The rotation offset
+      , direction: 1 // 1: clockwise, -1: counterclockwise
+      , speed: 1.7 // Rounds per second
+      , trail: 61 // Afterglow percentage
+      , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+      , zIndex: 2e9 // The z-index (defaults to 2000000000)
+      , className: 'spinner' // The CSS class to assign to the spinner
+      , top: '50%' // Top position relative to parent
+      , left: '50%' // Left position relative to parent
+      , shadow: false // Whether to render a shadow
+      , hwaccel: false // Whether to use hardware acceleration
+      , position: 'absolute' // Element positioning
+    }
+    var target = document.getElementById('page-wrapper')
+    var spinner = new Spinner(opts).spin(target);
+};
+
+/**
+ * Stops loading animation
+ */
+var stopLoadingAnimation = function () {
+    $('.spinner').remove();
+}
+
+/**
+ * Removes element by ID
+ */
+var removeElement = function (id) {
+    $(id).remove();
+}
+
+/**
+ * Adds an attribute to an element in the DOM
+ */
+var addAttribute = function (element, attribute, type) {
+  var myEl = angular.element( document.querySelector( element ) );
+  // Check type and apply attribute
+  if (type == "class") {
+    myEl.addClass(attribute);
+  }
+  else if (type == "id") {
+    myEl.addIDToElement(attribute);
+  }
+}
 
 
 
