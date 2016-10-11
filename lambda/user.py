@@ -235,7 +235,7 @@ class User(object):
         try:
             dynamodb = boto3.client("dynamodb")
             role = dynamodb.get_item(
-                TableName=role_table, Key={"Name": {"S": role_name}}
+                TableName=role_table, Key={"RoleName": {"S": role_name}}
             )
         except botocore.exceptions.ClientError as e:
             action = "Fetching role from the role table"
@@ -257,7 +257,7 @@ class User(object):
         """ Puts a role in the role table """
         # Create the role entry
         role = {
-            "Name": {"S": role_name},
+            "RoleName": {"S": role_name},
             "Permissions": {"L": []}
         }
         for permission in permissions:
@@ -283,8 +283,8 @@ class User(object):
             dynamodb = boto3.client("dynamodb")
             delete_response = dynamodb.delete_item(
                 TableName=role_table,
-                Key={"Name": {"S": role_name}},
-                ConditionExpression="attribute_exists(Name)"
+                Key={"RoleName": {"S": role_name}},
+                ConditionExpression="attribute_exists(RoleName)"
             )
         except botocore.exceptions.ClientError as e:
             action = "Deleting role from the role table"

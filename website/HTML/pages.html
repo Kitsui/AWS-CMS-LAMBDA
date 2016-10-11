@@ -23,6 +23,7 @@
                       <th>Description</th>
                       <th>Keywords</th>
                       <th>Date</th>
+                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody ng-repeat="page in pageCtrl.pages">
@@ -31,12 +32,18 @@
                       <td>Loading...</td>
                       <td>Loading...</td>
                       <td>Loading...</td>
+                      <td>Loading...</td>
                     </tr>
-                    <tr ng-hide="page.name=='loading'">
+                    <tr id={{page.name}} ng-hide="page.name=='loading'">
                       <td><a ng-href="#/page-form/{{page.name}}">{{page.name}}</a></td>
                       <td>{{page.description}}</td>
                       <td>{{page.keywords}}</td>
                       <td>{{page.date}}</td>
+                        <td>
+                          <form ng-submit="deletePage(page)" ng-controller="cmsPageListCtrl">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                          </form>
+                        </td> <!-- Delete Button -->
                     </tr>
                   </tbody>
                 </table>

@@ -22,6 +22,7 @@
                       <th>Email</th>
                       <th>Username</th>
                       <th>Role</th>
+                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody ng-repeat="user in userCtrl.users">
@@ -29,11 +30,18 @@
                       <td>Loading...</td>
                       <td>Loading...</td>
                       <td>Loading...</td>
+                      <td>Loading...</td>
                     </tr>
-                    <tr ng-hide="user.email=='loading'">
+                    <!-- Split first part of email use as identifier-->
+                    <tr id="{{user.email | split}}" ng-hide="user.email=='loading'">
                       <td><a ng-href="#/user-form/{{user.id}}">{{user.email}}</a></td>
                       <td>{{user.username}}</td>
                       <td>{{user.role}}</td>
+                        <td>
+                          <form ng-submit="deleteUser(user)" ng-controller="cmsUserListCtrl">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                          </form>
+                        </td> <!-- Delete Button -->
                     </tr>
                   </tbody>
                 </table>

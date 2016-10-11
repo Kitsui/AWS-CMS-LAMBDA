@@ -21,16 +21,23 @@
                     <tr>
                       <th>RoleName</th>
                       <th>Permissions</th>
+                      <td>Delete</td>
                     </tr>
                   </thead>
                   <tbody ng-repeat="role in roleCtrl.roles">
                     <tr ng-if="role.roleName=='loading'">
                       <td>Loading...</td>
                       <td>Loading...</td>
+                      <td>Loading...</td>
                     </tr>
-                    <tr ng-hide="role.roleName=='loading'">
+                    <tr id={{role.roleName}} ng-hide="role.roleName=='loading'">
                       <td><a ng-href="#/role-form/{{role.roleName}}">{{role.roleName}}</a></td>
                       <td>{{role.permissions}}</td>
+                      <td>
+                        <form ng-submit="deleteRole(role)" ng-controller="cmsRoleListCtrl">
+                          <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                      </td> <!-- Delete Button -->
                     </tr>
                   </tbody>
                 </table>

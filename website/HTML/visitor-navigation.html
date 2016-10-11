@@ -16,14 +16,9 @@
             <div class="col-lg-10">
               <form role="form" ng-submit="visitorNavFormCtrl.submitNav()">
                 <div class="form-group">
-                  <label>Title</label>
-                  <input class="form-control" placeholder="Home" ng-model="visitorNavFormCtrl.nav_item.title">
-                  <p class="help-block">Title of your link</p>
-                </div>
-                <div class="form-group">
-                  <label>Link Url</label>
-                  <input class="form-control" placeholder="www.example.com" ng-model="visitorNavFormCtrl.nav_item.url">
-                  <p class="help-block">Url of your site</p>
+                  <label>Navigation JSON</label>
+                  <textarea rows="25" class="form-control" ng-model="visitorNavFormCtrl.nav_json">
+                  </textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button> 
               </form>
