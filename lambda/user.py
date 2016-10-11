@@ -258,10 +258,8 @@ class User(object):
         # Create the role entry
         role = {
             "RoleName": {"S": role_name},
-            "Permissions": {"L": []}
+            "Permissions": {"SS": permissions}
         }
-        for permission in permissions:
-            role["Permissions"]["L"].append({"S": permission})
         
         # Put the role in the role table
         try:
