@@ -28,25 +28,25 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
         controllerAs: "roleCtrl",
         replace: true
       })
-      .when("/page-form", {
+      .when("/page-form/:pageName?", {
         templateUrl: "page-form.html",
         controller: "cmsPageFormCtrl",
         controllerAs: "pageFormCtrl",
         replace: true
       })
-      .when("/blog-form", {
+      .when("/blog-form/:blogId?", {
         templateUrl: "blog-form.html",
         controller: "cmsBlogFormCtrl",
         controllerAs: "blogFormCtrl",
         replace: true
       })
-      .when("/user-form", {
+      .when("/user-form/:userId?", {
         templateUrl: "user-registration-form.html",
         controller: "cmsUserFormCtrl",
         controllerAs: "userFormCtrl",
         replace: true
       })
-      .when("/role-form", {
+      .when("/role-form/:roleName?", {
         templateUrl: "role-form.html",
         controller: "cmsRoleFormCtrl",
         controllerAs: "roleFormCtrl",
@@ -60,6 +60,8 @@ angular.module("index", ["ngRoute", "ui.tinymce", "forms", "api"])
       })
       .when("/settings", {
         templateUrl: "site-settings.html",
+        controller: "cmsSettingsFormCtrl",
+        controllerAs: "settingsFormCtrl",
         replace: true
       })
       .when("/visitor-nav", {

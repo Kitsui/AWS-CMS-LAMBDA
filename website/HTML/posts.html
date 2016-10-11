@@ -35,7 +35,7 @@
                       <td>Loading...</td>
                     </tr>
                     <tr ng-hide="post.title=='loading'">
-                      <td>{{post.title}}</td>
+                      <td><a ng-href="#/blog-form/{{post.id}}">{{post.title}}</a></td>
                       <td>{{post.author}}</td>
                       <td>{{post.description}}</td>
                       <td>{{post.keywords}}</td>

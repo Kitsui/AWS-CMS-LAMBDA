@@ -1,31 +1,31 @@
 {
 	"nav": [
-      {
-        "title": "Link One",
-        "url": "www.example.com",
-        "children": [
-            {
-              "title": "Child",
-              "url": "www.example.com"
-            }
-          ]
-      },
-      {
-        "title": "Link Two",
-        "url": "www.example.com"
-      },
-      {
-        "title": "Link Three",
-        "url": "www.example.com"
-      }
-    ],
-  "site_name": "",
-  "site_description": "",
-  "facebook": "",
-  "twitter": "",
-  "instgram": "",
-  "google_plus": "",
-  "footer": "",
-  "disqus_id": "",
-  "google_id": ""
+	  {
+		"title": "Link One",
+		"url": "www.example.com",
+		"children": [
+			{
+			  "title": "Child",
+			  "url": "www.example.com"
+			}
+		  ]
+	  },
+	  {
+		"title": "Link Two",
+		"url": "www.example.com"
+	  },
+	  {
+		"title": "Link Three",
+		"url": "www.example.com"
+	  }
+	],
+	"site_name": "",
+	"site_description": "",
+	"facebook": "",
+	"twitter": "",
+	"instgram": "",
+	"google_plus": "",
+	"footer": "",
+	"disqus_id": "",
+	"google_id": ""
 }

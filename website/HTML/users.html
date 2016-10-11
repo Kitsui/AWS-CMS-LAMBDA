@@ -31,7 +31,7 @@
                       <td>Loading...</td>
                     </tr>
                     <tr ng-hide="user.email=='loading'">
-                      <td>{{user.email}}</td>
+                      <td><a ng-href="#/user-form/{{user.id}}">{{user.email}}</a></td>
                       <td>{{user.username}}</td>
                       <td>{{user.role}}</td>
                     </tr>

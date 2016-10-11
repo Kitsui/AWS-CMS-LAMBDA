@@ -1,49 +1,11 @@
 /*global angular, FormData, FileReader*/
 
-angular.module("forms", ["api"])
+angular.module("forms", ["api", "ngRoute"])
   .config(function ($httpProvider) {
     "use strict";
     $httpProvider.defaults.withCredentials = true;
   })
-  .controller("cmsPostListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
-    "use strict";
-    var ctrlScope = this;
-    ctrlScope.posts = [{title: "loading"}];
-    $http.post(
-      apiUrl,
-      {
-        "request": "getAllBlogs"
-      }
-    ).then(function successCallback(response) {
-      var blogNum, responseMessage, responseData;
-      responseMessage = response.data.message;
-      responseData = response.data.data;
-      
-      ctrlScope.posts = [];
-      for (blogNum in responseData) {
-        ctrlScope.posts.push(
-          {
-            title: responseData[blogNum].Title,
-            author: responseData[blogNum].Author,
-            description: responseData[blogNum].Description,
-            keywords: responseData[blogNum].Keywords.join(", "),
-            date: responseData[blogNum].SavedDate
-          }
-        );
-      }
-    }, function errorCallback(response) {
-      ctrlScope.posts = [
-        {
-          title: response.data.error,
-          author: response.data.error,
-          description: response.data.error,
-          keywords: response.data.error,
-          date: response.data.error
-        }
-      ];
-    });
-  }])
-  .controller("cmsPageListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsPageListCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
     ctrlScope.pages = [{name: "loading"}];
@@ -79,7 +41,46 @@ angular.module("forms", ["api"])
       ];
     });
   }])
-  .controller("cmsUserListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsPostListCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    ctrlScope.posts = [{title: "loading"}];
+    $http.post(
+      apiUrl,
+      {
+        "request": "getAllBlogs"
+      }
+    ).then(function successCallback(response) {
+      var blogNum, responseMessage, responseData;
+      responseMessage = response.data.message;
+      responseData = response.data.data;
+      
+      ctrlScope.posts = [];
+      for (blogNum in responseData) {
+        ctrlScope.posts.push(
+          {
+            id: responseData[blogNum].ID,
+            title: responseData[blogNum].Title,
+            author: responseData[blogNum].Author,
+            description: responseData[blogNum].Description,
+            keywords: responseData[blogNum].Keywords.join(", "),
+            date: responseData[blogNum].SavedDate
+          }
+        );
+      }
+    }, function errorCallback(response) {
+      ctrlScope.posts = [
+        {
+          title: response.data.error,
+          author: response.data.error,
+          description: response.data.error,
+          keywords: response.data.error,
+          date: response.data.error
+        }
+      ];
+    });
+  }])
+  .controller("cmsUserListCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
     ctrlScope.users = [{email: "loading"}];
@@ -97,6 +98,7 @@ angular.module("forms", ["api"])
       for (userNum in responseData) {
         ctrlScope.users.push(
           {
+            id: responseData[userNum].ID,
             email: responseData[userNum].Email,
             username: responseData[userNum].Username,
             role: responseData[userNum].Role
@@ -113,7 +115,7 @@ angular.module("forms", ["api"])
       ];
     });
   }])
-  .controller("cmsRoleListCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsRoleListCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
     ctrlScope.roles = [{roleName: "loading"}];
@@ -145,7 +147,7 @@ angular.module("forms", ["api"])
       ];
     });
   }])
-  .controller("cmsBlogFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsBlogFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
     
@@ -166,33 +168,14 @@ angular.module("forms", ["api"])
       });
     };
   }])
-  .controller("cmsVisitorNavFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsPageFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
-    
-    ctrlScope.submitNav = function () {
-      $http.post(
-        apiUrl,
-        {
-          "request": "putNavItems",
-          "nav_items": [
-            {
-              "title": ctrlScope.nav_item.title,
-              "url": ctrlScope.nav_item.url,
-              "children": []
-            }
-          ]
-        }
-      ).then(function successCallback(response) {
-        ctrlScope.status = ("Successfully published nav items");
-      }, function errorCallback(response) {
-        ctrlScope.status = response.data.error;
-      });
-    };
-  }])
-  .controller("cmsPageFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
-    "use strict";
-    var ctrlScope = this;
+    ctrlScope.retrieving = false;
+    ctrlScope.header = "New Page";
+    ctrlScope.namePlaceholder = "Page name";
+    ctrlScope.descriptionPlaceholder = "Description";
+    ctrlScope.keywordsPlaceholder = "Keywords";
     
     ctrlScope.submitPage = function () {
       $http.post(
@@ -210,8 +193,32 @@ angular.module("forms", ["api"])
         ctrlScope.status = response.data.error;
       });
     };
+    
+    if ($routeParams.pageName !== undefined) {
+      ctrlScope.editing = true;
+      ctrlScope.retrieving = true;
+      ctrlScope.header = "Edit Page";
+      ctrlScope.namePlaceholder = "Retrieving...";
+      ctrlScope.descriptionPlaceholder = "Retrieving...";
+      ctrlScope.keywordsPlaceholder = "Retrieving...";
+      $http.post(
+        apiUrl,
+        {
+          "request": "getPage",
+          "pageName": $routeParams.pageName
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
+        ctrlScope.page = {
+          name: response.data.Name,
+          description: response.data.Description,
+          keywords: response.data.Keywords.join(" "),
+          content: response.data.Content
+        };
+      });
+    }
   }])
-  .controller("cmsUserFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsUserFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
     
@@ -237,9 +244,13 @@ angular.module("forms", ["api"])
       });
     };
   }])
-  .controller("cmsRoleFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsRoleFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
+    ctrlScope.retrieving = false;
+    ctrlScope.header = "New Role";
+    ctrlScope.namePlaceholder = "Role name";
+    ctrlScope.permissionsPlaceholder = "Permissions";
     
     ctrlScope.submitRole = function () {
       $http.post(
@@ -251,6 +262,127 @@ angular.module("forms", ["api"])
         }
       ).then(function successCallback(response) {
         ctrlScope.status = ("Successfully added role: " + ctrlScope.role.roleName);
+      }, function errorCallback(response) {
+        ctrlScope.status = response.data.error;
+      });
+    };
+    
+    if ($routeParams.roleName !== undefined) {
+      ctrlScope.editing = true;
+      ctrlScope.retrieving = true;
+      ctrlScope.header = "Edit Role";
+      ctrlScope.namePlaceholder = "Retrieving...";
+      ctrlScope.permissionsPlaceholder = "Retrieving...";
+      $http.post(
+        apiUrl,
+        {
+          "request": "getRole",
+          "roleName": $routeParams.roleName
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
+        ctrlScope.role = {
+          roleName: response.data.data.Name,
+          permissions: response.data.data.Permissions.join(" ")
+        };
+      });
+    }
+  }])
+  .controller("cmsSettingsFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    ctrlScope.retrieving = true;
+    ctrlScope.namePlaceholder = "Retrieving...";
+    ctrlScope.descriptionPlaceholder = "Retrieving...";
+    ctrlScope.facebookNamePlaceholder = "Retrieving...";
+    ctrlScope.twitterHandlePlaceholder = "Retrieving...";
+    ctrlScope.instagramNamePlaceholder = "Retrieving...";
+    ctrlScope.googlePlusNamePlaceholder = "Retrieving...";
+    ctrlScope.disqusIdPlaceholder = "Retrieving...";
+    ctrlScope.googleIdPlaceholder = "Retrieving...";
+    
+    ctrlScope.submitSettings = function () {
+      ctrlScope.retrieving = true;
+      
+      var siteName, siteDescription, facebook, twitter, instagram, googlePlus, footer, disqusId, googleId;
+      
+      if (ctrlScope.name !== undefined) { siteName = ctrlScope.name; } else { siteName = ""; }
+      if (ctrlScope.description !== undefined) { siteDescription = ctrlScope.description; } else { siteDescription = ""; }
+      if (ctrlScope.facebookName !== undefined) { facebook = ctrlScope.facebookName; } else { facebook = ""; }
+      if (ctrlScope.twitterHandle !== undefined) { twitter = ctrlScope.twitterHandle; } else { twitter = ""; }
+      if (ctrlScope.instagramName !== undefined) { instagram = ctrlScope.instagramName; } else { instagram = ""; }
+      if (ctrlScope.googlePlusName !== undefined) { googlePlus = ctrlScope.googlePlusName; } else { googlePlus = ""; }
+      if (ctrlScope.footer !== undefined) { footer = ctrlScope.footer; } else { footer = ""; }
+      if (ctrlScope.disqusId !== undefined) { disqusId = ctrlScope.disqusId; } else { disqusId = ""; }
+      if (ctrlScope.googleId !== undefined) { googleId = ctrlScope.googleId; } else { googleId = ""; }
+      
+      $http.post(
+        apiUrl,
+        {
+          "request": "putSiteSettings",
+          "siteName": siteName,
+          "siteDescription": siteDescription,
+          "facebook": facebook,
+          "twitter": twitter,
+          "instagram": instagram,
+          "googlePlus": googlePlus,
+          "footer": footer,
+          "disqusId": disqusId,
+          "googleId": googleId
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
+      }).then(function errorCallback(response) {
+        ctrlScope.retrieving = false;
+      })
+    };
+    
+    $http.post(
+      apiUrl,
+      {
+        "request": "getSiteSettings",
+      }
+    ).then(function successCallback(response) {
+      ctrlScope.retrieving = false;
+      ctrlScope.namePlaceholder = "Name";
+      ctrlScope.descriptionPlaceholder = "Description";
+      ctrlScope.facebookNamePlaceholder = "Facebook name";
+      ctrlScope.twitterHandlePlaceholder = "Twitter handle";
+      ctrlScope.instagramNamePlaceholder = "Instagram name";
+      ctrlScope.googlePlusNamePlaceholder = "Google plus name";
+      ctrlScope.disqusIdPlaceholder = "Disqus id";
+      ctrlScope.googleIdPlaceholder = "Google id";
+      
+      ctrlScope.name = response.data.site_name;
+      ctrlScope.description = response.data.site_description;
+      ctrlScope.footer = response.data.footer;
+      ctrlScope.facebookName = response.data.facebook;
+      ctrlScope.twitterHandle = response.data.twitter;
+      ctrlScope.instagramName = response.data.instagram;
+      ctrlScope.googlePlusName = response.data.google_plus;
+      ctrlScope.disqusId = response.data.disqus_id;
+      ctrlScope.googleId = response.data.google_id;
+    });
+  }])
+  .controller("cmsVisitorNavFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    
+    ctrlScope.submitNav = function () {
+      $http.post(
+        apiUrl,
+        {
+          "request": "putNavItems",
+          "nav_items": [
+            {
+              "title": ctrlScope.nav_item.title,
+              "url": ctrlScope.nav_item.url,
+              "children": []
+            }
+          ]
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.status = ("Successfully published nav items");
       }, function errorCallback(response) {
         ctrlScope.status = response.data.error;
       });

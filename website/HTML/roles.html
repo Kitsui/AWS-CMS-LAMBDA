@@ -29,7 +29,7 @@
                       <td>Loading...</td>
                     </tr>
                     <tr ng-hide="role.roleName=='loading'">
-                      <td>{{role.roleName}}</td>
+                      <td><a ng-href="#/role-form/{{role.roleName}}">{{role.roleName}}</a></td>
                       <td>{{role.permissions}}</td>
                     </tr>
                   </tbody>
