@@ -30,7 +30,7 @@ class Site_Settings(object):
         # Get nav item JSON
         nav_items = site_settings["nav"]
         # Return nav item data
-        return json.dumps(nav_items)
+        return {"data": nav_items}
 
     @staticmethod
     def put_nav_items(nav_items, bucket):

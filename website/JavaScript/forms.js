@@ -329,24 +329,71 @@ angular.module("forms", ["api"])
     var ctrlScope = this;
     
     ctrlScope.submitNav = function () {
-      $http.post(
-        apiUrl,
-        {
-          "request": "putNavItems",
-          "nav_items": [
-            {
-              "title": ctrlScope.nav_item.title,
-              "url": ctrlScope.nav_item.url,
-              "children": []
-            }
-          ]
-        }
-      ).then(function successCallback(response) {
-        ctrlScope.status = ("Successfully published nav items");
-      }, function errorCallback(response) {
-        ctrlScope.status = response.data.error;
-      });
+
+      var str = ctrlScope.nav_json;
+
+      if(isJson(str)) {
+        $http.post(
+          apiUrl,
+          {
+            "request": "putNavItems",
+            "nav_json": str.replace(/(\r\n|\n|\r)/gm,"")
+          }
+        ).then(function successCallback(response) {
+          ctrlScope.status = ("Successfully published nav items");
+          alert("Successfully published nav items");
+        }, function errorCallback(response) {
+          ctrlScope.status = response.data.error;
+          alert("Unable to publish nav items");
+        });
+      }
+      else {
+        alert("Not valid JSON");
+      }
     };
+
+    function isJson(str) {  
+      try {
+          JSON.parse(str);
+      } catch (e) {
+          return false;
+      }
+      return true;
+    };
+
+    var getNavItems  = function () {
+        $http.post(
+          apiUrl,
+          {
+            "request": "getNavItems"
+          }
+        ).then(function successCallback(response) {
+          
+          var navJson = response.data.data;
+
+          // Remove escaped double quotes
+          navJson = navJson.replace(/\\"/g, '"');
+
+          // Remove first and last double quotes
+          if(navJson.charAt(0) == "\"" && navJson.charAt(navJson.length - 1 == "\""))
+            navJson = navJson.substr(1, navJson.length - 2);
+
+          navJson = JSON.parse(navJson);
+
+          ctrlScope.nav_json = JSON.stringify(navJson, null, 4);
+
+        }, function errorCallback(response) {
+          ctrlScope.nav = [
+            {
+              nav_json: response.data.error
+            }
+          ];
+        });
+    }
+
+    // Get nav data on load
+    getNavItems();
+
   }])
   .controller("cmsPageFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
     "use strict";

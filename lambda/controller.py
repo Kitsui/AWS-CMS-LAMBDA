@@ -381,25 +381,14 @@ def process_request(request_body, resources, request, user_info=None, token=None
         """ Request structure
             {
                 request: putNavItems,
-                nav_items: <list:
-                    {
-                        title: <str: title>
-                        url: <str: url>
-                        children: <list:
-                            {
-                                title: <str: title>
-                                url: <str: url>
-                            }
-                        >
-                    }
-                >
+                nav_json: <str: json>
             }
         """
-        if not "nav_items" in request_body:
-            Error.send_error("noNavItems", data={"request": request})
+        if not "nav_json" in request_body:
+            Error.send_error("noNavJson", data={"request": request})
             
-        nav_items = request_body["nav_items"]
-        return Site_Settings.put_nav_items(nav_items, resources["BUCKET"])
+        nav_json = request_body["nav_json"]
+        return Site_Settings.put_nav_items(nav_json, resources["BUCKET"])
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
 
