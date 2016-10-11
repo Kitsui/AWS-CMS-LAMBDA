@@ -445,14 +445,9 @@ def supported_request(request):
     New request types need to be added to the corresponding arrays """
 
     supported_gets = [
-<<<<<<< HEAD
         "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog",
         "getAllBlogs", "getPage", "getAllPages", "getPresignedPostImage",
         "getSiteSettings", "getNavItems"
-=======
-        "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog", "getAllBlogs", "getPage",
-        "getAllPages", "getPresignedPostImage", "getSiteSettings", "getNavItems", "getPermissions"
->>>>>>> 5e393f4be5416eac0726e3bb19a0afaedb5c19db
     ]
     supported_puts = [
         "putUser", "putRole", "putBlog", "putPage", "putNavItems",

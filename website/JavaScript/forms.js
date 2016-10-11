@@ -132,7 +132,7 @@ angular.module("forms", ["api", "ngRoute"])
       for (pageNum in responseData) {
         ctrlScope.pages.push(
           {
-            name: responseData[pageNum].Name,
+            name: responseData[pageNum].PageName,
             description: responseData[pageNum].Description,
             keywords: responseData[pageNum].Keywords.join(", "),
             date: responseData[pageNum].SavedDate
@@ -413,7 +413,7 @@ angular.module("forms", ["api", "ngRoute"])
       ).then(function successCallback(response) {
         ctrlScope.retrieving = false;
         ctrlScope.page = {
-          name: response.data.Name,
+          name: response.data.PageName,
           description: response.data.Description,
           keywords: response.data.Keywords.join(" "),
           content: response.data.Content
@@ -485,7 +485,7 @@ angular.module("forms", ["api", "ngRoute"])
       ).then(function successCallback(response) {
         ctrlScope.retrieving = false;
         ctrlScope.role = {
-          roleName: response.data.data.Name,
+          roleName: response.data.data.RoleName,
           permissions: response.data.data.Permissions.join(" ")
         };
       });
