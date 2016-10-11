@@ -7,7 +7,6 @@
 # Date: 10/10/2016
 """
 # upload selected file
-# run this python update.py [location-in-s3] [location of file to upload]
 
 import json
 import os
@@ -19,9 +18,25 @@ import boto3
 
 from cms_functions import AwsFunc
 
+def print_help():
+    print """ 
+Help :
+[Upload-File] : python upload_s3.py [location-in-s3] [location-of-local-file-to-upload]
+
+[Upload-Website-File] python upload_s3.py [location-of-local-file-to-upload]
+"""
+
+if (str(sys.argv[1]) == "--help"):
+    print_help()
+    sys.exit()
+
 # Get file local location and destination
-path = str(sys.argv[1])
-fileKey = str(sys.argv[2])
+if (str(sys.argv[1]) == "1"): # Default website deployment
+    path = "website/"+str(sys.argv[2])
+    fileKey = str(sys.argv[2])
+else: # Manual path selection
+    path = str(sys.argv[1])
+    fileKey = str(sys.argv[2])
 
 print "Uploading ::" + path + " to Location in s3 ::" + fileKey
 
@@ -31,6 +46,7 @@ if os.path.isfile("./installed.json"):
         installed = json.loads(installed_file.read())
 else:
     print "No cms' are installed, exiting"
+    print_help()
     sys.exit()
 
 # Ask the user which cms to update
@@ -41,6 +57,7 @@ user_selection = str(input("Enter the number of the cms whose lambda "
                            "code you would like to update: "))
 if user_selection not in installed.keys():
     print "Invalid selection, exiting."
+    print_help()
     sys.exit()
 else:
     # Get Constants value according to the CMS
@@ -78,6 +95,7 @@ try:
 except botocore.exceptions.ClientError as e:
     print e.response["Error"]["Code"]
     print e.response["Error"]["Message"]
+    print_help()
     sys.exit()
 
 
