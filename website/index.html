@@ -1,11 +1,11 @@
 <html ng-app="Kitsui">
 <head>
-	<title>Latest | Site Name</title>
+	<title ng-controller="SettingsController as settings ">Latest | {{ settings.site_name }}</title>
 	<!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<!-- Compiled and minified CSS -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.js" integrity="sha256-OxCsGH/j2k+Ub6Lo55TiYwZ94bv9Jmgvbn7gDahtiIs=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css" integrity="sha256-bZkavcZrFlXfus3527w/pLbvXgyqnrHbNdMpwNXf1dA=" crossorigin="anonymous" />
+ 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.js" integrity="sha256-OxCsGH/j2k+Ub6Lo55TiYwZ94bv9Jmgvbn7gDahtiIs=" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular-route.js" integrity="sha256-SAQ4JgNuN5J22HeNmrNXLyvqEh6gUoWsetBCX8EUnZQ=" crossorigin="anonymous"></script>
 	<script src="site.js"></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -21,52 +21,55 @@
 </head>
 
 <body class="grey lighten-4">
-<head>
-	<nav class="cyan darken-2">
+<header ng-controller="SettingsController as settings">
+	<nav class="{{ settings.primary_colour }}">
 		<div class="nav-wrapper container">
-		  <a href="#/" class="brand-logo">Site Name</a>
-		  <ul id="nav-mobile" class="right hide-on-med-and-down">
-			<li><a href="#/page/8">Cold Tires</a></li>
-			<li><a href="#/post/8">GRX-7 Review</a></li>
+		  <a href="#/" class="brand-logo">{{ settings.site_name }}</a>
+		  <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+		  <ul class="right hide-on-med-and-down">
+			<li ng-repeat="nav in settings.nav"> <a href="{{ nav.url }}">{{ nav.title }}</a> </li>  
+		  </ul>
+		  <ul class="side-nav" id="mobile-demo">
+			<li><a href="sass.html">Sass</a></li>
+			<li><a href="badges.html">Components</a></li>
+			<li><a href="collapsible.html">Javascript</a></li>
+			<li><a href="mobile.html">Mobile</a></li>
 		  </ul>
 		</div>
-	</nav>
-</head>
+	  </nav>
+</header>
 
 <main ng-view>
 	<!-- Content is inserted here -->
 </main>
 
-<footer class="page-footer cyan">
+<footer class="page-footer {{ settings.primary_colour }}" ng-controller="SettingsController as settings">
   <div class="container">
 	<div class="row">
-	  <div class="col l6 s12">
-		<h5 class="white-text">Footer Content</h5>
-		<p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+	  <div class="col l6 s12" ng-bind-html="settings.footer | html">
 	  </div>
-	  <div class="col l4 offset-l2 s12">
+	  <div class="col l4 offset-l2 s12" ng-if="settings.facebook != '' || settings.twitter != '' || settings.instagram != '' || settings.facebook != ''">
 		<h5 class="white-text">Find Us On</h5>
 		<ul>
-		  <li><a class="grey-text text-lighten-3" href="#!">Faceook</a></li>
-		  <li><a class="grey-text text-lighten-3" href="#!">Instragram</a></li>
-		  <li><a class="grey-text text-lighten-3" href="#!">Twitter</a></li>
-		  <li><a class="grey-text text-lighten-3" href="#!">Google Plus</a></li>
+		  <li ng-if="settings.facebook != ''"><a target="_blank" class="grey-text text-lighten-3" href="https://www.facebook.com/{{ settings.facebook }}">Facebook</a></li>
+		  <li ng-if="settings.instagram != ''"><a target="_blank" class="grey-text text-lighten-3" href="https://instagram.com/{{ settings.instagram }}">Instagram</a></li>
+		  <li ng-if="settings.twitter != ''"><a target="_blank" class="grey-text text-lighten-3" href="https://twitter.com/{{ settings.twitter }}">Twitter</a></li>
+		  <li ng-if="settings.google_plus != ''"><a target="_blank" class="grey-text text-lighten-3" href="https://plus.google.com/{{ settings.google_plus }}">Google Plus</a></li>
 		</ul>
 	  </div>
 	</div>
   </div>
   <div class="footer-copyright">
 	<div class="container">
-	&copy; 2016 Your Name
-	<span class="grey-text text-lighten-4 right">Powered by <a class="pink-text" href="http://kitsui.github.io">Kitsui</a></span>
+	&copy; 2016 {{ settings.site_name }}
+	<span class="grey-text text-lighten-4 right">Powered by <a class="{{ settings.highlight_colour }}-text" href="http://kitsui.github.io">Kitsui</a></span>
 	</div>
   </div>
 </footer>
   
 </body>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-<!-- Compiled and minified JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js" integrity="sha256-YUCh5+Y7KLYFkfuGkmKTo2Bsm2+RHjbG7aefaPF/cBg=" crossorigin="anonymous"></script>
 
 
 </html>

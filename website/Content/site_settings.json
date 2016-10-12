@@ -2,7 +2,7 @@
 	"nav": [
       {
         "title": "Link One",
-        "url": "www.example.com",
+        "url": "http://www.example.com",
         "children": [
             {
               "title": "Child",
@@ -12,20 +12,22 @@
       },
       {
         "title": "Link Two",
-        "url": "www.example.com"
+        "url": "http://www.example.com"
       },
       {
         "title": "Link Three",
-        "url": "www.example.com"
+        "url": "http://www.example.com"
       }
     ],
-  "site_name": "",
-  "site_description": "",
+  "site_name": "My Blog",
+  "site_description": "My brand new Kitsui blog.",
   "facebook": "",
   "twitter": "",
-  "instgram": "",
+  "instagram": "",
   "google_plus": "",
-  "footer": "",
+  "footer": "<h5 class='white-text'>Footer Content</h5><p class='grey-text text-lighten-4'>You can use rows and columns here to organize your footer content.</p>",
   "disqus_id": "",
-  "google_id": ""
+  "google_id": "",
+  "primary_colour": "blue",
+  "highlight_colour": "deep-orange"
 }
