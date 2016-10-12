@@ -15,12 +15,25 @@ class Site_Settings(object):
     """ Provides functions for handling SiteSettings related requests """
     
     @staticmethod
-    def get_all_settings(bucket):
-        return Site_Settings.read_site_settings(bucket);
+    def get_site_settings(bucket):
+        return json.loads(Site_Settings.read_site_settings(bucket));
 
     @staticmethod
-    def put_settings():
-        pass
+    def put_site_settings(site_name, site_description, facebook, twitter,
+                          instagram, google_plus, footer, disqus_id, google_id,
+                          bucket):
+        site_settings = json.loads(Site_Settings.read_site_settings(bucket))
+        site_settings["site_name"] = site_name
+        site_settings["site_description"] = site_description
+        site_settings["facebook"] = facebook
+        site_settings["twitter"] = twitter
+        site_settings["instagram"] = instagram
+        site_settings["google_plus"] = google_plus
+        site_settings["footer"] = footer
+        site_settings["disqus_id"] = disqus_id
+        site_settings["google_id"] = google_id
+        
+        return Site_Settings.save_site_settings(site_settings, bucket)
 
     @staticmethod
     def get_nav_items(bucket):
@@ -30,7 +43,7 @@ class Site_Settings(object):
         # Get nav item JSON
         nav_items = site_settings["nav"]
         # Return nav item data
-        return json.dumps(nav_items)
+        return {"data": nav_items}
 
     @staticmethod
     def put_nav_items(nav_items, bucket):
@@ -73,4 +86,5 @@ class Site_Settings(object):
             action = "Putting site settings in the bucket"
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
-
+        
+        return {"message": "Successfully saved site settings"}

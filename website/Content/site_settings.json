@@ -1,33 +1,33 @@
 {
 	"nav": [
-      {
-        "title": "Link One",
-        "url": "http://www.example.com",
-        "children": [
-            {
-              "title": "Child",
-              "url": "www.example.com"
-            }
-          ]
-      },
-      {
-        "title": "Link Two",
-        "url": "http://www.example.com"
-      },
-      {
-        "title": "Link Three",
-        "url": "http://www.example.com"
-      }
-    ],
-  "site_name": "My Blog",
-  "site_description": "My brand new Kitsui blog.",
-  "facebook": "",
-  "twitter": "",
-  "instagram": "",
-  "google_plus": "",
-  "footer": "<h5 class='white-text'>Footer Content</h5><p class='grey-text text-lighten-4'>You can use rows and columns here to organize your footer content.</p>",
-  "disqus_id": "",
-  "google_id": "",
-  "primary_colour": "blue",
-  "highlight_colour": "deep-orange"
+	  {
+		"title": "Link One",
+		"url": "http://www.example.com",
+		"children": [
+			{
+			  "title": "Child",
+			  "url": "http://www.example.com"
+			}
+		  ]
+	  },
+	  {
+		"title": "Link Two",
+		"url": "http://www.example.com"
+	  },
+	  {
+		"title": "Link Three",
+		"url": "http://www.example.com"
+	  }
+	],
+	"site_name": "My Blog",
+	"site_description": "My brand new Kitsui blog.",
+	"facebook": "",
+	"twitter": "",
+	"instgram": "",
+	"google_plus": "",
+	"disqus_id": "",
+	"google_id": "",
+	"footer": "<h5 class='white-text'>Footer Content</h5><p class='grey-text text-lighten-4'>You can use rows and columns here to organize your footer content.</p>",
+	"primary_colour": "blue",
+	"highlight_colour": "deep-orange"
 }

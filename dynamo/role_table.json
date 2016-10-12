@@ -1,13 +1,13 @@
 {	
 	"AttributeDefinitions": [
 		{
-			"AttributeName": "Name",
+			"AttributeName": "RoleName",
 			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
-			"AttributeName": "Name",
+			"AttributeName": "RoleName",
 			"KeyType": "HASH"
 		}
 	],

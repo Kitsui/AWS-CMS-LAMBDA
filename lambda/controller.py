@@ -58,6 +58,8 @@ def handler(event, context):
             user_token, request, resources["TOKEN_TABLE"],
             resources["USER_TABLE"], resources["ROLE_TABLE"]
         )
+
+        print user_info
         
         # Strip dynamo type identifiers from user info
         user_info = strip_dynamo_types(user_info)
@@ -125,6 +127,14 @@ def process_request(request_body, resources, request, user_info=None, token=None
             }
         """
         return User.logout(token, resources["TOKEN_TABLE"])
+    elif request == "getPermissions":
+        """ Request structure
+            {
+                request: logoutUser
+            }
+        """
+        return Security.get_permissions(token, request, resources["TOKEN_TABLE"],
+            resources["USER_TABLE"], resources["ROLE_TABLE"])
     elif request == "putUser":
         """ Request structure
             {
@@ -359,7 +369,54 @@ def process_request(request_body, resources, request, user_info=None, token=None
                 request: getSiteSettings
             }
         """
-        return Site_Settings.get_all_settings(resources["BUCKET"]);
+        return Site_Settings.get_site_settings(resources["BUCKET"])
+    elif request == "putSiteSettings":
+        """ Request structure
+            {
+                request: putSiteSettings,
+                siteName: <str: site name>,
+                siteDescription: <str: site description>,
+                facebook: <str: facebook name>,
+                twitter: <str: twitter handle>,
+                instagram: <str: instagram name>,
+                googlePlus: <str: google plus name>,
+                footer: <str: site footer>,
+                disqusId: <str: disqus id>,
+                googleId: <str: google id>
+            }
+        """
+        if not "siteName" in request_body:
+            Error.send_error("noSiteName", data={"request": request})
+        if not "siteDescription" in request_body:
+            Error.send_error("noSiteDescription", data={"request": request})
+        if not "facebook" in request_body:
+            Error.send_error("noFacebookName", data={"request": request})
+        if not "twitter" in request_body:
+            Error.send_error("noTwitterHandle", data={"request": request})
+        if not "instagram" in request_body:
+            Error.send_error("noInstagramName", data={"request": request})
+        if not "googlePlus" in request_body:
+            Error.send_error("noGooglePlusName", data={"request": request})
+        if not "footer" in request_body:
+            Error.send_error("noSiteFooter", data={"request": request})
+        if not "disqusId" in request_body:
+            Error.send_error("noDisqusId", data={"request": request})
+        if not "googleId" in request_body:
+            Error.send_error("noGoogleId", data={"request": request})
+        
+        site_name = request_body["siteName"]
+        site_description = request_body["siteDescription"]
+        facebook = request_body["facebook"]
+        twitter = request_body["twitter"]
+        instagram = request_body["instagram"]
+        google_plus = request_body["googlePlus"]
+        footer = request_body["footer"]
+        disqus_id = request_body["disqusId"]
+        google_id = request_body["googleId"]
+        return Site_Settings.put_site_settings(
+            site_name, site_description, facebook, twitter, instagram,
+            google_plus, footer, disqus_id, google_id, resources["BUCKET"]
+        )
     elif request == "getNavItems":
         """ Request structure
             {
@@ -371,35 +428,30 @@ def process_request(request_body, resources, request, user_info=None, token=None
         """ Request structure
             {
                 request: putNavItems,
-                nav_items: <list:
-                    {
-                        title: <str: title>
-                        url: <str: url>
-                        children: <list:
-                            {
-                                title: <str: title>
-                                url: <str: url>
-                            }
-                        >
-                    }
-                >
+                nav_json: <str: json>
             }
         """
-        if not "nav_items" in request_body:
-            Error.send_error("noNavItems", data={"request": request})
+        if not "nav_json" in request_body:
+            Error.send_error("noNavJson", data={"request": request})
             
-        nav_items = request_body["nav_items"]
-        return Site_Settings.put_nav_items(nav_items, resources["BUCKET"])
+        nav_json = request_body["nav_json"]
+        return Site_Settings.put_nav_items(nav_json, resources["BUCKET"])
     else:
         Error.send_error("unsupportedRequest", data={"request": request})
 
+
 def supported_request(request):
+    """Function which Returns back a boolean indicating if the request type is valid or not
+    New request types need to be added to the corresponding arrays """
+
     supported_gets = [
-        "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog", "getAllBlogs", "getPage",
-        "getAllPages", "getPresignedPostImage", "getSiteSettings", "getNavItems"
+        "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog",
+        "getAllBlogs", "getPage", "getAllPages", "getPresignedPostImage",
+        "getSiteSettings", "getNavItems"
     ]
     supported_puts = [
-        "putUser", "putRole", "putBlog", "putPage", "putNavItems"
+        "putUser", "putRole", "putBlog", "putPage", "putNavItems",
+        "putSiteSettings"
     ]
     supported_posts = [
         "loginUser", "logoutUser"
