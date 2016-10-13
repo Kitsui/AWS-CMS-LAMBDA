@@ -289,6 +289,10 @@ angular.module("forms", ["api", "ngRoute"])
     "use strict";
     var ctrlScope = this;
     ctrlScope.retrieving = false;
+    ctrlScope.header = "New Blog Post";
+    ctrlScope.titlePlaceholder = "Title";
+    ctrlScope.descriptionPlaceholder = "Description";
+    ctrlScope.keywordsPlaceholder = "Keywords";
 
     ctrlScope.submitBlog = function () {
       ctrlScope.retrieving = true;
@@ -308,6 +312,30 @@ angular.module("forms", ["api", "ngRoute"])
         ctrlScope.status = response.data.error;
       });
     };
+    
+    if ($routeParams.blogId !== undefined) {
+      ctrlScope.editing = true;
+      ctrlScope.retrieving = true;
+      ctrlScope.header = "Edit Blog Post";
+      ctrlScope.titlePlaceholder = "Retrieving...";
+      ctrlScope.descriptionPlaceholder = "Retrieving...";
+      ctrlScope.keywordsPlaceholder = "Retrieving...";
+      $http.post(
+        apiUrl,
+        {
+          "request": "getBlog",
+          "blogID": $routeParams.blogId
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
+        ctrlScope.blog = {
+          title: response.data.data.Title,
+          description: response.data.data.Description,
+          keywords: response.data.data.Keywords.join(" "),
+          content: response.data.data.Content
+        };
+      });
+    }
   }])
   .controller("cmsVisitorNavFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
     "use strict";
