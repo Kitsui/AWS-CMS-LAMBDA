@@ -103,6 +103,18 @@ def process_request(request_body, resources, request, user_info=None, token=None
         
         email = request_body["email"]
         return User.get_user(email, resources["USER_TABLE"])
+    elif request == "getUserFromId":
+        """ Request structure
+            {
+                request: getUserFromId,
+                userId: <str: user id>
+            }
+        """
+        if not "userId" in request_body:
+            Error.send_error("noUserId", data={"request": request})
+        
+        user_id = request_body["userId"]
+        return User.get_user_from_id(user_id, resources["USER_TABLE"])
     elif request == "loginUser":
         """ Request structure
             {
@@ -445,7 +457,7 @@ def supported_request(request):
     New request types need to be added to the corresponding arrays """
 
     supported_gets = [
-        "getUser", "getAllUsers", "getAllRoles", "getRole", "getBlog",
+        "getUser", "getUserFromId", "getAllUsers", "getAllRoles", "getRole", "getBlog",
         "getAllBlogs", "getPage", "getAllPages", "getPresignedPostImage",
         "getSiteSettings", "getNavItems"
     ]

@@ -160,7 +160,38 @@ class User(object):
         user = user["Item"]
         
         return {"message": "Successfully fetched user", "data": user}
-
+    
+    @staticmethod
+    def get_user_from_id(user_id, user_table):
+        """ Fetches a user entry from the user table """
+        try:
+            dynamodb = boto3.client("dynamodb")
+            user = dynamodb.scan(
+                TableName=user_table,
+                FilterExpression="ID = :id",
+                ExpressionAttributeValues={
+                    ":id": {"S": user_id}
+                },
+                ProjectionExpression="Email, Username, ID, #R",
+                ExpressionAttributeNames={
+                    "#R": "Role"
+                }
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Fetching user from the user table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # Check that the email has a user associated with it
+        if not "Items" in user:
+            action = "Fetching user from the user table"
+            return {"error": "InvalidUserId",
+                    "data": {"userId": user_id, "action": action}}
+        
+        user = user["Items"][0]
+        
+        return {"message": "Successfully fetched user", "data": user}
+        
     @staticmethod
     def put_user(email, username, password, role_name, user_table):
         """ Puts a user in the user table """

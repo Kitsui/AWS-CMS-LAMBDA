@@ -288,8 +288,10 @@ angular.module("forms", ["api", "ngRoute"])
   .controller("cmsBlogFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
+    ctrlScope.retrieving = false;
 
     ctrlScope.submitBlog = function () {
+      ctrlScope.retrieving = true;
       $http.post(
         apiUrl,
         {
@@ -300,6 +302,7 @@ angular.module("forms", ["api", "ngRoute"])
           "keywords": ctrlScope.blog.keywords.match(/\S+/g)
         }
       ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
         ctrlScope.status = ("Successfully published blog: " + ctrlScope.blog.title);
       }, function errorCallback(response) {
         ctrlScope.status = response.data.error;
@@ -381,6 +384,7 @@ angular.module("forms", ["api", "ngRoute"])
     ctrlScope.keywordsPlaceholder = "Keywords";
     
     ctrlScope.submitPage = function () {
+      ctrlScope.retrieving = true;
       $http.post(
         apiUrl,
         {
@@ -391,6 +395,7 @@ angular.module("forms", ["api", "ngRoute"])
           "keywords": ctrlScope.page.keywords.match(/\S+/g)
         }
       ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
         ctrlScope.status = ("Successfully published page: " + ctrlScope.page.name);
       }, function errorCallback(response) {
         ctrlScope.status = response.data.error;
@@ -424,10 +429,18 @@ angular.module("forms", ["api", "ngRoute"])
   .controller("cmsUserFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
+    ctrlScope.retrieving = false;
+    ctrlScope.header = "Register User";
+    ctrlScope.emailPlaceholder = "Email";
+    ctrlScope.usernamePlaceholder = "Username";
+    ctrlScope.passwordPlaceholder = "Password";
+    ctrlScope.confirmPlaceholder = "Confirm Password";
+    ctrlScope.roleNamePlaceholder = "Role name";
     
     ctrlScope.submitUser = function () {
+      ctrlScope.retrieving = true;
       if (ctrlScope.user.password !== ctrlScope.user.passwordConfirm) {
-        ctrlScope.status = "Password confirmation does not match password";
+        ctrlScope.invalidConfirm = true;
         return;
       }
       
@@ -441,11 +454,42 @@ angular.module("forms", ["api", "ngRoute"])
           "roleName": ctrlScope.user.roleName
         }
       ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
         ctrlScope.status = ("Successfully registered user: " + ctrlScope.user.username);
       }, function errorCallback(response) {
         ctrlScope.status = response.data.error;
       });
     };
+    
+    if ($routeParams.userId !== undefined) {
+      ctrlScope.editing = true;
+      ctrlScope.retrieving = true;
+      ctrlScope.header = "Edit User";
+      ctrlScope.emailPlaceholder = "Retrieving...";
+      ctrlScope.usernamePlaceholder = "Retrieving...";
+      ctrlScope.passwordPlaceholder = "Retrieving...";
+      ctrlScope.confirmPlaceholder = "Retrieving...";
+      ctrlScope.roleNamePlaceholder = "Retrieving...";
+      $http.post(
+        apiUrl,
+        {
+          "request": "getUserFromId",
+          "userId": $routeParams.userId
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
+        ctrlScope.emailPlaceholder = "Email";
+        ctrlScope.usernamePlaceholder = "Username";
+        ctrlScope.passwordPlaceholder = "Password";
+        ctrlScope.confirmPlaceholder = "Confirm Password";
+        ctrlScope.roleNamePlaceholder = "Role name";
+        ctrlScope.user = {
+          email: response.data.data.Email,
+          username: response.data.data.Username,
+          roleName: response.data.data.Role
+        };
+      });
+    }
   }])
   .controller("cmsRoleFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
@@ -456,6 +500,7 @@ angular.module("forms", ["api", "ngRoute"])
     ctrlScope.permissionsPlaceholder = "Permissions";
     
     ctrlScope.submitRole = function () {
+      ctrlScope.retrieving = true;
       $http.post(
         apiUrl,
         {
@@ -464,6 +509,7 @@ angular.module("forms", ["api", "ngRoute"])
           "permissions": ctrlScope.role.permissions.match(/\S+/g)
         }
       ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
         ctrlScope.status = ("Successfully added role: " + ctrlScope.role.roleName);
       }, function errorCallback(response) {
         ctrlScope.status = response.data.error;
