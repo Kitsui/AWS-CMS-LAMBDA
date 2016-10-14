@@ -49,7 +49,7 @@
                 </div>
                 <div class="form-group">
                   <label>Site Footer</label>
-                  <textarea rows=5 id="footer" ng-model="settingsFormCtrl.footer" ng-disabled="settingsFormCtrl.retrieving" ui-tinymce></textarea>
+                  <textarea rows=5 id="footer" ng-model="settingsFormCtrl.footer" ng-disabled="settingsFormCtrl.retrieving" ui-tinymce="settingsFormCtrl.tinymceOptions"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary" ng-disabled="settingsFormCtrl.retrieving">Save</button>
               </form>

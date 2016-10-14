@@ -293,6 +293,12 @@ angular.module("forms", ["api", "ngRoute"])
     ctrlScope.titlePlaceholder = "Title";
     ctrlScope.descriptionPlaceholder = "Description";
     ctrlScope.keywordsPlaceholder = "Keywords";
+    ctrlScope.tinymceOptions = {
+      plugins : 'advlist autolink link image media lists charmap preview code',
+      skin: 'lightgray',
+      theme : 'modern',
+      media_live_embeds: true
+    };
 
     ctrlScope.submitBlog = function () {
       ctrlScope.retrieving = true;
@@ -410,6 +416,12 @@ angular.module("forms", ["api", "ngRoute"])
     ctrlScope.namePlaceholder = "Page name";
     ctrlScope.descriptionPlaceholder = "Description";
     ctrlScope.keywordsPlaceholder = "Keywords";
+    ctrlScope.tinymceOptions = {
+      plugins : 'advlist autolink link image media lists charmap preview code',
+      skin: 'lightgray',
+      theme : 'modern',
+      media_live_embeds: true
+    };
     
     ctrlScope.submitPage = function () {
       ctrlScope.retrieving = true;
@@ -577,6 +589,12 @@ angular.module("forms", ["api", "ngRoute"])
     ctrlScope.googlePlusNamePlaceholder = "Retrieving...";
     ctrlScope.disqusIdPlaceholder = "Retrieving...";
     ctrlScope.googleIdPlaceholder = "Retrieving...";
+    ctrlScope.tinymceOptions = {
+      plugins : 'advlist autolink link image media lists charmap preview code',
+      skin: 'lightgray',
+      theme : 'modern',
+      media_live_embeds: true
+    };
     
     ctrlScope.submitSettings = function () {
       ctrlScope.retrieving = true;
