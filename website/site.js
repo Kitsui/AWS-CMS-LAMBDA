@@ -36,6 +36,13 @@ var app = angular.module('Kitsui', ['ngRoute'])
 app.filter('html', function($sce) { return $sce.trustAsHtml; });
 
 
+app.filter('base64', function() { 
+	return function(x){
+		y = btoa(x).replace(/\W/g, '');
+		return y;
+	};
+});
+
 app.controller('SettingsController', [ '$http', '$rootScope', function($http, $rootScope){
 	var controller = this;
 	
@@ -43,9 +50,9 @@ app.controller('SettingsController', [ '$http', '$rootScope', function($http, $r
 		for (var key in response.data){
 			controller[key] = response.data[key];
 		}
+		controller.nav = JSON.parse(response.data.nav);
 		$rootScope.primary_colour = response.data.primary_colour;
 		$rootScope.highlight_colour = response.data.highlight_colour;
-		console.log($rootScope.primary_colour);
 	});
 	
 }]);
@@ -59,7 +66,6 @@ app.controller('PageController', ['$http', '$routeParams', function($http, $rout
         controller.page = response.data;
 		controller.title = response.data.title;
 		controller.content = response.data.content;
-		console.log(controller);
     });
 	
 } ]);
@@ -75,7 +81,6 @@ app.controller('PostController', ['$http', '$routeParams', function($http, $rout
 		post.description = response.data.Description;
 		post.date = response.data.SavedDate;
 		post.author = response.data.Author;
-		console.log(post);
     });
 	
 } ]);
@@ -87,7 +92,6 @@ app.controller('HomeController', ['$http', '$routeParams', '$location', function
 	var current_page = $routeParams.page;
 	if (!current_page){
 		current_page = 1;
-		console.log("There is no current page")
 	}
 	
 	var controller = this;
@@ -96,39 +100,36 @@ app.controller('HomeController', ['$http', '$routeParams', '$location', function
         
 		controller.posts = [];
 		
-		// Get each post's JSON file.
-		for(i = 0; i < response.data[''+current_page].length; ++i){ // Loop through the post IDs and fetch their data.
-			$http.get("Content/Post/"+response.data[''+current_page][i]+".json").then(function(response) {
-				controller.posts.push(response.data);
-			});
+		if(response.data[''+current_page]){ // In case there are no posts yet.
+			// Get each post's JSON file.
+			for(i = 0; i < response.data[''+current_page].length; ++i){ // Loop through the post IDs and fetch their data.
+				$http.get("Content/Post/"+response.data[''+current_page][i]+".json").then(function(response) {
+					controller.posts.push(response.data);
+				});
+				
+			}
+		} else { // fall back to something, todo.
 			
 		}
 		
 		//Figure out if there's a next page
 		controller.next_page = parseInt(current_page) + 1;
-		console.log(controller);
 		// Check that there is a next page in the data
 		if(!response.data[controller.next_page]){
 			controller.next_page = null;
-			console.log("There is no next page: "+controller.next_page);
 		}
 		
 		//Figure out if there's a previous page
 		controller.previous_page = parseInt(current_page) - 1;
-		console.log(controller);
 		// Check that there is a previous page in the data
 		if(!response.data[controller.previous_page]){
 			controller.previous_page = null;
-			console.log("There is no previous page: "+controller.previous_page);
 		}
 		
 		
     });
 	
-	console.log("Current page: "+this.current_page);
-	console.log("Next page: "+this.next_page);
-	
-	console.log(this);
+
 	
 } ]);
 

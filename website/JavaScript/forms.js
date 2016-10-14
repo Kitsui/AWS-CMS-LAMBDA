@@ -346,7 +346,7 @@ angular.module("forms", ["api", "ngRoute"])
   .controller("cmsVisitorNavFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
     "use strict";
     var ctrlScope = this;
-    
+
     ctrlScope.submitNav = function () {
       var str, isJson;
       
@@ -378,35 +378,36 @@ angular.module("forms", ["api", "ngRoute"])
         alert("Not valid JSON");
       }
     };
+	
+	var getNavItems = function (){
 
-    $http.post(
-      apiUrl,
-      {
-        "request": "getNavItems"
-      }
-    ).then(function successCallback(response) {
+		
+		$http.post(
+		  apiUrl,
+		  {
+			"request": "getNavItems"
+		  }
+		).then(function successCallback(response) {
 
-      var navJson = response.data.data;
+		  var navJson = response.data.data;
+		  
+		  try{
+			  navJson = JSON.parse(navJson);
+			  ctrlScope.nav_json = JSON.stringify(navJson, null, 4);
+		  } catch (e){
+			  alert("Invalid JSON in site settings.");
+		  }
 
-      // Remove escaped double quotes
-      navJson = navJson.replace(/\\"/g, '"');
-
-      // Remove first and last double quotes
-      if (navJson.charAt(0) === "\"" && navJson.charAt(navJson.length - 1 === "\"")) {
-        navJson = navJson.substr(1, navJson.length - 2);
-      }
-
-      navJson = JSON.parse(navJson);
-
-      ctrlScope.nav_json = JSON.stringify(navJson, null, 4);
-
-    }, function errorCallback(response) {
-      ctrlScope.nav = [
-        {
-          nav_json: response.data.error
-        }
-      ];
-    });
+		}, function errorCallback(response) {
+		  ctrlScope.nav = [
+			{
+			  nav_json: response.data.error
+			}
+		  ];
+		});
+	}
+	
+	getNavItems();
   }])
   .controller("cmsPageFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
@@ -658,30 +659,6 @@ angular.module("forms", ["api", "ngRoute"])
       ctrlScope.disqusId = response.data.disqus_id;
       ctrlScope.googleId = response.data.google_id;
     });
-  }])
-  .controller("cmsVisitorNavFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
-    "use strict";
-    var ctrlScope = this;
-    
-    ctrlScope.submitNav = function () {
-      $http.post(
-        apiUrl,
-        {
-          "request": "putNavItems",
-          "nav_items": [
-            {
-              "title": ctrlScope.nav_item.title,
-              "url": ctrlScope.nav_item.url,
-              "children": []
-            }
-          ]
-        }
-      ).then(function successCallback(response) {
-        ctrlScope.status = ("Successfully published nav items");
-      }, function errorCallback(response) {
-        ctrlScope.status = response.data.error;
-      });
-    };
   }])
   .controller("cmsUploadImageCtrl", ["$http", "apiUrl", "$scope", function ($http, apiUrl, $scope) {
     "use strict";
