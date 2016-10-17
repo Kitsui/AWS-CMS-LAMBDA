@@ -59,7 +59,62 @@ class Blog(object):
                     "data": {"id": blog_id, "action": action}}
 
         return {"message": "Successfully fetched blog", "data": blog["Item"]}
-
+    
+    @staticmethod
+    def edit_blog(blog_id, title, content, description, keywords, blog_table,
+                  bucket):
+        """ Edits a blog """
+        # Create the blog entry
+        current_blog = Blog.get_blog(blog_id, blog_table)
+        if "error" in current_blog:
+            return current_blog
+            
+        blog = current_blog["data"]
+        blog["Title"]["S"] = title
+        blog["Content"]["S"] = content
+        blog["Description"]["S"] = description
+        blog["Keywords"]["L"] = []
+        for keyword in keywords:
+            blog["Keywords"]["L"].append({"S": keyword})
+        blog_for_s3 = {
+            "ID": blog["ID"]["S"],
+            "Title": title,
+            "Author": blog["Author"]["S"],
+            "SavedDate": blog["SavedDate"]["S"],
+            "Content": content,
+            "Description": description,
+            "Keywords": keywords
+        }
+        
+        # Put the blog in the blog table
+        try:
+            dynamodb = boto3.client("dynamodb")
+            put_response = dynamodb.put_item(
+                TableName=blog_table, Item=blog, ReturnConsumedCapacity="TOTAL"
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Putting blog in the blog table"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        # TODO: Add paging table
+        Blog.update_blog_list(blog_id, bucket)
+        
+        # Add blog as json to bucket
+        try:
+            s3 = boto3.client("s3")
+            s3.put_object(
+                Bucket=bucket, ACL="public-read", Body=json.dumps(blog_for_s3),
+                Key=("Content/Post/%s.json" % blog_for_s3["ID"]),
+                ContentType="application/json"
+            )
+        except botocore.exceptions.ClientError as e:
+            action = "Putting blog in the bucket"
+            return {"error": e.response["Error"]["Code"],
+                    "data": {"exception": str(e), "action": action}}
+        
+        return {"message": "Successfully put blog", "data": blog}
+    
     @staticmethod
     def put_blog(author, title, content, description, keywords, blog_table,
                  bucket):
@@ -77,6 +132,8 @@ class Blog(object):
             "Description": {"S": description},
             "Keywords": {"L": []}
         }
+        for keyword in keywords:
+            blog["Keywords"]["L"].append({"S": keyword})
         blog_for_s3 = {
             "ID": blog_uuid,
             "SavedDate": saved_date,
@@ -86,8 +143,6 @@ class Blog(object):
             "Description": description,
             "Keywords": keywords
         }
-        for keyword in keywords:
-            blog["Keywords"]["L"].append({"S": keyword})
         
         # Put the blog in the blog table
         try:

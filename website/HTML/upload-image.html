@@ -28,20 +28,20 @@
                       <span class="glyphicon glyphicon-remove"></span>
                     </button>
                   </span>
-                  <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="imageCtrl.upload()" ng-disabled="!(imageCtrl.image)">
-                      <span class="glyphicon glyphicon-upload"></span>
-                    </button>
-                  </span>
                 </div>
               </div>
               <div class="col-lg-2"></div>
             </div>
             <div class="row" ng-hide="!(imageCtrl.image)">
               <div class="col-lg-2"></div>
-              <div class="col-lg-8">
-                <button type="button" class="btn btn-primary" ng-click="imageCtrl.refreshPreview()" style="width:100%;">
+              <div class="col-lg-4">
+                <button type="button" class="btn btn-primary" ng-click="imageCtrl.refreshPreview()" style="width:100%;display:block;">
                   <center>Summon Preview</center>
+                </button>
+              </div>
+              <div class="col-lg-4">
+                <button type="button" class="btn btn-primary" ng-click="imageCtrl.upload()" style="width:100%;display:block;">
+                  <center>Upload Image</center>
                 </button>
               </div>
               <div class="col-lg-2"></div>

@@ -327,6 +327,26 @@ angular.module("forms", ["api", "ngRoute"])
       ctrlScope.titlePlaceholder = "Retrieving...";
       ctrlScope.descriptionPlaceholder = "Retrieving...";
       ctrlScope.keywordsPlaceholder = "Retrieving...";
+      ctrlScope.submitBlog = function () {
+        ctrlScope.retrieving = true;
+        $http.post(
+          apiUrl,
+          {
+            "request": "editBlog",
+            "blogId": $routeParams.blogId,
+            "title": ctrlScope.blog.title,
+            "content": ctrlScope.blog.content,
+            "description": ctrlScope.blog.description,
+            "keywords": ctrlScope.blog.keywords.match(/\S+/g)
+          }
+        ).then(function successCallback(response) {
+          ctrlScope.retrieving = false;
+          ctrlScope.status = ("Successfully published blog: " + ctrlScope.blog.title);
+        }, function errorCallback(response) {
+          ctrlScope.status = response.data.error;
+        });
+      };
+      
       $http.post(
         apiUrl,
         {
