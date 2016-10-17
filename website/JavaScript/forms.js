@@ -321,6 +321,7 @@ angular.module("forms", ["api", "ngRoute"])
     
     if ($routeParams.blogId !== undefined) {
       ctrlScope.editing = true;
+      ctrlScope.blogUrl = "../index.html#/post/" + $routeParams.blogId;
       ctrlScope.retrieving = true;
       ctrlScope.header = "Edit Blog Post";
       ctrlScope.titlePlaceholder = "Retrieving...";
@@ -445,6 +446,7 @@ angular.module("forms", ["api", "ngRoute"])
     
     if ($routeParams.pageName !== undefined) {
       ctrlScope.editing = true;
+      ctrlScope.pageUrl = "../index.html#/page/" + $routeParams.pageName;
       ctrlScope.retrieving = true;
       ctrlScope.header = "Edit Page";
       ctrlScope.namePlaceholder = "Retrieving...";
