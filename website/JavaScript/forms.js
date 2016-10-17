@@ -327,6 +327,26 @@ angular.module("forms", ["api", "ngRoute"])
       ctrlScope.titlePlaceholder = "Retrieving...";
       ctrlScope.descriptionPlaceholder = "Retrieving...";
       ctrlScope.keywordsPlaceholder = "Retrieving...";
+      ctrlScope.submitBlog = function () {
+        ctrlScope.retrieving = true;
+        $http.post(
+          apiUrl,
+          {
+            "request": "editBlog",
+            "blogId": $routeParams.blogId,
+            "title": ctrlScope.blog.title,
+            "content": ctrlScope.blog.content,
+            "description": ctrlScope.blog.description,
+            "keywords": ctrlScope.blog.keywords.match(/\S+/g)
+          }
+        ).then(function successCallback(response) {
+          ctrlScope.retrieving = false;
+          ctrlScope.status = ("Successfully published blog: " + ctrlScope.blog.title);
+        }, function errorCallback(response) {
+          ctrlScope.status = response.data.error;
+        });
+      };
+      
       $http.post(
         apiUrl,
         {
@@ -697,7 +717,7 @@ angular.module("forms", ["api", "ngRoute"])
       }
       ctrlScope.contentType = ctrlScope.image.type;
       
-      waitingDialog.show("Fetching presigned URL");
+      waitingDialog.show("Uploading image to s3");
 
       var presignedRequest = {
         "request": "getPresignedPostImage",
@@ -712,7 +732,6 @@ angular.module("forms", ["api", "ngRoute"])
           withCredentials: true
         }
       ).then(function successCallback(response) {
-        waitingDialog.update("Uploading image to s3");
 
         var responseData, fields, postData, key, postConfig, field, uploadForm;
         responseData = response.data;
@@ -740,6 +759,7 @@ angular.module("forms", ["api", "ngRoute"])
         }).then(function successCallback(response) {
           waitingDialog.update("Successfully uploaded " + ctrlScope.image.name);
           setTimeout(waitingDialog.hide, 1000);
+          ctrlScope.imageS3Url = "../" + fields.key;
         }, function errorCallback(response) {
           var error = "Something went wrong";
           if (response.hasOwnProperty("data.error")) {

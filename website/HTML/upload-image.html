@@ -15,6 +15,7 @@
             <div class="row">
               <div class="col-lg-2"></div>
               <div class="col-lg-8">
+                <center><a target="_blank" ng-href="{{imageCtrl.imageS3Url}}"><strong>{{imageCtrl.imageS3Url}}<br/></strong></a></center>
                 <div class="input-group">
                   <span class="input-group-btn">
                     <button class="btn btn-default" onclick="$('#file-input').click();">
@@ -28,20 +29,20 @@
                       <span class="glyphicon glyphicon-remove"></span>
                     </button>
                   </span>
-                  <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="imageCtrl.upload()" ng-disabled="!(imageCtrl.image)">
-                      <span class="glyphicon glyphicon-upload"></span>
-                    </button>
-                  </span>
                 </div>
               </div>
               <div class="col-lg-2"></div>
             </div>
             <div class="row" ng-hide="!(imageCtrl.image)">
               <div class="col-lg-2"></div>
-              <div class="col-lg-8">
-                <button type="button" class="btn btn-primary" ng-click="imageCtrl.refreshPreview()" style="width:100%;">
+              <div class="col-lg-4">
+                <button type="button" class="btn btn-primary" ng-click="imageCtrl.refreshPreview()" style="width:100%;display:block;">
                   <center>Summon Preview</center>
+                </button>
+              </div>
+              <div class="col-lg-4">
+                <button type="button" class="btn btn-primary" ng-click="imageCtrl.upload()" style="width:100%;display:block;">
+                  <center>Upload Image</center>
                 </button>
               </div>
               <div class="col-lg-2"></div>
@@ -49,7 +50,9 @@
             <div class="row" ng-hide="!(imageCtrl.imageUrl)">
               <div class="col-lg-2"></div>
               <div class="col-lg-8">
-                <div align="center"><image class="img-thumbnail" ng-src="{{imageCtrl.imageUrl}}" style="max-width:100%;max-height:600px;"></image></div>
+                <div align="center">
+                  <image class="img-thumbnail" ng-src="{{imageCtrl.imageUrl}}" style="max-width:100%;max-height:600px;"></image>
+                </div>
               </div>
               <div class="col-lg-2"></div>
             </div>

@@ -284,6 +284,39 @@ def process_request(request_body, resources, request, user_info=None, token=None
         keywords = request_body["keywords"]
         return Blog.put_blog(author, title, content, description, keywords,
                              resources["BLOG_TABLE"], resources["BUCKET"])
+    elif request == "editBlog":
+        """ Request structure
+            {
+                request: putBlog,
+                blogId: <str: blog id>,
+                title: <str: title>,
+                content: <str: content>,
+                description: <str: description>,
+                keywords: <list:
+                    <str: keyword1>,
+                    <str: keyword2>,
+                    <str: etc...>
+                >
+            }
+        """
+        if not "blogId" in request_body:
+            Error.send_error("noBlogId", data={"request": request})
+        if not "title" in request_body:
+            Error.send_error("noTitle", data={"request": request})
+        if not "content" in request_body:
+            Error.send_error("noContent", data={"request": request})
+        if not "description" in request_body:
+            Error.send_error("noDescription", data={"request": request})
+        if not "keywords" in request_body:
+            Error.send_error("noKeywords", data={"request": request})
+        
+        blog_id = request_body["blogId"]
+        title = request_body["title"]
+        content = request_body["content"]
+        description = request_body["description"]
+        keywords = request_body["keywords"]
+        return Blog.edit_blog(blog_id, title, content, description, keywords,
+                             resources["BLOG_TABLE"], resources["BUCKET"])
     elif request == "deleteBlog":
         """ Request structure
             {
@@ -472,7 +505,7 @@ def supported_request(request):
         "getSiteSettings", "getNavItems"
     ]
     supported_puts = [
-        "putUser", "putRole", "putBlog", "putPage", "putNavItems",
+        "putUser", "putRole", "putBlog", "editBlog", "putPage", "putNavItems",
         "putSiteSettings"
     ]
     supported_posts = [
