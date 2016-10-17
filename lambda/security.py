@@ -103,11 +103,7 @@ class Security(object):
         # Get collection out of dynamo reponse value
         role_info = role_info[collectionName]
             
-        # Check for Super admin account
-        if user_email == "email@gmail.com":
-            role_permissions = role_info["Permissions"]["SS"]
-        else:
-            role_permissions = role_info["Permissions"]["L"]
+        role_permissions = role_info["Permissions"]["SS"]
 
         # Check that the user is authorized to perform the request
         if not request == "getPermissions":
@@ -219,12 +215,7 @@ class Security(object):
             return {"error": "roleHasNoPermissions",
                     "data": {"user": user_email, "action": action}}
         
-        # Check for Super admin account
-        # Return back permissions list
-        if user_email == "email@gmail.com":
-            return {"message": "Successfully fetched permissions", "data": role_info["Permissions"]["SS"]}
-        else:
-            return {"message": "Successfully fetched permissions", "data": role_info["Permissions"]["L"]}
+        return {"message": "Successfully fetched permissions", "data": role_info["Permissions"]["SS"]}
 
         return {"error": "RoleFormatError",
                     "data": {"user": user_email, "action": action}}
