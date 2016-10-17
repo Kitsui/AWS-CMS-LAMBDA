@@ -100,7 +100,7 @@ class Page(object):
             s3 = boto3.client("s3")
             s3.put_object(
                 Bucket=bucket, ACL="public-read", Body=json.dumps(page_for_s3),
-                Key=("Content/Pages/%s.json" % page_for_s3["Name"]),
+                Key=("Content/Pages/%s.json" % page_for_s3["PageName"]),
                 ContentType="application/json"
             )
         except botocore.exceptions.ClientError as e:
