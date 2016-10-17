@@ -394,7 +394,9 @@ def process_request(request_body, resources, request, user_info=None, token=None
                 googlePlus: <str: google plus name>,
                 footer: <str: site footer>,
                 disqusId: <str: disqus id>,
-                googleId: <str: google id>
+                googleId: <str: google id>,
+                primaryColor: <str: color>,
+                highlightColor: <str: color>
             }
         """
         if not "siteName" in request_body:
@@ -415,6 +417,10 @@ def process_request(request_body, resources, request, user_info=None, token=None
             Error.send_error("noDisqusId", data={"request": request})
         if not "googleId" in request_body:
             Error.send_error("noGoogleId", data={"request": request})
+        if not "primaryColor" in request_body:
+            Error.send_error("noPrimaryColor", data={"request": request})
+        if not "highlightColor" in request_body:
+            Error.send_error("noHighlightColor", data={"request": request})
         
         site_name = request_body["siteName"]
         site_description = request_body["siteDescription"]
@@ -425,9 +431,13 @@ def process_request(request_body, resources, request, user_info=None, token=None
         footer = request_body["footer"]
         disqus_id = request_body["disqusId"]
         google_id = request_body["googleId"]
+        primary_color = request_body["primaryColor"]
+        highlight_color = request_body["highlightColor"]
+
         return Site_Settings.put_site_settings(
             site_name, site_description, facebook, twitter, instagram,
-            google_plus, footer, disqus_id, google_id, resources["BUCKET"]
+            google_plus, footer, disqus_id, google_id, primary_color,
+            highlight_color, resources["BUCKET"]
         )
     elif request == "getNavItems":
         """ Request structure

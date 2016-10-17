@@ -592,6 +592,8 @@ angular.module("forms", ["api", "ngRoute"])
     ctrlScope.googlePlusNamePlaceholder = "Retrieving...";
     ctrlScope.disqusIdPlaceholder = "Retrieving...";
     ctrlScope.googleIdPlaceholder = "Retrieving...";
+    ctrlScope.primaryColorPlaceHolder = "Retrieving...";
+    ctrlScope.highlightColorPlaceHolder = "Retrieving...";
     ctrlScope.tinymceOptions = {
       plugins : 'advlist autolink link image media lists charmap preview code',
       skin: 'lightgray',
@@ -602,7 +604,8 @@ angular.module("forms", ["api", "ngRoute"])
     ctrlScope.submitSettings = function () {
       ctrlScope.retrieving = true;
       
-      var siteName, siteDescription, facebook, twitter, instagram, googlePlus, footer, disqusId, googleId;
+      var siteName, siteDescription, facebook, twitter, instagram, googlePlus, footer, disqusId, googleId,
+        primaryColor, highlightColor;
       
       if (ctrlScope.name !== undefined) { siteName = ctrlScope.name; } else { siteName = ""; }
       if (ctrlScope.description !== undefined) { siteDescription = ctrlScope.description; } else { siteDescription = ""; }
@@ -613,6 +616,8 @@ angular.module("forms", ["api", "ngRoute"])
       if (ctrlScope.footer !== undefined) { footer = ctrlScope.footer; } else { footer = ""; }
       if (ctrlScope.disqusId !== undefined) { disqusId = ctrlScope.disqusId; } else { disqusId = ""; }
       if (ctrlScope.googleId !== undefined) { googleId = ctrlScope.googleId; } else { googleId = ""; }
+      if (ctrlScope.primaryColor !== undefined) { primaryColor = ctrlScope.primaryColor; } else { primaryColor = ""; }
+      if (ctrlScope.highlightColor !== undefined) { highlightColor = ctrlScope.highlightColor; } else { highlightColor = ""; }
       
       $http.post(
         apiUrl,
@@ -626,7 +631,9 @@ angular.module("forms", ["api", "ngRoute"])
           "googlePlus": googlePlus,
           "footer": footer,
           "disqusId": disqusId,
-          "googleId": googleId
+          "googleId": googleId,
+          "primaryColor": primaryColor,
+          "highlightColor": highlightColor
         }
       ).then(function successCallback(response) {
         ctrlScope.retrieving = false;
@@ -650,6 +657,9 @@ angular.module("forms", ["api", "ngRoute"])
       ctrlScope.googlePlusNamePlaceholder = "Google plus name";
       ctrlScope.disqusIdPlaceholder = "Disqus id";
       ctrlScope.googleIdPlaceholder = "Google id";
+      ctrlScope.primaryColorPlaceHolder = "blue";
+      ctrlScope.highlightColorPlaceHolder = "red";
+
       
       ctrlScope.name = response.data.site_name;
       ctrlScope.description = response.data.site_description;
@@ -660,6 +670,9 @@ angular.module("forms", ["api", "ngRoute"])
       ctrlScope.googlePlusName = response.data.google_plus;
       ctrlScope.disqusId = response.data.disqus_id;
       ctrlScope.googleId = response.data.google_id;
+      ctrlScope.primaryColor = response.data.primary_colour;
+      ctrlScope.highlightColor = response.data.highlight_colour;
+
     });
   }])
   .controller("cmsUploadImageCtrl", ["$http", "apiUrl", "$scope", function ($http, apiUrl, $scope) {
