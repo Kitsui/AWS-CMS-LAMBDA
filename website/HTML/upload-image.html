@@ -15,6 +15,7 @@
             <div class="row">
               <div class="col-lg-2"></div>
               <div class="col-lg-8">
+                <center><a target="_blank" ng-href="{{imageCtrl.imageS3Url}}"><strong>{{imageCtrl.imageS3Url}}<br/></strong></a></center>
                 <div class="input-group">
                   <span class="input-group-btn">
                     <button class="btn btn-default" onclick="$('#file-input').click();">
@@ -49,7 +50,9 @@
             <div class="row" ng-hide="!(imageCtrl.imageUrl)">
               <div class="col-lg-2"></div>
               <div class="col-lg-8">
-                <div align="center"><image class="img-thumbnail" ng-src="{{imageCtrl.imageUrl}}" style="max-width:100%;max-height:600px;"></image></div>
+                <div align="center">
+                  <image class="img-thumbnail" ng-src="{{imageCtrl.imageUrl}}" style="max-width:100%;max-height:600px;"></image>
+                </div>
               </div>
               <div class="col-lg-2"></div>
             </div>

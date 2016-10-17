@@ -717,7 +717,7 @@ angular.module("forms", ["api", "ngRoute"])
       }
       ctrlScope.contentType = ctrlScope.image.type;
       
-      waitingDialog.show("Fetching presigned URL");
+      waitingDialog.show("Uploading image to s3");
 
       var presignedRequest = {
         "request": "getPresignedPostImage",
@@ -732,7 +732,6 @@ angular.module("forms", ["api", "ngRoute"])
           withCredentials: true
         }
       ).then(function successCallback(response) {
-        waitingDialog.update("Uploading image to s3");
 
         var responseData, fields, postData, key, postConfig, field, uploadForm;
         responseData = response.data;
@@ -760,6 +759,7 @@ angular.module("forms", ["api", "ngRoute"])
         }).then(function successCallback(response) {
           waitingDialog.update("Successfully uploaded " + ctrlScope.image.name);
           setTimeout(waitingDialog.hide, 1000);
+          ctrlScope.imageS3Url = "../" + fields.key;
         }, function errorCallback(response) {
           var error = "Something went wrong";
           if (response.hasOwnProperty("data.error")) {
