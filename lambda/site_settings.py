@@ -21,7 +21,7 @@ class Site_Settings(object):
     @staticmethod
     def put_site_settings(site_name, site_description, facebook, twitter,
                           instagram, google_plus, footer, disqus_id, google_id,
-                          bucket):
+                          primary_color, highlight_color, bucket):
         site_settings = json.loads(Site_Settings.read_site_settings(bucket))
         site_settings["site_name"] = site_name
         site_settings["site_description"] = site_description
@@ -32,6 +32,8 @@ class Site_Settings(object):
         site_settings["footer"] = footer
         site_settings["disqus_id"] = disqus_id
         site_settings["google_id"] = google_id
+        site_settings["primary_colour"] = primary_color
+        site_settings["highlight_colour"] = highlight_color
         
         return Site_Settings.save_site_settings(site_settings, bucket)
 
