@@ -58,19 +58,20 @@ app.controller('SettingsController', [ '$http', '$rootScope', function($http, $r
 }]);
 
 
-app.controller('PageController', ['$http', '$routeParams', function($http, $routeParams){
+app.controller('PageController', ['$http', '$routeParams', '$rootScope', function($http, $routeParams, $rootScope){
 	
 	var controller = this;
 	
-	$http.get("Content/Page/"+ $routeParams.pageid +".json").then(function(response) {
+	$http.get("Content/Pages/"+ $routeParams.pageid +".json").then(function(response) {
         controller.page = response.data;
-		controller.title = response.data.title;
-		controller.content = response.data.content;
+		controller.title = response.data.PageName;
+		controller.content = response.data.Content;
+		$rootScope.page_name = response.data.PageName;
     });
 	
 } ]);
 
-app.controller('PostController', ['$http', '$routeParams', function($http, $routeParams){
+app.controller('PostController', ['$http', '$routeParams', '$rootScope', function($http, $routeParams, $rootScope){
 	
 	var post = this;
 	
@@ -81,12 +82,13 @@ app.controller('PostController', ['$http', '$routeParams', function($http, $rout
 		post.description = response.data.Description;
 		post.date = response.data.SavedDate;
 		post.author = response.data.Author;
+		$rootScope.page_name = response.data.Title;
     });
 	
 } ]);
 
 //Handles displaying post.
-app.controller('HomeController', ['$http', '$routeParams', '$location', function($http, $routeParams, $location){
+app.controller('HomeController', ['$http', '$routeParams', '$location', '$rootScope', function($http, $routeParams, $location, $rootScope){
 	
 	// What page we are on of the home feed, if applicable.
 	var current_page = $routeParams.page;
@@ -129,7 +131,7 @@ app.controller('HomeController', ['$http', '$routeParams', '$location', function
 		
     });
 	
-
+	$rootScope.page_name = "Latest";
 	
 } ]);
 
