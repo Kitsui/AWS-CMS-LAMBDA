@@ -368,9 +368,15 @@ angular.module("forms", ["api", "ngRoute"])
     "use strict";
     var ctrlScope = this;
     
+    ctrlScope.navigationItems = [];
+    
     ctrlScope.addItem = function () {
       ctrlScope.navigationItems.push({"title": "", "url": ""});
-    }
+    };
+    
+    ctrlScope.removeItem = function (index) {
+      ctrlScope.navigationItems.splice(index, 1);
+    };
     
     ctrlScope.submitNav = function () {
       if (ctrlScope.navigationItems.length > 0) {
