@@ -11,20 +11,36 @@
           Edit The Visitor Navigation
         </div>
         <div class="panel-body">
-          <div class="row">
-            <div class="col-lg-1"></div>
-            <div class="col-lg-10">
-              <form role="form" ng-submit="visitorNavFormCtrl.submitNav()">
-                <div class="form-group">
-                  <label>Navigation JSON</label>
-                  <textarea rows="25" class="form-control" ng-model="visitorNavFormCtrl.nav_json">
-                  </textarea>
+          <form role="form" ng-submit="visitorNavFormCtrl.submitNav()">
+            <div ng-repeat="navigationItem in visitorNavFormCtrl.navigationItems">
+              <div class="row">
+                <div class="col-lg-1"></div>
+                <div class="col-lg-10">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">Title</span>
+                    <input type="text" class="form-control" placeholder="Navigation item name"ng-model="navigationItem.title">
+                    <span class="input-group-addon" id="basic-addon3">Url</span>
+                    <input type="url" class="form-control" placeholder="Some link" ng-model="navigationItem.url">
+                  </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Save</button> 
-              </form>
+                <div class="col-lg-1"></div>
+              </div>
             </div>
-            <div class="col-lg-1"></div>
-          </div>
+            <div class="row">
+              <div class="col-lg-1"></div>
+              <div class="col-lg-10">
+                <button type="button" class="btn btn-primary" ng-click="visitorNavFormCtrl.addItem()">Add Item</button>
+              </div>
+              <div class="col-lg-1"></div>
+            </div>
+            <div class="row">
+              <div class="col-lg-1"></div>
+              <div class="col-lg-10">
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+              <div class="col-lg-1"></div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

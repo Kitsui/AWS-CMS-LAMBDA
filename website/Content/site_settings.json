@@ -1,1 +1,9 @@
-{"site_name": "My Blog", "google_id": "", "footer": "<h5 class='white-text'>Footer Content</h5><p class='grey-text text-lighten-4'>You can use rows and columns here to organize your footer content.</p>", "instgram": "", "twitter": "", "google_plus": "", "primary_colour": "blue", "site_description": "My brand new Kitsui blog.", "facebook": "", "highlight_colour": "deep-orange", "nav": "[    {        \"url\": \"http://www.example.com\",        \"title\": \"Link One\"    },    {        \"url\": \"http://www.example.com\",        \"title\": \"Link Two\"    },    {        \"url\": \"http://www.example.com\",        \"title\": \"Link Three\"    }]", "disqus_id": ""}
+{
+	"site_name": "My Blog",
+	"google_id": "",
+	"footer": "<h5 class='white-text'>Footer Content</h5><p class='grey-text text-lighten-4'>You can use rows and columns here to organize your footer content.</p>",
+	"instgram": "", "twitter": "", "google_plus": "",
+	"primary_colour": "blue", "site_description": "My brand new Kitsui blog.",
+	"facebook": "", "highlight_colour": "deep-orange",
+	"nav": "[    {        \"url\": \"http://www.example.com\",        \"title\": \"Link One\"    },    {        \"url\": \"http://www.example.com\",        \"title\": \"Link Two\"    },    {        \"url\": \"http://www.example.com\",        \"title\": \"Link Three\"    }]", "disqus_id": ""
+}

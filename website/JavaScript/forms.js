@@ -367,26 +367,18 @@ angular.module("forms", ["api", "ngRoute"])
   .controller("cmsVisitorNavFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
     "use strict";
     var ctrlScope = this;
-
+    
+    ctrlScope.addItem = function () {
+      ctrlScope.navigationItems.push({"title": "", "url": ""});
+    }
+    
     ctrlScope.submitNav = function () {
-      var str, isJson;
-      
-      str = ctrlScope.nav_json;
-      isJson = function (str) {
-        try {
-          JSON.parse(str);
-        } catch (e) {
-          return false;
-        }
-        return true;
-      };
-      
-      if (isJson(str)) {
+      if (ctrlScope.navigationItems.length > 0) {
         $http.post(
           apiUrl,
           {
             "request": "putNavItems",
-            "nav_json": str.replace(/(\r\n|\n|\r)/gm, "")
+            "nav_json": JSON.stringify(ctrlScope.navigationItems)
           }
         ).then(function successCallback(response) {
           ctrlScope.status = ("Successfully published nav items");
@@ -395,40 +387,19 @@ angular.module("forms", ["api", "ngRoute"])
           ctrlScope.status = response.data.error;
           alert("Unable to publish nav items");
         });
-      } else {
-        alert("Not valid JSON");
       }
     };
-	
-	var getNavItems = function (){
-
-		
-		$http.post(
-		  apiUrl,
-		  {
-			"request": "getNavItems"
-		  }
-		).then(function successCallback(response) {
-
-		  var navJson = response.data.data;
-		  
-		  try{
-			  navJson = JSON.parse(navJson);
-			  ctrlScope.nav_json = JSON.stringify(navJson, null, 4);
-		  } catch (e){
-			  alert("Invalid JSON in site settings.");
-		  }
-
-		}, function errorCallback(response) {
-		  ctrlScope.nav = [
-			{
-			  nav_json: response.data.error
-			}
-		  ];
-		});
-	}
-	
-	getNavItems();
+    
+    $http.post(
+      apiUrl,
+      {
+        "request": "getNavItems"
+      }
+    ).then(function successCallback(response) {
+      ctrlScope.navigationItems = JSON.parse(response.data.data);
+    }, function errorCallback(response) {
+      
+    });
   }])
   .controller("cmsPageFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
