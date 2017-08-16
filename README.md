@@ -16,7 +16,7 @@ Installation documentation can be found  [here](http://kitsui.github.io/docs/)
 
 ## CONTRIBUTORS
 Miguel Saavedra [Git](https://github.com/chownema) | [LinkedIn](https://nz.linkedin.com/in/miguel-saavedra-ab0865aa)  
-Adam Campbell [Git](https://github.com/Obj3ct)  
+Adam Campbell [Git](https://github.com/sorgenskammer)  
 Chris Treadgold [Git](https://github.com/Christopher-Treadgold)  
 John Cave [Git](https://github.com/johncave)
 
